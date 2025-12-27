@@ -45,7 +45,7 @@ RUN npm install -g yarn
 RUN yarn add bootstrap @popperjs/core
 
 # Ustawienie katalogu roboczego
-WORKDIR /var/www/html
+WORKDIR /var/www
 
 # Instalacja rozszerzenia YAML
 RUN pecl install yaml && docker-php-ext-enable yaml
