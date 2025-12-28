@@ -5,12 +5,12 @@ use App\Http\Controllers\Api\V1\TaskController;
 use Illuminate\Support\Facades\Route;
 
 // Public endpoints (API Key required)
-Route::middleware(['api.key'])->group(function () {
-    Route::post('/v1/tasks', [TaskController::class, 'store']);
-});
+// Route::middleware(['api.key'])->group(function () {
+//     Route::post('/v1/tasks', [TaskController::class, 'store']);
+// });
 
 // Protected endpoints (JWT required)
-Route::middleware(['auth:api'])->group(function () {
+// Route::middleware(['auth:api'])->group(function () {
     // Task endpoints
     Route::get('/v1/tasks', [TaskController::class, 'index']);
     Route::get('/v1/tasks/{id}', [TaskController::class, 'show']);
@@ -23,4 +23,4 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/v1/applications/{id}', [ApplicationManagerController::class, 'show']);
     Route::put('/v1/applications/{id}', [ApplicationManagerController::class, 'update']);
     Route::post('/v1/applications/{id}/generate-api-key', [ApplicationManagerController::class, 'generateApiKey']);
-});
+// });
