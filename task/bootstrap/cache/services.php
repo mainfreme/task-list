@@ -39,7 +39,7 @@
     35 => 'Spatie\\Permission\\PermissionServiceProvider',
     36 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
     37 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
-    38 => 'App\\Providers\\RepositoryServiceProvider',
+    38 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
   ),
   'eager' => 
   array (
@@ -65,7 +65,7 @@
     19 => 'Spatie\\Permission\\PermissionServiceProvider',
     20 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
     21 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
-    22 => 'App\\Providers\\RepositoryServiceProvider',
+    22 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
   ),
   'deferred' => 
   array (
