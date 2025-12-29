@@ -43,7 +43,12 @@ API aplikacji do zarządzania zadaniami zbudowane w architekturze DDD/CQRS z wyk
    docker-compose exec app php artisan migrate
    ```
 
-7. **Aplikacja będzie dostępna pod adresem:**
+7. ** Napelnij baze **
+```bash
+php artisan db:seed
+```
+
+8. **Aplikacja będzie dostępna pod adresem:**
    - **API:** `http://localhost:8080/api/v1/`
    - **Dokumentacja Swagger:** `http://localhost:8080/api/documentation`
 

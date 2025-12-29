@@ -183,7 +183,6 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         ),
         'I' =>
         array (
-            'Infrastructure\\' => 15,
             'Illuminate\\Support\\' => 19,
             'Illuminate\\' => 11,
         ),
@@ -209,7 +208,6 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         'D' =>
         array (
             'Dotenv\\' => 7,
-            'Domain\\' => 7,
             'Doctrine\\Inflector\\' => 19,
             'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
@@ -235,7 +233,6 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         'A' =>
         array (
             'Aws\\' => 4,
-            'Application\\' => 12,
             'App\\' => 4,
         ),
     );
@@ -625,10 +622,6 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         array (
             0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
         ),
-        'Infrastructure\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/src/Infrastructure',
-        ),
         'Illuminate\\Support\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Macroable',
@@ -683,10 +676,6 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
-        'Domain\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/src/Domain',
-        ),
         'Doctrine\\Inflector\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/src',
@@ -713,11 +702,13 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         ),
         'Database\\Seeders\\' =>
         array (
-            0 => __DIR__ . '/..' . '/laravel/pint/database/seeders',
+            0 => __DIR__ . '/../..' . '/database/seeders',
+            1 => __DIR__ . '/..' . '/laravel/pint/database/seeders',
         ),
         'Database\\Factories\\' =>
         array (
-            0 => __DIR__ . '/..' . '/laravel/pint/database/factories',
+            0 => __DIR__ . '/../..' . '/database/factories',
+            1 => __DIR__ . '/..' . '/laravel/pint/database/factories',
         ),
         'Cron\\' =>
         array (
@@ -751,13 +742,9 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         array (
             0 => __DIR__ . '/..' . '/aws/aws-sdk-php/src',
         ),
-        'Application\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/src/Application',
-        ),
         'App\\' =>
         array (
-            0 => __DIR__ . '/../..' . '/app',
+            0 => __DIR__ . '/../..' . '/src/app',
             1 => __DIR__ . '/..' . '/laravel/pint/app',
         ),
     );
@@ -796,6 +783,49 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         'AWS\\CRT\\NativeResource' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/NativeResource.php',
         'AWS\\CRT\\OptionValue' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
         'AWS\\CRT\\Options' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
+        'App\\Application\\ApplicationManager\\Command\\CreateApplicationManager\\CreateApplicationManagerCommand' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Command/CreateApplicationManager/CreateApplicationManagerCommand.php',
+        'App\\Application\\ApplicationManager\\Command\\CreateApplicationManager\\CreateApplicationManagerHandler' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Command/CreateApplicationManager/CreateApplicationManagerHandler.php',
+        'App\\Application\\ApplicationManager\\Command\\GenerateApiKey\\GenerateApiKeyCommand' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Command/GenerateApiKey/GenerateApiKeyCommand.php',
+        'App\\Application\\ApplicationManager\\Command\\GenerateApiKey\\GenerateApiKeyHandler' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Command/GenerateApiKey/GenerateApiKeyHandler.php',
+        'App\\Application\\ApplicationManager\\Command\\UpdateApplicationManager\\UpdateApplicationManagerCommand' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Command/UpdateApplicationManager/UpdateApplicationManagerCommand.php',
+        'App\\Application\\ApplicationManager\\Command\\UpdateApplicationManager\\UpdateApplicationManagerHandler' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Command/UpdateApplicationManager/UpdateApplicationManagerHandler.php',
+        'App\\Application\\ApplicationManager\\DTO\\ApplicationManagerDTO' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/DTO/ApplicationManagerDTO.php',
+        'App\\Application\\ApplicationManager\\Query\\GetApplicationManager\\GetApplicationManagerHandler' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Query/GetApplicationManager/GetApplicationManagerHandler.php',
+        'App\\Application\\ApplicationManager\\Query\\GetApplicationManager\\GetApplicationManagerQuery' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Query/GetApplicationManager/GetApplicationManagerQuery.php',
+        'App\\Application\\ApplicationManager\\Query\\ListApplicationManagers\\ListApplicationManagersHandler' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Query/ListApplicationManagers/ListApplicationManagersHandler.php',
+        'App\\Application\\ApplicationManager\\Query\\ListApplicationManagers\\ListApplicationManagersQuery' => __DIR__ . '/../..' . '/src/app/Application/ApplicationManager/Query/ListApplicationManagers/ListApplicationManagersQuery.php',
+        'App\\Application\\Task\\Command\\CreateTask\\CreateTaskCommand' => __DIR__ . '/../..' . '/src/app/Application/Task/Command/CreateTask/CreateTaskCommand.php',
+        'App\\Application\\Task\\Command\\CreateTask\\CreateTaskHandler' => __DIR__ . '/../..' . '/src/app/Application/Task/Command/CreateTask/CreateTaskHandler.php',
+        'App\\Application\\Task\\Command\\UpdateTaskStatus\\UpdateTaskStatusCommand' => __DIR__ . '/../..' . '/src/app/Application/Task/Command/UpdateTaskStatus/UpdateTaskStatusCommand.php',
+        'App\\Application\\Task\\Command\\UpdateTaskStatus\\UpdateTaskStatusHandler' => __DIR__ . '/../..' . '/src/app/Application/Task/Command/UpdateTaskStatus/UpdateTaskStatusHandler.php',
+        'App\\Application\\Task\\Command\\UpdateTask\\UpdateTaskCommand' => __DIR__ . '/../..' . '/src/app/Application/Task/Command/UpdateTask/UpdateTaskCommand.php',
+        'App\\Application\\Task\\Command\\UpdateTask\\UpdateTaskHandler' => __DIR__ . '/../..' . '/src/app/Application/Task/Command/UpdateTask/UpdateTaskHandler.php',
+        'App\\Application\\Task\\DTO\\TaskDTO' => __DIR__ . '/../..' . '/src/app/Application/Task/DTO/TaskDTO.php',
+        'App\\Application\\Task\\DTO\\TaskListDTO' => __DIR__ . '/../..' . '/src/app/Application/Task/DTO/TaskListDTO.php',
+        'App\\Application\\Task\\Query\\GetTask\\GetTaskHandler' => __DIR__ . '/../..' . '/src/app/Application/Task/Query/GetTask/GetTaskHandler.php',
+        'App\\Application\\Task\\Query\\GetTask\\GetTaskQuery' => __DIR__ . '/../..' . '/src/app/Application/Task/Query/GetTask/GetTaskQuery.php',
+        'App\\Application\\Task\\Query\\ListTasks\\ListTasksHandler' => __DIR__ . '/../..' . '/src/app/Application/Task/Query/ListTasks/ListTasksHandler.php',
+        'App\\Application\\Task\\Query\\ListTasks\\ListTasksQuery' => __DIR__ . '/../..' . '/src/app/Application/Task/Query/ListTasks/ListTasksQuery.php',
+        'App\\Domain\\ApplicationManager\\Entity\\ApplicationManager' => __DIR__ . '/../..' . '/src/app/Domain/ApplicationManager/Entity/ApplicationManager.php',
+        'App\\Domain\\ApplicationManager\\Exception\\ApplicationManagerNotFoundException' => __DIR__ . '/../..' . '/src/app/Domain/ApplicationManager/Exception/ApplicationManagerNotFoundException.php',
+        'App\\Domain\\ApplicationManager\\Repository\\ApplicationManagerRepositoryInterface' => __DIR__ . '/../..' . '/src/app/Domain/ApplicationManager/Repository/ApplicationManagerRepositoryInterface.php',
+        'App\\Domain\\ApplicationManager\\ValueObject\\ApiKey' => __DIR__ . '/../..' . '/src/app/Domain/ApplicationManager/ValueObject/ApiKey.php',
+        'App\\Domain\\Task\\Entity\\Task' => __DIR__ . '/../..' . '/src/app/Domain/Task/Entity/Task.php',
+        'App\\Domain\\Task\\Exception\\TaskNotFoundException' => __DIR__ . '/../..' . '/src/app/Domain/Task/Exception/TaskNotFoundException.php',
+        'App\\Domain\\Task\\Repository\\TaskRepositoryInterface' => __DIR__ . '/../..' . '/src/app/Domain/Task/Repository/TaskRepositoryInterface.php',
+        'App\\Domain\\Task\\ValueObject\\TaskStatus' => __DIR__ . '/../..' . '/src/app/Domain/Task/ValueObject/TaskStatus.php',
+        'App\\Infrastructure\\ApplicationManager\\Middleware\\ApiKeyMiddleware' => __DIR__ . '/../..' . '/src/app/Infrastructure/ApplicationManager/Middleware/ApiKeyMiddleware.php',
+        'App\\Infrastructure\\ApplicationManager\\Repository\\EloquentApplicationManagerRepository' => __DIR__ . '/../..' . '/src/app/Infrastructure/ApplicationManager/Repository/EloquentApplicationManagerRepository.php',
+        'App\\Infrastructure\\Shared\\Providers\\RepositoryServiceProvider' => __DIR__ . '/../..' . '/src/app/Infrastructure/Shared/Providers/RepositoryServiceProvider.php',
+        'App\\Infrastructure\\Task\\Eloquent\\TaskModel' => __DIR__ . '/../..' . '/src/app/Infrastructure/Task/Eloquent/TaskModel.php',
+        'App\\Infrastructure\\Task\\Repository\\EloquentTaskRepository' => __DIR__ . '/../..' . '/src/app/Infrastructure/Task/Repository/EloquentTaskRepository.php',
+        'App\\UI\\Http\\Controllers\\Api\\V1\\ApplicationManagerController' => __DIR__ . '/../..' . '/src/app/UI/Http/Controllers/Api/V1/ApplicationManagerController.php',
+        'App\\UI\\Http\\Controllers\\Api\\V1\\TaskController' => __DIR__ . '/../..' . '/src/app/UI/Http/Controllers/Api/V1/TaskController.php',
+        'App\\UI\\Http\\Requests\\Api\\V1\\StoreApplicationManagerRequest' => __DIR__ . '/../..' . '/src/app/UI/Http/Requests/Api/V1/StoreApplicationManagerRequest.php',
+        'App\\UI\\Http\\Requests\\Api\\V1\\StoreTaskRequest' => __DIR__ . '/../..' . '/src/app/UI/Http/Requests/Api/V1/StoreTaskRequest.php',
+        'App\\UI\\Http\\Requests\\Api\\V1\\UpdateApplicationManagerRequest' => __DIR__ . '/../..' . '/src/app/UI/Http/Requests/Api/V1/UpdateApplicationManagerRequest.php',
+        'App\\UI\\Http\\Requests\\Api\\V1\\UpdateTaskRequest' => __DIR__ . '/../..' . '/src/app/UI/Http/Requests/Api/V1/UpdateTaskRequest.php',
+        'App\\UI\\Http\\Requests\\Api\\V1\\UpdateTaskStatusRequest' => __DIR__ . '/../..' . '/src/app/UI/Http/Requests/Api/V1/UpdateTaskStatusRequest.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Aws\\ACMPCA\\ACMPCAClient' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/ACMPCA/ACMPCAClient.php',
         'Aws\\ACMPCA\\Exception\\ACMPCAException' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/ACMPCA/Exception/ACMPCAException.php',
@@ -2168,6 +2198,9 @@ class ComposerStaticInitf92628ae587b3d8bd21270a98ad2c9dc
         'Cron\\HoursField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/HoursField.php',
         'Cron\\MinutesField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MinutesField.php',
         'Cron\\MonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
+        'Database\\Seeders\\ApplicationManagerSeeder' => __DIR__ . '/../..' . '/database/seeders/ApplicationManagerSeeder.php',
+        'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
+        'Database\\Seeders\\TaskSeeder' => __DIR__ . '/../..' . '/database/seeders/TaskSeeder.php',
         'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
         'DateException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
         'DateInvalidOperationException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',
