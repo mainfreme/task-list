@@ -1,6 +1,6 @@
 <?php
 
-use Infrastructure\Providers\RepositoryServiceProvider;
+use App\Providers\RepositoryServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
