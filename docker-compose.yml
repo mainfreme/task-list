@@ -28,7 +28,6 @@ services:
 
     nginx:
         image: nginx:latest
-        container_name: nginx
         restart: unless-stopped
         volumes:
             - ./task:/var/www
