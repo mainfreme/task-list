@@ -53,6 +53,36 @@ final class Task
         );
     }
 
+    public static function fromDatabase(
+        string $title,
+        string $websiteUrl,
+        string $description,
+        string $phone,
+        string $email,
+        string $address,
+        TaskStatus $status,
+        ?int $applicationManagerId = null,
+        ?\DateTimeImmutable $dueDate = null,
+        ?string $deliveryAddress = null,
+        ?\DateTimeImmutable $createdAt = null,
+        ?\DateTimeImmutable $updatedAt = null
+    ): self {
+        return new self(
+            $title,
+            $websiteUrl,
+            $description,
+            $phone,
+            $email,
+            $address,
+            $status,
+            $applicationManagerId,
+            $dueDate,
+            $deliveryAddress,
+            $createdAt,
+            $updatedAt
+        );
+    }
+
     public function getId(): ?int
     {
         return $this->id;
