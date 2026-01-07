@@ -1,6 +1,6 @@
 <?php
 
-use App\Providers\RepositoryServiceProvider;
+use App\Shared\Infrastructure\Providers\RepositoryServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'api.key' => \Infrastructure\ApplicationManager\Middleware\ApiKeyMiddleware::class,
+            'api.key' => App\Infrastructure\ApplicationManager\Middleware\ApiKeyMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

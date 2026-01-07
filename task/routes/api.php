@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\V1\ApplicationManagerController;
-use App\Http\Controllers\Api\V1\TaskController;
+use App\UI\Http\Controllers\Api\V1\ApplicationManagerController;
+use App\UI\Http\Controllers\Api\V1\TaskController;
 use Illuminate\Support\Facades\Route;
 
 // Public endpoints (API Key required)
