@@ -33,6 +33,18 @@ final class ApplicationManager
         return new self($name, $apiKey, $requestUrl, $isActive, $ipWhitelist);
     }
 
+    public static function fromDatabase(
+        string $name,
+        ApiKey $apiKey,
+        ?string $requestUrl = null,
+        bool $isActive = true,
+        ?array $ipWhitelist = null,
+        ?\DateTimeImmutable $createdAt = null,
+        ?\DateTimeImmutable $updatedAt = null
+    ): self {
+        return new self($name, $apiKey, $requestUrl, $isActive, $ipWhitelist, $createdAt, $updatedAt);
+    }
+
     public function getId(): ?int
     {
         return $this->id;

@@ -76,25 +76,17 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
         // For now, we'll use a workaround - the API key will be regenerated when needed
         $apiKey = ApiKey::fromString('placeholder'); // This is a limitation - we can't get original key from hash
 
-        $entity = ApplicationManager::create(
+        $entity = ApplicationManager::fromDatabase(
             $model->name,
             $apiKey,
             $model->request_url,
             $model->is_active,
-            $model->ip_whitelist
+            $model->ip_whitelist,
+            $model->created_at ? \DateTimeImmutable::createFromMutable($model->created_at) : null,
+            $model->updated_at ? \DateTimeImmutable::createFromMutable($model->updated_at) : null
         );
 
         $entity->setId($model->id);
-
-        // Set timestamps
-        $reflection = new \ReflectionClass($entity);
-        $createdAtProperty = $reflection->getProperty('createdAt');
-        $createdAtProperty->setAccessible(true);
-        $createdAtProperty->setValue($entity, \DateTimeImmutable::createFromMutable($model->created_at));
-
-        $updatedAtProperty = $reflection->getProperty('updatedAt');
-        $updatedAtProperty->setAccessible(true);
-        $updatedAtProperty->setValue($entity, \DateTimeImmutable::createFromMutable($model->updated_at));
 
         return $entity;
     }

@@ -77,6 +77,17 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
         }
     }
 
+    public function softDelete(Task $task): void
+    {
+        $model = TaskModel::find($task->getId());
+
+        if (!$model) {
+            throw TaskNotFoundException::byId($task->getId());
+        }
+
+        TaskModel::where('id', $task->getId())->update(['deleted_at' => now()]);
+    }
+
     public function delete(Task $task): void
     {
         if ($task->getId() !== null) {
@@ -86,30 +97,22 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
 
     private function toEntity(TaskModel $model): Task
     {
-        $entity = Task::create(
+        $entity = Task::fromDatabase(
             $model->title,
             $model->website_url,
             $model->description,
             $model->phone,
             $model->email,
             $model->address,
+            TaskStatus::fromString($model->status),
             $model->application_manager_id,
             $model->due_date ? \DateTimeImmutable::createFromMutable($model->due_date) : null,
-            $model->delivery_address
+            $model->delivery_address,
+            $model->created_at ? \DateTimeImmutable::createFromMutable($model->created_at) : null,
+            $model->updated_at ? \DateTimeImmutable::createFromMutable($model->updated_at) : null
         );
 
         $entity->setId($model->id);
-        $entity->setStatus(TaskStatus::fromString($model->status));
-
-        // Set timestamps
-        $reflection = new \ReflectionClass($entity);
-        $createdAtProperty = $reflection->getProperty('createdAt');
-        $createdAtProperty->setAccessible(true);
-        $createdAtProperty->setValue($entity, \DateTimeImmutable::createFromMutable($model->created_at));
-
-        $updatedAtProperty = $reflection->getProperty('updatedAt');
-        $updatedAtProperty->setAccessible(true);
-        $updatedAtProperty->setValue($entity, \DateTimeImmutable::createFromMutable($model->updated_at));
 
         return $entity;
     }

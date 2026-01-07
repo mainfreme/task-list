@@ -35,5 +35,7 @@ interface TaskRepositoryInterface
     public function save(Task $task): void;
 
     public function delete(Task $task): void;
+
+    public function softDelete(Task $task): void;
 }
 

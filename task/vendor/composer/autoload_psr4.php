@@ -129,5 +129,5 @@ return array(
     'Brick\\Math\\' => array($vendorDir . '/brick/math/src'),
     'Barryvdh\\LaravelIdeHelper\\' => array($vendorDir . '/barryvdh/laravel-ide-helper/src'),
     'Aws\\' => array($vendorDir . '/aws/aws-sdk-php/src'),
-    'App\\' => array($baseDir . '/src/app', $vendorDir . '/laravel/pint/app'),
+    'App\\' => array($baseDir . '/src/App', $vendorDir . '/laravel/pint/app'),
 );
