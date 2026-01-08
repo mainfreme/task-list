@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Providers;
 
-use App\Domain\ApplicationManager\Repository\ApplicationManagerRepositoryInterface;
-use App\Domain\Task\Repository\TaskRepositoryInterface;
+use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
+use App\Task\Domain\Repository\TaskRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
-use App\Infrastructure\ApplicationManager\Repository\EloquentApplicationManagerRepository;
-use App\Infrastructure\Task\Repository\EloquentTaskRepository;
+use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
+use App\Task\Infrastructure\Repository\EloquentTaskRepository;
 
 final class RepositoryServiceProvider extends ServiceProvider
 {
@@ -36,4 +36,3 @@ final class RepositoryServiceProvider extends ServiceProvider
         //
     }
 }
-
