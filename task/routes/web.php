@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+require_once __DIR__ . '/RouteLoader.php';
 
-Route::get('/', function () {
-    return 'web ';
-});
+\Routes\RouteLoader::loadWebRoutes();
