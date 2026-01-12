@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Crm\Domain\Entity;
+namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\ValueObject\NoteType;
 
+/**
+ * @internal
+ */
 final class ClientNote
 {
     private ?string $id = null;

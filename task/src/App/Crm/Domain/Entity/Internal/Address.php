@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Crm\Domain\Entity;
+namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\ValueObject\AddressType;
 
+/**
+ * @internal
+ */
 final class Address
 {
     private ?string $id = null;

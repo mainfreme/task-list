@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Crm\Domain\Entity;
+namespace App\Crm\Domain\Entity\Internal;
 
+/**
+ * @internal
+ */
 final class ClientTag
 {
     private ?string $id = null;
