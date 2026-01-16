@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Crm\Domain\ValueObject;
+namespace App\Crm\Domain\ValueObject\Uuid;
 
 final class ContactId extends AbstractUuid
 {
