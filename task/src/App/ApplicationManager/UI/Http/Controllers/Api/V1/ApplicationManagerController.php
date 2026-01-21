@@ -8,6 +8,8 @@ use App\ApplicationManager\Application\Command\CreateApplicationManager\CreateAp
 use App\ApplicationManager\Application\Command\CreateApplicationManager\CreateApplicationManagerHandler;
 use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyCommand;
 use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyHandler;
+use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenCommand;
+use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenHandler;
 use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerCommand;
 use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerHandler;
 use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicationManagerHandler;
@@ -24,6 +26,7 @@ final class ApplicationManagerController
         private readonly CreateApplicationManagerHandler $createHandler,
         private readonly UpdateApplicationManagerHandler $updateHandler,
         private readonly GenerateApiKeyHandler $generateApiKeyHandler,
+        private readonly GenerateJwtTokenHandler $generateJwtTokenHandler,
         private readonly GetApplicationManagerHandler $getHandler,
         private readonly ListApplicationManagersHandler $listHandler,
     ) {
@@ -101,5 +104,26 @@ final class ApplicationManagerController
         $dto = $this->generateApiKeyHandler->handle($command);
 
         return response()->json($dto->toArray());
+    }
+
+    public function generateJwtToken(Request $request, int $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'expiration_minutes' => 'nullable|integer|min:1|max:525600', // Max 1 year
+        ]);
+
+        $command = new GenerateJwtTokenCommand(
+            applicationId: $id,
+            expirationMinutes: $validated['expiration_minutes'] ?? null,
+        );
+
+        $token = $this->generateJwtTokenHandler->handle($command);
+        $expirationMinutes = $validated['expiration_minutes'] ?? (int) env('JWT_EXPIRATION_MINUTES', 60 * 24);
+
+        return response()->json([
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => $expirationMinutes,
+        ]);
     }
 }
