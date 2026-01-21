@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
+use App\Shared\Domain\ValueObject\ValueObjectInterface;
+use App\Shared\Domain\ValueObject\AbstractValueObject;
 use InvalidArgumentException;
 
-final class Nip
+final class Nip extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
         private readonly string $value
     ) {
-        $this->validate($value);
+        parent::__construct($value);
+        $this->validate();
     }
 
     public static function fromString(string $nip): self
@@ -19,14 +22,14 @@ final class Nip
         return new self($nip);
     }
 
-    private function validate(string $value): void
+    public function validate(): void
     {
-        if (empty(trim($value))) {
+        if (empty(trim($this->value))) {
             throw new InvalidArgumentException('NIP cannot be empty');
         }
 
         // Remove spaces and dashes for validation
-        $cleaned = preg_replace('/[\s-]/', '', $value);
+        $cleaned = preg_replace('/[\s-]/', '', $this->value);
 
         // Polish NIP validation: 10 digits
         if (!preg_match('/^\d{10}$/', $cleaned)) {
@@ -56,18 +59,13 @@ final class Nip
         return $checksum === (int)$nip[9];
     }
 
-    public function toString(): string
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function __toString(): string
+    public function equals(ValueObjectInterface $other): bool
     {
-        return $this->value;
-    }
-
-    public function equals(Nip $other): bool
-    {
-        return $this->value === $other->value;
+        return $this->value === $other->getValue();
     }
 }

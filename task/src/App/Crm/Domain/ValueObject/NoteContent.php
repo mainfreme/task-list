@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
+use App\Shared\Domain\ValueObject\ValueObjectInterface;
+use App\Shared\Domain\ValueObject\AbstractValueObject;
 use InvalidArgumentException;
 
-final class NoteContent
+final class NoteContent extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
         private readonly string $value
     ) {
-        $this->validate($value);
+        parent::__construct($value);
+        $this->validate();
     }
 
     public static function fromString(string $content): self
@@ -19,25 +22,20 @@ final class NoteContent
         return new self($content);
     }
 
-    private function validate(string $value): void
+    public function validate(): void
     {
-        if (empty(trim($value))) {
+        if (empty(trim($this->value))) {
             throw new InvalidArgumentException('Note content cannot be empty');
         }
     }
 
-    public function toString(): string
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function __toString(): string
+    public function equals(ValueObjectInterface $other): bool
     {
-        return $this->value;
-    }
-
-    public function equals(NoteContent $other): bool
-    {
-        return $this->value === $other->value;
+        return $this->value === $other->getValue();
     }
 }

@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
+use App\Shared\Domain\ValueObject\ValueObjectInterface;
+use App\Shared\Domain\ValueObject\AbstractValueObject;
 use InvalidArgumentException;
 
-final class Street
+final class Street extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
         private readonly string $value
     ) {
-        $this->validate($value);
+        parent::__construct($value);
+        $this->validate();
     }
 
     public static function fromString(string $street): self
@@ -19,29 +22,24 @@ final class Street
         return new self($street);
     }
 
-    private function validate(string $value): void
+    public function validate(): void
     {
-        if (empty(trim($value))) {
+        if (empty(trim($this->value))) {
             throw new InvalidArgumentException('Street cannot be empty');
         }
 
-        if (strlen($value) > 255) {
+        if (strlen($this->value) > 255) {
             throw new InvalidArgumentException('Street cannot exceed 255 characters');
         }
     }
 
-    public function toString(): string
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function __toString(): string
+    public function equals(ValueObjectInterface $other): bool
     {
-        return $this->value;
-    }
-
-    public function equals(Street $other): bool
-    {
-        return $this->value === $other->value;
+        return $this->value === $other->getValue();
     }
 }

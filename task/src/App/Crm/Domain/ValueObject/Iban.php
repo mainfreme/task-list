@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
+use App\Shared\Domain\ValueObject\ValueObjectInterface;
+use App\Shared\Domain\ValueObject\AbstractValueObject;
 use InvalidArgumentException;
 
-final class Iban
+final class Iban extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
         private readonly string $value
     ) {
-        $this->validate($value);
+        parent::__construct($value);
+        $this->validate();
     }
 
     public static function fromString(string $iban): self
@@ -19,14 +22,14 @@ final class Iban
         return new self($iban);
     }
 
-    private function validate(string $value): void
+    public function validate(): void
     {
-        if (empty(trim($value))) {
+        if (empty(trim($this->value))) {
             throw new InvalidArgumentException('IBAN cannot be empty');
         }
 
         // Remove spaces for validation
-        $cleaned = preg_replace('/\s+/', '', strtoupper($value));
+        $cleaned = preg_replace('/\s+/', '', strtoupper($this->value));
 
         // IBAN format: 15-34 alphanumeric characters, starts with 2 letters (country code)
         if (!preg_match('/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/', $cleaned)) {
@@ -64,19 +67,14 @@ final class Iban
         return $remainder === 1;
     }
 
-    public function toString(): string
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function __toString(): string
-    {
-        return $this->value;
-    }
-
-    public function equals(Iban $other): bool
+    public function equals(ValueObjectInterface $other): bool
     {
         return strtoupper(preg_replace('/\s+/', '', $this->value)) === 
-               strtoupper(preg_replace('/\s+/', '', $other->value));
+               strtoupper(preg_replace('/\s+/', '', $other->getValue()));
     }
 }

@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
+use App\Shared\Domain\ValueObject\ValueObjectInterface;
+use App\Shared\Domain\ValueObject\AbstractValueObject;
 use InvalidArgumentException;
 
-final class Bic
+final class Bic extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
         private readonly string $value
     ) {
-        $this->validate($value);
+        parent::__construct($value);
+        $this->validate();
     }
 
     public static function fromString(string $bic): self
@@ -19,34 +22,29 @@ final class Bic
         return new self($bic);
     }
 
-    private function validate(string $value): void
+    public function validate(): void
     {
-        if (empty(trim($value))) {
+        if (empty(trim($this->value))) {
             throw new InvalidArgumentException('BIC cannot be empty');
         }
 
-        if (strlen($value) > 255) {
+        if (strlen($this->value) > 255) {
             throw new InvalidArgumentException('BIC cannot exceed 255 characters');
         }
 
         // BIC format: 8-11 alphanumeric characters (same as SWIFT)
-        if (!preg_match('/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/', strtoupper($value))) {
+        if (!preg_match('/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/', strtoupper($this->value))) {
             throw new InvalidArgumentException('Invalid BIC format');
         }
     }
 
-    public function toString(): string
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function __toString(): string
+    public function equals(ValueObjectInterface $other): bool
     {
-        return $this->value;
-    }
-
-    public function equals(Bic $other): bool
-    {
-        return strtoupper($this->value) === strtoupper($other->value);
+        return strtoupper($this->value) === strtoupper($other->getValue());
     }
 }

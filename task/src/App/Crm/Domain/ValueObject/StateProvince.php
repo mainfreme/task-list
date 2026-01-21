@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
+use App\Shared\Domain\ValueObject\ValueObjectInterface;
+use App\Shared\Domain\ValueObject\AbstractValueObject;
 use InvalidArgumentException;
 
-final class StateProvince
+final class StateProvince extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
         private readonly string $value
     ) {
-        $this->validate($value);
+        parent::__construct($value);
+        $this->validate();
     }
 
     public static function fromString(string $stateProvince): self
@@ -19,29 +22,24 @@ final class StateProvince
         return new self($stateProvince);
     }
 
-    private function validate(string $value): void
+    public function validate(): void
     {
-        if (empty(trim($value))) {
+        if (empty(trim($this->value))) {
             throw new InvalidArgumentException('State/Province cannot be empty');
         }
 
-        if (strlen($value) > 100) {
+        if (strlen($this->value) > 100) {
             throw new InvalidArgumentException('State/Province cannot exceed 100 characters');
         }
     }
 
-    public function toString(): string
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function __toString(): string
+    public function equals(ValueObjectInterface $other): bool
     {
-        return $this->value;
-    }
-
-    public function equals(StateProvince $other): bool
-    {
-        return $this->value === $other->value;
+        return $this->value === $other->getValue();
     }
 }
