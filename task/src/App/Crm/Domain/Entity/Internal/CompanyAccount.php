@@ -4,24 +4,36 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity\Internal;
 
+use App\Crm\Domain\ValueObject\AccountName;
+use App\Crm\Domain\ValueObject\AccountNumber;
+use App\Crm\Domain\ValueObject\SwiftCode;
+use App\Crm\Domain\ValueObject\Iban;
+use App\Crm\Domain\ValueObject\Bic;
+use App\Crm\Domain\ValueObject\CompanyAccountName;
+use App\Crm\Domain\ValueObject\IsActive;
+use App\Crm\Domain\ValueObject\IsPrimary;
+use App\Crm\Domain\ValueObject\Uuid\AccountId;
+use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Crm\Domain\ValueObject\Uuid\AddressId;
+
 /**
  * @internal
  */
 final class CompanyAccount
 {
-    private ?string $id = null;
+    private ?AccountId $id = null;
 
     public function __construct(
-        private string $clientUuid,
-        private string $name,
-        private string $number,
-        private string $swiftCode,
-        private string $iban,
-        private string $bic,
-        private string $accountName,
-        private ?string $addressUuid = null,
-        private bool $isActive = true,
-        private bool $isPrimary = false,
+        private ClientId $clientUuid,
+        private AccountName $name,
+        private AccountNumber $number,
+        private SwiftCode $swiftCode,
+        private Iban $iban,
+        private Bic $bic,
+        private CompanyAccountName $accountName,
+        private ?AddressId $addressUuid = null,
+        private IsActive $isActive = new IsActive(true),
+        private IsPrimary $isPrimary = new IsPrimary(false),
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
@@ -30,15 +42,15 @@ final class CompanyAccount
     }
 
     public static function create(
-        string $clientUuid,
-        string $name,
-        string $number,
-        string $swiftCode,
-        string $iban,
-        string $bic,
-        string $accountName,
-        ?string $addressUuid = null,
-        bool $isPrimary = false
+        ClientId $clientUuid,
+        AccountName $name,
+        AccountNumber $number,
+        SwiftCode $swiftCode,
+        Iban $iban,
+        Bic $bic,
+        CompanyAccountName $accountName,
+        ?AddressId $addressUuid = null,
+        IsPrimary $isPrimary = new IsPrimary(false)
     ): self {
         return new self(
             $clientUuid,
@@ -49,22 +61,22 @@ final class CompanyAccount
             $bic,
             $accountName,
             $addressUuid,
-            true,
+            new IsActive(true),
             $isPrimary
         );
     }
 
     public static function fromDatabase(
-        string $clientUuid,
-        string $name,
-        string $number,
-        string $swiftCode,
-        string $iban,
-        string $bic,
-        string $accountName,
-        bool $isActive = true,
-        bool $isPrimary = false,
-        ?string $addressUuid = null,
+        ClientId $clientUuid,
+        AccountName $name,
+        AccountNumber $number,
+        SwiftCode $swiftCode,
+        Iban $iban,
+        Bic $bic,
+        CompanyAccountName $accountName,
+        IsActive $isActive,
+        IsPrimary $isPrimary,
+        ?AddressId $addressUuid = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
     ): self {
@@ -84,127 +96,127 @@ final class CompanyAccount
         );
     }
 
-    public function getId(): ?string
+    public function getId(): ?AccountId
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(AccountId $id): void
     {
         $this->id = $id;
     }
 
-    public function getClientUuid(): string
+    public function getClientUuid(): ClientId
     {
         return $this->clientUuid;
     }
 
-    public function setClientUuid(string $clientUuid): void
+    public function setClientUuid(ClientId $clientUuid): void
     {
         $this->clientUuid = $clientUuid;
         $this->touch();
     }
 
-    public function getName(): string
+    public function getName(): AccountName
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(AccountName $name): void
     {
         $this->name = $name;
         $this->touch();
     }
 
-    public function getNumber(): string
+    public function getNumber(): AccountNumber
     {
         return $this->number;
     }
 
-    public function setNumber(string $number): void
+    public function setNumber(AccountNumber $number): void
     {
         $this->number = $number;
         $this->touch();
     }
 
-    public function getSwiftCode(): string
+    public function getSwiftCode(): SwiftCode
     {
         return $this->swiftCode;
     }
 
-    public function setSwiftCode(string $swiftCode): void
+    public function setSwiftCode(SwiftCode $swiftCode): void
     {
         $this->swiftCode = $swiftCode;
         $this->touch();
     }
 
-    public function getIban(): string
+    public function getIban(): Iban
     {
         return $this->iban;
     }
 
-    public function setIban(string $iban): void
+    public function setIban(Iban $iban): void
     {
         $this->iban = $iban;
         $this->touch();
     }
 
-    public function getBic(): string
+    public function getBic(): Bic
     {
         return $this->bic;
     }
 
-    public function setBic(string $bic): void
+    public function setBic(Bic $bic): void
     {
         $this->bic = $bic;
         $this->touch();
     }
 
-    public function getAccountName(): string
+    public function getAccountName(): CompanyAccountName
     {
         return $this->accountName;
     }
 
-    public function setAccountName(string $accountName): void
+    public function setAccountName(CompanyAccountName $accountName): void
     {
         $this->accountName = $accountName;
         $this->touch();
     }
 
-    public function getAddressUuid(): ?string
+    public function getAddressUuid(): ?AddressId
     {
         return $this->addressUuid;
     }
 
-    public function setAddressUuid(?string $addressUuid): void
+    public function setAddressUuid(?AddressId $addressUuid): void
     {
         $this->addressUuid = $addressUuid;
         $this->touch();
     }
 
-    public function isActive(): bool
+    public function isActive(): IsActive
     {
         return $this->isActive;
     }
 
     public function activate(): void
     {
-        $this->isActive = true;
+        $this->isActive = IsActive::fromBool(true);
         $this->touch();
     }
 
     public function deactivate(): void
     {
-        $this->isActive = false;
+        $this->isActive = IsActive::fromBool(false);
         $this->touch();
     }
 
-    public function isPrimary(): bool
+    public function isPrimary(): IsPrimary
     {
         return $this->isPrimary;
     }
 
-    public function setPrimary(bool $isPrimary): void
+    public function setPrimary(IsPrimary $isPrimary): void
     {
         $this->isPrimary = $isPrimary;
         $this->touch();

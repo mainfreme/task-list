@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity;
 
+use App\Crm\Domain\ValueObject\Email;
+use App\Crm\Domain\ValueObject\Password;
+use App\Crm\Domain\ValueObject\Uuid\UserId;
+
 final class User
 {
-    private ?string $id = null;
+    private ?UserId $id = null;
 
     public function __construct(
-        private string $email,
-        private string $password,
+        private Email $email,
+        private Password $password,
         private array $roles = [],
         private ?string $rememberToken = null,
         private ?\DateTimeImmutable $createdAt = null,
@@ -21,16 +25,16 @@ final class User
     }
 
     public static function create(
-        string $email,
-        string $password,
+        Email $email,
+        Password $password,
         array $roles = []
     ): self {
         return new self($email, $password, $roles);
     }
 
     public static function fromDatabase(
-        string $email,
-        string $password,
+        Email $email,
+        Password $password,
         array $roles = [],
         ?string $rememberToken = null,
         ?\DateTimeImmutable $createdAt = null,
@@ -39,33 +43,33 @@ final class User
         return new self($email, $password, $roles, $rememberToken, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?string
+    public function getId(): ?UserId
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(UserId $id): void
     {
         $this->id = $id;
     }
 
-    public function getEmail(): string
+    public function getEmail(): Email
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): void
+    public function setEmail(Email $email): void
     {
         $this->email = $email;
         $this->touch();
     }
 
-    public function getPassword(): string
+    public function getPassword(): Password
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): void
+    public function setPassword(Password $password): void
     {
         $this->password = $password;
         $this->touch();

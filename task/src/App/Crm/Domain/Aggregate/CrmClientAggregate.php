@@ -13,7 +13,7 @@ use App\Crm\Domain\ValueObject\ClientName;
 use App\Crm\Domain\ValueObject\ClientNotes;
 use App\Crm\Domain\ValueObject\ClientRating;
 use App\Crm\Domain\ValueObject\ClientSource;
-use App\Crm\Domain\ValueObject\ClientStatus;
+use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\ValueObject\Country;
 use App\Crm\Domain\ValueObject\IsCompany;
 use App\Crm\Domain\ValueObject\Nip;
@@ -22,6 +22,8 @@ use App\Crm\Domain\ValueObject\Regon;
 use App\Crm\Domain\Dto\ClientDto;
 use App\Crm\Domain\Dto\ClientNoteDto;
 use Illuminate\Support\Collection;
+
+use App\Crm\Domain\ValueObject\IsDeleted;
 
 /**
  * CrmClientAggregate - Read-only aggregate representing Client with all related entities
@@ -59,7 +61,7 @@ final class CrmClientAggregate
         private Collection $tags,
         private ?ClientNoteDto $clientNoteDto,
         private Collection $accounts,
-        private bool $isDeleted = false,
+        private IsDeleted $isDeleted = new IsDeleted(false),
     ) {
     }
 
@@ -88,7 +90,7 @@ final class CrmClientAggregate
             tags: new Collection(),
             clientNoteDto: null,
             accounts: new Collection(),
-            isDeleted: false
+            isDeleted: new IsDeleted(false)
         );
     }
 
@@ -120,7 +122,7 @@ final class CrmClientAggregate
         Collection $tags,
         Collection $accounts,
         ?ClientNoteDto $clientNoteDto = null,
-        bool $isDeleted = false
+        IsDeleted $isDeleted = new IsDeleted(false)
     ): self {
         return new self(
             id: $id,
@@ -213,7 +215,7 @@ final class CrmClientAggregate
 
     public function softDelete(): self
     {
-        $this->isDeleted = true;
+        $this->isDeleted = IsDeleted::fromBool(true);
         return $this;
     }
 

@@ -4,19 +4,23 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity\Internal;
 
-use App\Crm\Domain\ValueObject\NoteType;
+use App\Crm\Domain\Enums\NoteType;
+use App\Crm\Domain\ValueObject\NoteContent;
+use App\Crm\Domain\ValueObject\Uuid\NoteId;
+use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Crm\Domain\ValueObject\Uuid\UserId;
 
 /**
  * @internal
  */
 final class ClientNote
 {
-    private ?string $id = null;
+    private ?NoteId $id = null;
 
     public function __construct(
-        private string $clientUuid,
-        private string $userUuid,
-        private string $content,
+        private ClientId $clientUuid,
+        private UserId $userUuid,
+        private NoteContent $content,
         private NoteType $type = NoteType::NOTE,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
@@ -26,18 +30,18 @@ final class ClientNote
     }
 
     public static function create(
-        string $clientUuid,
-        string $userUuid,
-        string $content,
+        ClientId $clientUuid,
+        UserId $userUuid,
+        NoteContent $content,
         NoteType $type = NoteType::NOTE
     ): self {
         return new self($clientUuid, $userUuid, $content, $type);
     }
 
     public static function fromDatabase(
-        string $clientUuid,
-        string $userUuid,
-        string $content,
+        ClientId $clientUuid,
+        UserId $userUuid,
+        NoteContent $content,
         NoteType $type,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
@@ -45,44 +49,44 @@ final class ClientNote
         return new self($clientUuid, $userUuid, $content, $type, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?string
+    public function getId(): ?NoteId
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(NoteId $id): void
     {
         $this->id = $id;
     }
 
-    public function getClientUuid(): string
+    public function getClientUuid(): ClientId
     {
         return $this->clientUuid;
     }
 
-    public function setClientUuid(string $clientUuid): void
+    public function setClientUuid(ClientId $clientUuid): void
     {
         $this->clientUuid = $clientUuid;
         $this->touch();
     }
 
-    public function getUserUuid(): string
+    public function getUserUuid(): UserId
     {
         return $this->userUuid;
     }
 
-    public function setUserUuid(string $userUuid): void
+    public function setUserUuid(UserId $userUuid): void
     {
         $this->userUuid = $userUuid;
         $this->touch();
     }
 
-    public function getContent(): string
+    public function getContent(): NoteContent
     {
         return $this->content;
     }
 
-    public function setContent(string $content): void
+    public function setContent(NoteContent $content): void
     {
         $this->content = $content;
         $this->touch();

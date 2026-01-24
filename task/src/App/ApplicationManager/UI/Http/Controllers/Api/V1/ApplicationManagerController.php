@@ -16,6 +16,10 @@ use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicatio
 use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicationManagerQuery;
 use App\ApplicationManager\Application\Query\ListApplicationManagers\ListApplicationManagersHandler;
 use App\ApplicationManager\Application\Query\ListApplicationManagers\ListApplicationManagersQuery;
+use App\ApplicationManager\Domain\ValueObject\Uuid;
+use App\ApplicationManager\Domain\ValueObject\ApplicationName;
+use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
+use App\ApplicationManager\Domain\ValueObject\RequestUrl;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -43,10 +47,10 @@ final class ApplicationManagerController
         ]);
 
         $command = new CreateApplicationManagerCommand(
-            name: $validated['name'],
-            requestUrl: $validated['request_url'] ?? null,
+            name: ApplicationName::fromString($validated['name']),
+            requestUrl: RequestUrl::fromNullable($validated['request_url'] ?? null),
             isActive: $validated['is_active'] ?? true,
-            ipWhitelist: $validated['ip_whitelist'] ?? null,
+            ipWhitelist: IpWhitelist::fromNullable($validated['ip_whitelist'] ?? null),
         );
 
         $dto = $this->createHandler->handle($command);
@@ -67,15 +71,15 @@ final class ApplicationManagerController
         ]);
     }
 
-    public function show(int $id): JsonResponse
+    public function show(string $id): JsonResponse
     {
-        $query = new GetApplicationManagerQuery(id: $id);
+        $query = new GetApplicationManagerQuery(id: Uuid::fromString($id));
         $dto = $this->getHandler->handle($query);
 
         return response()->json($dto->toArray());
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -86,11 +90,17 @@ final class ApplicationManagerController
         ]);
 
         $command = new UpdateApplicationManagerCommand(
-            id: $id,
-            name: $validated['name'] ?? null,
-            requestUrl: $validated['request_url'] ?? null,
+            id: Uuid::fromString($id),
+            name: array_key_exists('name', $validated)
+                ? ApplicationName::fromString($validated['name'])
+                : null,
+            requestUrl: array_key_exists('request_url', $validated)
+                ? RequestUrl::fromNullable($validated['request_url'])
+                : null,
             isActive: $validated['is_active'] ?? null,
-            ipWhitelist: $validated['ip_whitelist'] ?? null,
+            ipWhitelist: array_key_exists('ip_whitelist', $validated)
+                ? IpWhitelist::fromNullable($validated['ip_whitelist'])
+                : null,
         );
 
         $dto = $this->updateHandler->handle($command);
@@ -98,22 +108,22 @@ final class ApplicationManagerController
         return response()->json($dto->toArray());
     }
 
-    public function generateApiKey(int $id): JsonResponse
+    public function generateApiKey(string $id): JsonResponse
     {
-        $command = new GenerateApiKeyCommand(id: $id);
+        $command = new GenerateApiKeyCommand(id: Uuid::fromString($id));
         $dto = $this->generateApiKeyHandler->handle($command);
 
         return response()->json($dto->toArray());
     }
 
-    public function generateJwtToken(Request $request, int $id): JsonResponse
+    public function generateJwtToken(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
             'expiration_minutes' => 'nullable|integer|min:1|max:525600', // Max 1 year
         ]);
 
         $command = new GenerateJwtTokenCommand(
-            applicationId: $id,
+            uuid: Uuid::fromString($id),
             expirationMinutes: $validated['expiration_minutes'] ?? null,
         );
 

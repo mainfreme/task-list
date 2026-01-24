@@ -8,24 +8,34 @@ use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Task\Domain\ValueObject\TaskStatus;
+use App\Task\Domain\ValueObject\Uuid;
+use App\Task\Domain\ValueObject\Title;
+use App\Task\Domain\ValueObject\WebsiteUrl;
+use App\Task\Domain\ValueObject\Description;
+use App\Task\Domain\ValueObject\Phone;
+use App\Task\Domain\ValueObject\Email;
+use App\Task\Domain\ValueObject\Address;
+use App\Task\Domain\ValueObject\DeliveryAddress;
+use App\Task\Domain\ValueObject\DueDate;
+use App\Task\Domain\ValueObject\ApplicationManagerId;
 use App\Task\Infrastructure\Eloquent\TaskModel;
 
 final class EloquentTaskRepository implements TaskRepositoryInterface
 {
-    public function findById(int $id): Task
+    public function findById(Uuid $id): Task
     {
-        $model = TaskModel::find($id);
+        $model = TaskModel::find($id->getValue());
 
         if (!$model) {
-            throw TaskNotFoundException::byId($id);
+            throw TaskNotFoundException::byId($id->getValue());
         }
 
         return $this->toEntity($model);
     }
 
-    public function findByApplicationId(int $applicationId): array
+    public function findByApplicationId(ApplicationManagerId $applicationId): array
     {
-        return TaskModel::where('application_manager_id', $applicationId)
+        return TaskModel::where('application_manager_id', $applicationId->getValue())
             ->get()
             ->map(fn (TaskModel $model) => $this->toEntity($model))
             ->toArray();
@@ -57,62 +67,62 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
     public function save(Task $task): void
     {
         $data = [
-            'title' => $task->getTitle(),
-            'website_url' => $task->getWebsiteUrl(),
-            'description' => $task->getDescription(),
-            'phone' => $task->getPhone(),
-            'email' => $task->getEmail(),
-            'address' => $task->getAddress(),
+            'title' => $task->getTitle()->getValue(),
+            'website_url' => $task->getWebsiteUrl()->getValue(),
+            'description' => $task->getDescription()->getValue(),
+            'phone' => $task->getPhone()->getValue(),
+            'email' => $task->getEmail()->getValue(),
+            'address' => $task->getAddress()->getValue(),
             'status' => $task->getStatus()->value,
-            'application_manager_id' => $task->getApplicationManagerId(),
+            'application_manager_id' => $task->getApplicationManagerId()?->getValue(),
             'due_date' => $task->getDueDate()?->format('Y-m-d H:i:s'),
-            'delivery_address' => $task->getDeliveryAddress(),
+            'delivery_address' => $task->getDeliveryAddress()?->getValue(),
         ];
 
         if ($task->getId() === null) {
             $model = TaskModel::create($data);
-            $task->setId($model->id);
+            $task->setId(Uuid::fromString($model->id));
         } else {
-            TaskModel::where('id', $task->getId())->update($data);
+            TaskModel::where('id', $task->getId()->getValue())->update($data);
         }
     }
 
     public function softDelete(Task $task): void
     {
-        $model = TaskModel::find($task->getId());
+        $model = TaskModel::find($task->getId()->getValue());
 
         if (!$model) {
-            throw TaskNotFoundException::byId($task->getId());
+            throw TaskNotFoundException::byId($task->getId()->getValue());
         }
 
-        TaskModel::where('id', $task->getId())->update(['deleted_at' => now()]);
+        TaskModel::where('id', $task->getId()->getValue())->update(['deleted_at' => now()]);
     }
 
     public function delete(Task $task): void
     {
         if ($task->getId() !== null) {
-            TaskModel::destroy($task->getId());
+            TaskModel::destroy($task->getId()->getValue());
         }
     }
 
     private function toEntity(TaskModel $model): Task
     {
         $entity = Task::fromDatabase(
-            $model->title,
-            $model->website_url,
-            $model->description,
-            $model->phone,
-            $model->email,
-            $model->address,
+            Title::fromString($model->title),
+            WebsiteUrl::fromString($model->website_url),
+            Description::fromString($model->description),
+            Phone::fromString($model->phone),
+            Email::fromString($model->email),
+            Address::fromString($model->address),
             TaskStatus::fromString($model->status),
-            $model->application_manager_id,
-            $model->due_date ? \DateTimeImmutable::createFromMutable($model->due_date) : null,
-            $model->delivery_address,
+            ApplicationManagerId::fromNullable($model->application_manager_id),
+            DueDate::fromNullable($model->due_date ? $model->due_date->format('Y-m-d H:i:s') : null),
+            DeliveryAddress::fromNullable($model->delivery_address),
             $model->created_at ? \DateTimeImmutable::createFromMutable($model->created_at) : null,
             $model->updated_at ? \DateTimeImmutable::createFromMutable($model->updated_at) : null
         );
 
-        $entity->setId($model->id);
+        $entity->setId(Uuid::fromString($model->id));
 
         return $entity;
     }

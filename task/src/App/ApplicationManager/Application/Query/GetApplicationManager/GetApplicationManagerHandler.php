@@ -17,15 +17,16 @@ final class GetApplicationManagerHandler
     public function handle(GetApplicationManagerQuery $query): ApplicationManagerDTO
     {
         $applicationManager = $this->repository->findById($query->id);
+        $requestUrl = $applicationManager->getRequestUrl();
+        $ipWhitelist = $applicationManager->getIpWhitelist();
 
         return new ApplicationManagerDTO(
             id: $applicationManager->getId(),
             name: $applicationManager->getName(),
-            requestUrl: $applicationManager->getRequestUrl(),
+            requestUrl: $requestUrl,
+            apiKey: $applicationManager->getApiKey(),
             isActive: $applicationManager->isActive(),
-            ipWhitelist: $applicationManager->getIpWhitelist(),
-            createdAt: $applicationManager->getCreatedAt()->format('Y-m-d H:i:s'),
-            updatedAt: $applicationManager->getUpdatedAt()->format('Y-m-d H:i:s'),
+            ipWhitelist: $ipWhitelist,
         );
     }
 }

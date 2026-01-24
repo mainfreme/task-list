@@ -5,22 +5,32 @@ declare(strict_types=1);
 namespace App\Task\Domain\Entity;
 
 use App\Task\Domain\ValueObject\TaskStatus;
+use App\Task\Domain\ValueObject\Uuid;
+use App\Task\Domain\ValueObject\Title;
+use App\Task\Domain\ValueObject\WebsiteUrl;
+use App\Task\Domain\ValueObject\Description;
+use App\Task\Domain\ValueObject\Phone;
+use App\Task\Domain\ValueObject\Email;
+use App\Task\Domain\ValueObject\Address;
+use App\Task\Domain\ValueObject\DeliveryAddress;
+use App\Task\Domain\ValueObject\DueDate;
+use App\Task\Domain\ValueObject\ApplicationManagerId;
 
 final class Task
 {
-    private ?int $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
-        private string $title,
-        private string $websiteUrl,
-        private string $description,
-        private string $phone,
-        private string $email,
-        private string $address,
+        private Title $title,
+        private WebsiteUrl $websiteUrl,
+        private Description $description,
+        private Phone $phone,
+        private Email $email,
+        private Address $address,
         private TaskStatus $status = TaskStatus::PENDING,
-        private ?int $applicationManagerId = null,
-        private ?\DateTimeImmutable $dueDate = null,
-        private ?string $deliveryAddress = null,
+        private ?ApplicationManagerId $applicationManagerId = null,
+        private ?DueDate $dueDate = null,
+        private ?DeliveryAddress $deliveryAddress = null,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
@@ -29,15 +39,15 @@ final class Task
     }
 
     public static function create(
-        string $title,
-        string $websiteUrl,
-        string $description,
-        string $phone,
-        string $email,
-        string $address,
-        ?int $applicationManagerId = null,
-        ?\DateTimeImmutable $dueDate = null,
-        ?string $deliveryAddress = null
+        Title $title,
+        WebsiteUrl $websiteUrl,
+        Description $description,
+        Phone $phone,
+        Email $email,
+        Address $address,
+        ?ApplicationManagerId $applicationManagerId = null,
+        ?DueDate $dueDate = null,
+        ?DeliveryAddress $deliveryAddress = null
     ): self {
         return new self(
             $title,
@@ -54,16 +64,16 @@ final class Task
     }
 
     public static function fromDatabase(
-        string $title,
-        string $websiteUrl,
-        string $description,
-        string $phone,
-        string $email,
-        string $address,
+        Title $title,
+        WebsiteUrl $websiteUrl,
+        Description $description,
+        Phone $phone,
+        Email $email,
+        Address $address,
         TaskStatus $status,
-        ?int $applicationManagerId = null,
-        ?\DateTimeImmutable $dueDate = null,
-        ?string $deliveryAddress = null,
+        ?ApplicationManagerId $applicationManagerId = null,
+        ?DueDate $dueDate = null,
+        ?DeliveryAddress $deliveryAddress = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
     ): self {
@@ -83,77 +93,77 @@ final class Task
         );
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
 
-    public function getTitle(): string
+    public function getTitle(): Title
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): void
+    public function setTitle(Title $title): void
     {
         $this->title = $title;
         $this->touch();
     }
 
-    public function getWebsiteUrl(): string
+    public function getWebsiteUrl(): WebsiteUrl
     {
         return $this->websiteUrl;
     }
 
-    public function setWebsiteUrl(string $websiteUrl): void
+    public function setWebsiteUrl(WebsiteUrl $websiteUrl): void
     {
         $this->websiteUrl = $websiteUrl;
         $this->touch();
     }
 
-    public function getDescription(): string
+    public function getDescription(): Description
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): void
+    public function setDescription(Description $description): void
     {
         $this->description = $description;
         $this->touch();
     }
 
-    public function getPhone(): string
+    public function getPhone(): Phone
     {
         return $this->phone;
     }
 
-    public function setPhone(string $phone): void
+    public function setPhone(Phone $phone): void
     {
         $this->phone = $phone;
         $this->touch();
     }
 
-    public function getEmail(): string
+    public function getEmail(): Email
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): void
+    public function setEmail(Email $email): void
     {
         $this->email = $email;
         $this->touch();
     }
 
-    public function getAddress(): string
+    public function getAddress(): Address
     {
         return $this->address;
     }
 
-    public function setAddress(string $address): void
+    public function setAddress(Address $address): void
     {
         $this->address = $address;
         $this->touch();
@@ -170,34 +180,34 @@ final class Task
         $this->touch();
     }
 
-    public function getApplicationManagerId(): ?int
+    public function getApplicationManagerId(): ?ApplicationManagerId
     {
         return $this->applicationManagerId;
     }
 
-    public function setApplicationManagerId(?int $applicationManagerId): void
+    public function setApplicationManagerId(?ApplicationManagerId $applicationManagerId): void
     {
         $this->applicationManagerId = $applicationManagerId;
         $this->touch();
     }
 
-    public function getDueDate(): ?\DateTimeImmutable
+    public function getDueDate(): ?DueDate
     {
         return $this->dueDate;
     }
 
-    public function setDueDate(?\DateTimeImmutable $dueDate): void
+    public function setDueDate(?DueDate $dueDate): void
     {
         $this->dueDate = $dueDate;
         $this->touch();
     }
 
-    public function getDeliveryAddress(): ?string
+    public function getDeliveryAddress(): ?DeliveryAddress
     {
         return $this->deliveryAddress;
     }
 
-    public function setDeliveryAddress(?string $deliveryAddress): void
+    public function setDeliveryAddress(?DeliveryAddress $deliveryAddress): void
     {
         $this->deliveryAddress = $deliveryAddress;
         $this->touch();

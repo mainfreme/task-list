@@ -8,17 +8,21 @@ use App\ApplicationManager\Domain\Entity\ApplicationManager;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
+use App\ApplicationManager\Domain\ValueObject\Uuid;
+use App\ApplicationManager\Domain\ValueObject\ApplicationName;
+use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
+use App\ApplicationManager\Domain\ValueObject\RequestUrl;
 use App\ApplicationManager\Infrastructure\Eloquent\ApplicationManagerModel;
 use Illuminate\Support\Facades\Hash;
 
 final class EloquentApplicationManagerRepository implements ApplicationManagerRepositoryInterface
 {
-    public function findById(int $id): ApplicationManager
+    public function findById(Uuid $id): ApplicationManager
     {
-        $model = ApplicationManagerModel::find($id);
+        $model = ApplicationManagerModel::find($id->getValue());
 
         if (!$model) {
-            throw ApplicationManagerNotFoundException::byId($id);
+            throw ApplicationManagerNotFoundException::byId($id->getValue());
         }
 
         return $this->toEntity($model);
@@ -39,26 +43,29 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
 
     public function save(ApplicationManager $applicationManager): void
     {
+        $requestUrl = $applicationManager->getRequestUrl();
+        $ipWhitelist = $applicationManager->getIpWhitelist();
+
         $data = [
-            'name' => $applicationManager->getName(),
+            'name' => $applicationManager->getName()->getValue(),
             'api_key_hash' => Hash::make($applicationManager->getApiKey()->value()),
-            'request_url' => $applicationManager->getRequestUrl(),
+            'request_url' => $requestUrl?->getValue(),
             'is_active' => $applicationManager->isActive(),
-            'ip_whitelist' => $applicationManager->getIpWhitelist(),
+            'ip_whitelist' => $ipWhitelist?->toArray(),
         ];
 
         if ($applicationManager->getId() === null) {
             $model = ApplicationManagerModel::create($data);
-            $applicationManager->setId($model->id);
+            $applicationManager->setId(Uuid::fromString($model->id));
         } else {
-            ApplicationManagerModel::where('id', $applicationManager->getId())->update($data);
+            ApplicationManagerModel::where('id', $applicationManager->getId()->getValue())->update($data);
         }
     }
 
     public function delete(ApplicationManager $applicationManager): void
     {
         if ($applicationManager->getId() !== null) {
-            ApplicationManagerModel::destroy($applicationManager->getId());
+            ApplicationManagerModel::destroy($applicationManager->getId()->getValue());
         }
     }
 
@@ -77,16 +84,16 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
         $apiKey = ApiKey::fromString('placeholder'); // This is a limitation - we can't get original key from hash
 
         $entity = ApplicationManager::fromDatabase(
-            $model->name,
+            ApplicationName::fromString($model->name),
             $apiKey,
-            $model->request_url,
+            RequestUrl::fromNullable($model->request_url),
             $model->is_active,
-            $model->ip_whitelist,
+            IpWhitelist::fromNullable($model->ip_whitelist),
             $model->created_at ? \DateTimeImmutable::createFromMutable($model->created_at) : null,
             $model->updated_at ? \DateTimeImmutable::createFromMutable($model->updated_at) : null
         );
 
-        $entity->setId($model->id);
+        $entity->setId(Uuid::fromString($model->id));
 
         return $entity;
     }

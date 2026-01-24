@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('title');
             $table->string('website_url');
             $table->text('description');
@@ -20,7 +20,11 @@ return new class extends Migration
             $table->string('email');
             $table->text('address');
             $table->string('status')->default('pending');
-            $table->foreignId('application_manager_id')->nullable()->constrained('applications')->nullOnDelete();
+            $table->uuid('application_manager_id')->nullable();
+            $table->foreign('application_manager_id')
+                ->references('id')
+                ->on('applications')
+                ->nullOnDelete();
             $table->dateTime('due_date')->nullable();
             $table->text('delivery_address')->nullable();
             $table->timestamps();

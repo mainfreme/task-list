@@ -7,6 +7,7 @@ namespace App\Task\Application\Command\CreateTask;
 use App\Task\Application\DTO\TaskDTO;
 use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
+use App\Task\Domain\ValueObject\Uuid;
 
 final class CreateTaskHandler
 {
@@ -17,11 +18,6 @@ final class CreateTaskHandler
 
     public function handle(CreateTaskCommand $command): TaskDTO
     {
-        $dueDate = $command->dueDate
-            ? \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $command->dueDate)
-                ?: \DateTimeImmutable::createFromFormat('Y-m-d', $command->dueDate)
-            : null;
-
         $task = Task::create(
             $command->title,
             $command->websiteUrl,
@@ -30,7 +26,7 @@ final class CreateTaskHandler
             $command->email,
             $command->address,
             $command->applicationManagerId,
-            $dueDate,
+            $command->dueDate,
             $command->deliveryAddress
         );
 
@@ -44,12 +40,10 @@ final class CreateTaskHandler
             phone: $task->getPhone(),
             email: $task->getEmail(),
             address: $task->getAddress(),
-            status: $task->getStatus()->value,
+            status: $task->getStatus(),
             applicationManagerId: $task->getApplicationManagerId(),
-            dueDate: $task->getDueDate()?->format('Y-m-d H:i:s'),
-            deliveryAddress: $task->getDeliveryAddress(),
-            createdAt: $task->getCreatedAt()->format('Y-m-d H:i:s'),
-            updatedAt: $task->getUpdatedAt()->format('Y-m-d H:i:s'),
+            dueDate: $task->getDueDate(),
+            deliveryAddress: $task->getDeliveryAddress()
         );
     }
 }

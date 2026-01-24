@@ -14,10 +14,10 @@ enum TaskStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending',
-            self::IN_PROGRESS => 'In Progress',
-            self::COMPLETED => 'Completed',
-            self::CANCELLED => 'Cancelled',
+            self::PENDING => 'Oczekuje na realizację',
+            self::IN_PROGRESS => 'W trakcie realizacji',
+            self::COMPLETED => 'Zakończono',
+            self::CANCELLED => 'Anulowano',
         };
     }
 

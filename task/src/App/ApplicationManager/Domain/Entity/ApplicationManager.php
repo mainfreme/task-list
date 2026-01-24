@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace App\ApplicationManager\Domain\Entity;
 
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
+use App\ApplicationManager\Domain\ValueObject\Uuid;
+use App\ApplicationManager\Domain\ValueObject\ApplicationName;
+use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
+use App\ApplicationManager\Domain\ValueObject\RequestUrl;
 
 final class ApplicationManager
 {
-    private ?int $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
-        private string $name,
+        private ApplicationName $name,
         private ApiKey $apiKey,
-        private ?string $requestUrl = null,
+        private ?RequestUrl $requestUrl = null,
         private bool $isActive = true,
-        private ?array $ipWhitelist = null,
+        private ?IpWhitelist $ipWhitelist = null,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
@@ -24,43 +28,43 @@ final class ApplicationManager
     }
 
     public static function create(
-        string $name,
+        ApplicationName $name,
         ApiKey $apiKey,
-        ?string $requestUrl = null,
+        ?RequestUrl $requestUrl = null,
         bool $isActive = true,
-        ?array $ipWhitelist = null
+        ?IpWhitelist $ipWhitelist = null
     ): self {
         return new self($name, $apiKey, $requestUrl, $isActive, $ipWhitelist);
     }
 
     public static function fromDatabase(
-        string $name,
+        ApplicationName $name,
         ApiKey $apiKey,
-        ?string $requestUrl = null,
+        ?RequestUrl $requestUrl = null,
         bool $isActive = true,
-        ?array $ipWhitelist = null,
+        ?IpWhitelist $ipWhitelist = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
     ): self {
         return new self($name, $apiKey, $requestUrl, $isActive, $ipWhitelist, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
 
-    public function getName(): string
+    public function getName(): ApplicationName
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(ApplicationName $name): void
     {
         $this->name = $name;
         $this->touch();
@@ -77,12 +81,12 @@ final class ApplicationManager
         $this->touch();
     }
 
-    public function getRequestUrl(): ?string
+    public function getRequestUrl(): ?RequestUrl
     {
         return $this->requestUrl;
     }
 
-    public function setRequestUrl(?string $requestUrl): void
+    public function setRequestUrl(?RequestUrl $requestUrl): void
     {
         $this->requestUrl = $requestUrl;
         $this->touch();
@@ -105,12 +109,12 @@ final class ApplicationManager
         $this->touch();
     }
 
-    public function getIpWhitelist(): ?array
+    public function getIpWhitelist(): ?IpWhitelist
     {
         return $this->ipWhitelist;
     }
 
-    public function setIpWhitelist(?array $ipWhitelist): void
+    public function setIpWhitelist(?IpWhitelist $ipWhitelist): void
     {
         $this->ipWhitelist = $ipWhitelist;
         $this->touch();

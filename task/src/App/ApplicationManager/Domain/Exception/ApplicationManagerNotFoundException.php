@@ -8,7 +8,7 @@ use Exception;
 
 final class ApplicationManagerNotFoundException extends Exception
 {
-    public static function byId(int $id): self
+    public static function byId(string $id): self
     {
         return new self("ApplicationManager with ID {$id} not found");
     }

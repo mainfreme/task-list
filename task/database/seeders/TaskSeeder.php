@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+use Illuminate\Support\Str;
+
 class TaskSeeder extends Seeder
 {
     /**
@@ -18,6 +20,7 @@ class TaskSeeder extends Seeder
 
         $tasks = [
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Implementacja systemu uwierzytelniania',
                 'website_url' => 'https://project.example.com/auth',
                 'description' => 'Implementacja pełnego systemu uwierzytelniania użytkowników z obsługą OAuth2, JWT i dwuskładnikowej autentyfikacji.',
@@ -32,6 +35,7 @@ class TaskSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(2),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Optymalizacja wydajności bazy danych',
                 'website_url' => 'https://dashboard.example.com/db-optimization',
                 'description' => 'Optymalizacja zapytań SQL, dodanie indeksów i implementacja cache dla poprawy wydajności systemu.',
@@ -46,6 +50,7 @@ class TaskSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(1),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Aktualizacja interfejsu mobilnego',
                 'website_url' => 'https://mobile.example.com/ui-update',
                 'description' => 'Modernizacja interfejsu użytkownika aplikacji mobilnej zgodnie z najnowszymi wytycznymi Material Design.',
@@ -60,6 +65,7 @@ class TaskSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(2),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Implementacja systemu powiadomień',
                 'website_url' => 'https://admin.example.com/notifications',
                 'description' => 'Implementacja systemu powiadomień push, email i SMS dla użytkowników systemu administracyjnego.',
@@ -74,6 +80,7 @@ class TaskSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Migracja danych do nowej struktury',
                 'website_url' => 'https://legacy.example.com/migration',
                 'description' => 'Migracja danych z systemu legacy do nowej architektury bazy danych z zachowaniem integralności danych.',
@@ -88,6 +95,7 @@ class TaskSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(3),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Implementacja API dokumentacji',
                 'website_url' => 'https://api.example.com/docs',
                 'description' => 'Utworzenie kompleksowej dokumentacji API z przykładami użycia i automatycznym generowaniem specyfikacji OpenAPI.',
@@ -102,6 +110,7 @@ class TaskSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Testowanie bezpieczeństwa aplikacji',
                 'website_url' => 'https://security.example.com/testing',
                 'description' => 'Przeprowadzenie kompleksowych testów bezpieczeństwa aplikacji webowej, w tym testów penetracyjnych i analizy podatności.',
@@ -116,6 +125,7 @@ class TaskSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(4),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'title' => 'Optymalizacja obrazów i mediów',
                 'website_url' => 'https://media.example.com/optimization',
                 'description' => 'Implementacja automatycznej optymalizacji obrazów i plików multimedialnych dla poprawy wydajności ładowania strony.',

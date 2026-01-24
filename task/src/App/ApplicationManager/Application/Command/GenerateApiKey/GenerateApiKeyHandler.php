@@ -24,13 +24,16 @@ final class GenerateApiKeyHandler
 
         $this->repository->save($applicationManager);
 
+        $requestUrl = $applicationManager->getRequestUrl();
+        $ipWhitelist = $applicationManager->getIpWhitelist();
+
         return new ApplicationManagerDTO(
-            id: $applicationManager->getId(),
-            name: $applicationManager->getName(),
+            id: $applicationManager->getId()->getValue(),
+            name: $applicationManager->getName()->getValue(),
             apiKey: $newApiKey->value(), // Return plain key only when regenerating
-            requestUrl: $applicationManager->getRequestUrl(),
+            requestUrl: $requestUrl?->getValue(),
             isActive: $applicationManager->isActive(),
-            ipWhitelist: $applicationManager->getIpWhitelist(),
+            ipWhitelist: $ipWhitelist?->toArray(),
             createdAt: $applicationManager->getCreatedAt()->format('Y-m-d H:i:s'),
             updatedAt: $applicationManager->getUpdatedAt()->format('Y-m-d H:i:s'),
         );

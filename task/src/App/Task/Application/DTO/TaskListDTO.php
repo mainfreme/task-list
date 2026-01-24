@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Task\Application\DTO;
 
+use App\Task\Domain\ValueObject\Uuid;
+
 final class TaskListDTO
 {
     /**

@@ -16,6 +16,7 @@ class ApplicationManagerSeeder extends Seeder
     {
         $applications = [
             [
+                'id' => (string) Str::uuid(),
                 'name' => 'Task Management App',
                 'api_key_hash' => Hash::make(Str::random(32)),
                 'request_url' => 'https://taskapp.example.com',
@@ -25,6 +26,7 @@ class ApplicationManagerSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'name' => 'Project Dashboard',
                 'api_key_hash' => Hash::make(Str::random(32)),
                 'request_url' => 'https://dashboard.example.com',
@@ -34,6 +36,7 @@ class ApplicationManagerSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'name' => 'Mobile Task App',
                 'api_key_hash' => Hash::make(Str::random(32)),
                 'request_url' => 'https://mobile.example.com',
@@ -43,6 +46,7 @@ class ApplicationManagerSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'name' => 'Admin Panel',
                 'api_key_hash' => Hash::make(Str::random(32)),
                 'request_url' => 'https://admin.example.com',
@@ -52,6 +56,7 @@ class ApplicationManagerSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => (string) Str::uuid(),
                 'name' => 'API Client Test',
                 'api_key_hash' => Hash::make(Str::random(32)),
                 'request_url' => null,
