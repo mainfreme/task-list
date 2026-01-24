@@ -7,13 +7,14 @@ namespace App\ApplicationManager\Domain\Repository;
 use App\ApplicationManager\Domain\Entity\ApplicationManager;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
+use App\ApplicationManager\Domain\ValueObject\Uuid;
 
 interface ApplicationManagerRepositoryInterface
 {
     /**
      * @throws ApplicationManagerNotFoundException
      */
-    public function findById(int $id): ApplicationManager;
+    public function findById(Uuid $id): ApplicationManager;
 
     /**
      * @throws ApplicationManagerNotFoundException

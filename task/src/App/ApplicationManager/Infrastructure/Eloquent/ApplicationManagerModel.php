@@ -9,7 +9,13 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 final class ApplicationManagerModel extends Model
 {
+    use HasUuids;
+
     protected $table = 'applications';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = [
         'name',

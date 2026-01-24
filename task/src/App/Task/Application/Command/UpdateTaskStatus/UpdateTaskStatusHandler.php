@@ -7,6 +7,7 @@ namespace App\Task\Application\Command\UpdateTaskStatus;
 use App\Task\Application\DTO\TaskDTO;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Task\Domain\ValueObject\TaskStatus;
+use App\Task\Domain\ValueObject\Uuid;
 
 final class UpdateTaskStatusHandler
 {
@@ -19,8 +20,7 @@ final class UpdateTaskStatusHandler
     {
         $task = $this->repository->findById($command->id);
 
-        $status = TaskStatus::fromString($command->status);
-        $task->setStatus($status);
+        $task->setStatus($command->status);
 
         $this->repository->save($task);
 
@@ -32,12 +32,10 @@ final class UpdateTaskStatusHandler
             phone: $task->getPhone(),
             email: $task->getEmail(),
             address: $task->getAddress(),
-            status: $task->getStatus()->value,
+            status: $task->getStatus(),
             applicationManagerId: $task->getApplicationManagerId(),
-            dueDate: $task->getDueDate()?->format('Y-m-d H:i:s'),
-            deliveryAddress: $task->getDeliveryAddress(),
-            createdAt: $task->getCreatedAt()->format('Y-m-d H:i:s'),
-            updatedAt: $task->getUpdatedAt()->format('Y-m-d H:i:s'),
+            dueDate: $task->getDueDate(),
+            deliveryAddress: $task->getDeliveryAddress()
         );
     }
 }

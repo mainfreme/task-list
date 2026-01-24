@@ -6,6 +6,7 @@ namespace App\Task\Application\Command\UpdateTask;
 
 use App\Task\Application\DTO\TaskDTO;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
+use App\Task\Domain\ValueObject\Uuid;
 
 final class UpdateTaskHandler
 {
@@ -43,11 +44,7 @@ final class UpdateTaskHandler
         }
 
         if ($command->dueDate !== null) {
-            $dueDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $command->dueDate)
-                ?: \DateTimeImmutable::createFromFormat('Y-m-d', $command->dueDate);
-            if ($dueDate) {
-                $task->setDueDate($dueDate);
-            }
+            $task->setDueDate($command->dueDate);
         }
 
         if ($command->deliveryAddress !== null) {
@@ -64,12 +61,10 @@ final class UpdateTaskHandler
             phone: $task->getPhone(),
             email: $task->getEmail(),
             address: $task->getAddress(),
-            status: $task->getStatus()->value,
+            status: $task->getStatus(),
             applicationManagerId: $task->getApplicationManagerId(),
-            dueDate: $task->getDueDate()?->format('Y-m-d H:i:s'),
-            deliveryAddress: $task->getDeliveryAddress(),
-            createdAt: $task->getCreatedAt()->format('Y-m-d H:i:s'),
-            updatedAt: $task->getUpdatedAt()->format('Y-m-d H:i:s'),
+            dueDate: $task->getDueDate(),
+            deliveryAddress: $task->getDeliveryAddress()
         );
     }
 }

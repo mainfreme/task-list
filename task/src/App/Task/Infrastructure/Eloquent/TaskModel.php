@@ -6,9 +6,17 @@ namespace App\Task\Infrastructure\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
 final class TaskModel extends Model
 {
+    use HasUuids;
+
     protected $table = 'tasks';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = [
         'title',

@@ -6,6 +6,7 @@ namespace App\Task\Application\Query\ListTasks;
 
 use App\Task\Application\DTO\TaskDTO;
 use App\Task\Application\DTO\TaskListDTO;
+use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Task\Domain\ValueObject\TaskStatus;
 
@@ -33,7 +34,7 @@ final class ListTasksHandler
         $totalPages = (int) ceil($total / $query->perPage);
 
         $taskDTOs = array_map(
-            fn ($task) => new TaskDTO(
+            fn (Task $task) => new TaskDTO(
                 id: $task->getId(),
                 title: $task->getTitle(),
                 websiteUrl: $task->getWebsiteUrl(),
@@ -41,12 +42,10 @@ final class ListTasksHandler
                 phone: $task->getPhone(),
                 email: $task->getEmail(),
                 address: $task->getAddress(),
-                status: $task->getStatus()->value,
+                status: $task->getStatus(),
                 applicationManagerId: $task->getApplicationManagerId(),
-                dueDate: $task->getDueDate()?->format('Y-m-d H:i:s'),
+                dueDate: $task->getDueDate(),
                 deliveryAddress: $task->getDeliveryAddress(),
-                createdAt: $task->getCreatedAt()->format('Y-m-d H:i:s'),
-                updatedAt: $task->getUpdatedAt()->format('Y-m-d H:i:s'),
             ),
             $tasks
         );

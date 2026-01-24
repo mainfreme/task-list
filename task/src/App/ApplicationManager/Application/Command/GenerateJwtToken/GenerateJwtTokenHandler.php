@@ -16,7 +16,7 @@ final class GenerateJwtTokenHandler
 
     public function handle(GenerateJwtTokenCommand $command): string
     {
-        $applicationManager = $this->repository->findById($command->applicationId);
+        $applicationManager = $this->repository->findById($command->uuid);
 
         // Check if application is active
         if (!$applicationManager->isActive()) {
@@ -31,8 +31,8 @@ final class GenerateJwtTokenHandler
         $expiration = $issuedAt + ($expirationMinutes * 60);
 
         $payload = [
-            'application_id' => $applicationManager->getId(),
-            'application_name' => $applicationManager->getName(),
+            'application_id' => $applicationManager->getId()->getValue(),
+            'application_name' => $applicationManager->getName()->getValue(),
             'iat' => $issuedAt,
             'exp' => $expiration,
         ];

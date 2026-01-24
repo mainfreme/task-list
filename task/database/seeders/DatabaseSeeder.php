@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ApplicationManagerSeeder::class,
             TaskSeeder::class,
+            CrmSeeder::class,
         ]);
     }
 }

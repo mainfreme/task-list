@@ -28,15 +28,18 @@ final class CreateApplicationManagerHandler
             $command->ipWhitelist
         );
 
+        $requestUrl = $applicationManager->getRequestUrl();
+        $ipWhitelist = $applicationManager->getIpWhitelist();
+
         $this->repository->save($applicationManager);
 
         return new ApplicationManagerDTO(
-            id: $applicationManager->getId(),
-            name: $applicationManager->getName(),
+            id: $applicationManager->getId()->getValue(),
+            name: $applicationManager->getName()->getValue(),
             apiKey: $apiKey->value(), // Return plain key only on creation
-            requestUrl: $applicationManager->getRequestUrl(),
+            requestUrl: $requestUrl?->getValue(),
             isActive: $applicationManager->isActive(),
-            ipWhitelist: $applicationManager->getIpWhitelist(),
+            ipWhitelist: $ipWhitelist?->toArray(),
             createdAt: $applicationManager->getCreatedAt()->format('Y-m-d H:i:s'),
             updatedAt: $applicationManager->getUpdatedAt()->format('Y-m-d H:i:s'),
         );

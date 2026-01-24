@@ -7,6 +7,7 @@ namespace App\ApplicationManager\Infrastructure\Middleware;
 use Closure;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
+use App\ApplicationManager\Domain\ValueObject\Uuid;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
@@ -37,8 +38,8 @@ final class JwtMiddleware
 
         try {
             $decoded = $this->verifyToken($token);
-            $applicationId = $this->extractApplicationId($decoded);
-            $applicationManager = $this->repository->findById($applicationId);
+            $uuid = $this->extractUuid($decoded);
+            $applicationManager = $this->repository->findById($uuid);
 
             // Check if application is active
             if (!$applicationManager->isActive()) {
@@ -50,9 +51,9 @@ final class JwtMiddleware
 
             // Check IP whitelist if configured
             $ipWhitelist = $applicationManager->getIpWhitelist();
-            if ($ipWhitelist !== null && count($ipWhitelist) > 0) {
+            if ($ipWhitelist !== null && !$ipWhitelist->isEmpty()) {
                 $clientIp = $request->ip();
-                if (!in_array($clientIp, $ipWhitelist, true)) {
+                if (!$ipWhitelist->allows($clientIp)) {
                     return response()->json([
                         'error' => 'IP address not allowed',
                         'message' => 'Your IP address is not in the whitelist for this application',
@@ -61,7 +62,7 @@ final class JwtMiddleware
             }
 
             // Attach application manager ID to request for use in controllers
-            $request->attributes->set('application_manager_id', $applicationManager->getId());
+            $request->attributes->set('application_manager_id', $applicationManager->getId()?->getValue());
             $request->attributes->set('application_manager', $applicationManager);
 
         } catch (ApplicationManagerNotFoundException $e) {
@@ -107,13 +108,13 @@ final class JwtMiddleware
         }
     }
 
-    private function extractApplicationId(object $decoded): int
+    private function extractUuid(object $decoded): Uuid
     {
         if (!isset($decoded->application_id)) {
             throw new \RuntimeException('Token does not contain application_id claim');
         }
 
-        return (int) $decoded->application_id;
+        return Uuid::fromString((string) $decoded->application_id);
     }
 
     private function getJwtSecret(): string

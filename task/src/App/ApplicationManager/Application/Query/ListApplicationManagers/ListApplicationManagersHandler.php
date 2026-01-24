@@ -29,15 +29,18 @@ final class ListApplicationManagersHandler
         }
 
         return array_map(
-            fn ($applicationManager) => new ApplicationManagerDTO(
-                id: $applicationManager->getId(),
-                name: $applicationManager->getName(),
-                requestUrl: $applicationManager->getRequestUrl(),
-                isActive: $applicationManager->isActive(),
-                ipWhitelist: $applicationManager->getIpWhitelist(),
-                createdAt: $applicationManager->getCreatedAt()->format('Y-m-d H:i:s'),
-                updatedAt: $applicationManager->getUpdatedAt()->format('Y-m-d H:i:s'),
-            ),
+            function ($applicationManager): ApplicationManagerDTO {
+                $requestUrl = $applicationManager->getRequestUrl();
+                $ipWhitelist = $applicationManager->getIpWhitelist();
+
+                return new ApplicationManagerDTO(
+                    id: $applicationManager->getId(),
+                    name: $applicationManager->getName(),
+                    requestUrl: $requestUrl,
+                    isActive: $applicationManager->isActive(),
+                    ipWhitelist: $ipWhitelist,
+                );
+            },
             $applicationManagers
         );
     }

@@ -40,12 +40,15 @@ final class UpdateApplicationManagerHandler
 
         $this->repository->save($applicationManager);
 
+        $requestUrl = $applicationManager->getRequestUrl();
+        $ipWhitelist = $applicationManager->getIpWhitelist();
+
         return new ApplicationManagerDTO(
-            id: $applicationManager->getId(),
-            name: $applicationManager->getName(),
-            requestUrl: $applicationManager->getRequestUrl(),
+            id: $applicationManager->getId()->getValue(),
+            name: $applicationManager->getName()->getValue(),
+            requestUrl: $requestUrl?->getValue(),
             isActive: $applicationManager->isActive(),
-            ipWhitelist: $applicationManager->getIpWhitelist(),
+            ipWhitelist: $ipWhitelist?->toArray(),
             createdAt: $applicationManager->getCreatedAt()->format('Y-m-d H:i:s'),
             updatedAt: $applicationManager->getUpdatedAt()->format('Y-m-d H:i:s'),
         );

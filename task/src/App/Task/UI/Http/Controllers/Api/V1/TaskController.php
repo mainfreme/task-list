@@ -17,12 +17,21 @@ use App\Task\Application\Query\GetTask\GetTaskHandler;
 use App\Task\Application\Query\GetTask\GetTaskQuery;
 use App\Task\Application\Query\ListTasks\ListTasksHandler;
 use App\Task\Application\Query\ListTasks\ListTasksQuery;
+use App\Task\Domain\ValueObject\Uuid;
+use App\Task\Domain\ValueObject\Title;
+use App\Task\Domain\ValueObject\WebsiteUrl;
+use App\Task\Domain\ValueObject\Description;
+use App\Task\Domain\ValueObject\Phone;
+use App\Task\Domain\ValueObject\Email;
+use App\Task\Domain\ValueObject\Address;
+use App\Task\Domain\ValueObject\ApplicationManagerId;
+use App\Task\Domain\ValueObject\DueDate;
+use App\Task\Domain\ValueObject\DeliveryAddress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Task\UI\Http\Requests\V1\CreateTaskRequest;
 use App\Task\UI\Http\Requests\V1\UpdateTaskRequest;
 use App\Task\Domain\Exception\TaskNotFoundException;
-use Illuminate\Validation\ValidationException;
 
 final class TaskController extends ApiController
 {
@@ -38,27 +47,23 @@ final class TaskController extends ApiController
 
     public function store(CreateTaskRequest $request): JsonResponse
     {
-        // try {
-            $validated = $request->validated();
+        $validated = $request->validated();
 
-            $command = new CreateTaskCommand(
-                title: $validated['title'],
-                websiteUrl: $validated['website_url'],
-                description: $validated['description'],
-                phone: $validated['phone'],
-                email: $validated['email'],
-                address: $validated['address'],
-                applicationManagerId: $request->attributes->get('application_manager_id'), // Set by ApiKeyMiddleware
-                dueDate: $validated['due_date'] ?? null,
-                deliveryAddress: $validated['delivery_address'] ?? null,
-            );
+        $command = new CreateTaskCommand(
+            title: Title::fromString($validated['title']),
+            websiteUrl: WebsiteUrl::fromString($validated['website_url']),
+            description: Description::fromString($validated['description']),
+            phone: Phone::fromString($validated['phone']),
+            email: Email::fromString($validated['email']),
+            address: Address::fromString($validated['address']),
+            applicationManagerId: ApplicationManagerId::fromNullable($request->attributes->get('application_manager_id')),
+            dueDate: DueDate::fromNullable($validated['due_date'] ?? null),
+            deliveryAddress: DeliveryAddress::fromNullable($validated['delivery_address'] ?? null),
+        );
 
-            $taskDTO = $this->createTaskHandler->handle($command);
+        $taskDTO = $this->createTaskHandler->handle($command);
 
-            return $this->created($taskDTO->toArray());
-        // } catch (ValidationException $e) {
-        //     return $this->badRequest($e->getMessage(), $e->validator->errors());
-        // }
+        return $this->created($taskDTO->toArray());
     }
 
     public function index(Request $request): JsonResponse
@@ -67,7 +72,7 @@ final class TaskController extends ApiController
             page: (int) $request->input('page', 1),
             perPage: (int) $request->input('per_page', 20),
             status: $request->input('status'),
-            applicationManagerId: $request->input('application_manager_id'),
+            applicationManagerId: ApplicationManagerId::fromNullable($request->input('application_manager_id')),
         );
 
         $result = $this->listTasksHandler->handle($query);
@@ -75,28 +80,28 @@ final class TaskController extends ApiController
         return $this->success($result->toArray());
     }
 
-    public function show(int $id): JsonResponse
+    public function show(string $id): JsonResponse
     {
-        $query = new GetTaskQuery(id: $id);
+        $query = new GetTaskQuery(id: Uuid::fromString($id));
         $taskDTO = $this->getTaskHandler->handle($query);
 
         return $this->success($taskDTO->toArray());
     }
 
-    public function update(UpdateTaskRequest $request, int $id): JsonResponse
+    public function update(UpdateTaskRequest $request, string $id): JsonResponse
     {
         $validated = $request->validated();
 
         $command = new UpdateTaskCommand(
-            id: $id,
-            title: $validated['title'] ?? null,
-            websiteUrl: $validated['website_url'] ?? null,
-            description: $validated['description'] ?? null,
-            phone: $validated['phone'] ?? null,
-            email: $validated['email'] ?? null,
-            address: $validated['address'] ?? null,
-            dueDate: $validated['due_date'] ?? null,
-            deliveryAddress: $validated['delivery_address'] ?? null,
+            id: Uuid::fromString($id),
+            title: isset($validated['title']) ? Title::fromString($validated['title']) : null,
+            websiteUrl: isset($validated['website_url']) ? WebsiteUrl::fromString($validated['website_url']) : null,
+            description: isset($validated['description']) ? Description::fromString($validated['description']) : null,
+            phone: isset($validated['phone']) ? Phone::fromString($validated['phone']) : null,
+            email: isset($validated['email']) ? Email::fromString($validated['email']) : null,
+            address: isset($validated['address']) ? Address::fromString($validated['address']) : null,
+            dueDate: isset($validated['due_date']) ? DueDate::fromNullable($validated['due_date']) : null,
+            deliveryAddress: isset($validated['delivery_address']) ? DeliveryAddress::fromNullable($validated['delivery_address']) : null,
         );
 
         $taskDTO = $this->updateTaskHandler->handle($command);
@@ -104,15 +109,15 @@ final class TaskController extends ApiController
         return $this->success($taskDTO->toArray());
     }
 
-    public function updateStatus(Request $request, int $id): JsonResponse
+    public function updateStatus(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
         ]);
 
         $command = new UpdateTaskStatusCommand(
-            id: $id,
-            status: $validated['status'],
+            id: Uuid::fromString($id),
+            status: TaskStatus::fromString($validated['status']),
         );
 
         $taskDTO = $this->updateTaskStatusHandler->handle($command);
@@ -120,17 +125,15 @@ final class TaskController extends ApiController
         return $this->success($taskDTO->toArray());
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
         try {
-        $command = new DeleteTaskCommand(id: $id);
-        $this->deleteTaskHandler->handle($command);
+            $command = new DeleteTaskCommand(id: Uuid::fromString($id));
+            $this->deleteTaskHandler->handle($command);
 
             return $this->success(['message' => 'Task deleted successfully']);
         } catch (TaskNotFoundException $e) {
             return $this->notFound($e->getMessage());
         }
     }
-
-
 }

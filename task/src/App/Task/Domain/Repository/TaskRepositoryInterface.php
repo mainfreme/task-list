@@ -8,17 +8,21 @@ use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\ValueObject\TaskStatus;
 
+use App\Task\Domain\ValueObject\Uuid;
+
+use App\Task\Domain\ValueObject\ApplicationManagerId;
+
 interface TaskRepositoryInterface
 {
     /**
      * @throws TaskNotFoundException
      */
-    public function findById(int $id): Task;
+    public function findById(Uuid $id): Task;
 
     /**
      * @return Task[]
      */
-    public function findByApplicationId(int $applicationId): array;
+    public function findByApplicationId(ApplicationManagerId $applicationId): array;
 
     /**
      * @return Task[]

@@ -51,9 +51,9 @@ final class ApiKeyMiddleware
 
             // Check IP whitelist if configured
             $ipWhitelist = $applicationManager->getIpWhitelist();
-            if ($ipWhitelist !== null && count($ipWhitelist) > 0) {
+            if ($ipWhitelist !== null && !$ipWhitelist->isEmpty()) {
                 $clientIp = $request->ip();
-                if (!in_array($clientIp, $ipWhitelist, true)) {
+                if (!$ipWhitelist->allows($clientIp)) {
                     return response()->json([
                         'error' => 'IP address not allowed',
                         'message' => 'Your IP address is not in the whitelist for this application',
@@ -62,7 +62,7 @@ final class ApiKeyMiddleware
             }
 
             // Attach application manager ID to request for use in controllers
-            $request->attributes->set('application_manager_id', $applicationManager->getId());
+            $request->attributes->set('application_manager_id', $applicationManager->getId()?->getValue());
 
         } catch (ApplicationManagerNotFoundException $e) {
             return response()->json([
