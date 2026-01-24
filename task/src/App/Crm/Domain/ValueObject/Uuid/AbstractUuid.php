@@ -10,7 +10,7 @@ use InvalidArgumentException;
 abstract class AbstractUuid
 {
     protected function __construct(
-        private readonly string $value
+        public readonly string $value
     ) {
         $this->validate($value);
     }

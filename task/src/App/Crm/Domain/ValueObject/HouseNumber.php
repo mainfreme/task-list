@@ -11,7 +11,7 @@ use InvalidArgumentException;
 final class HouseNumber extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
-        private readonly string $value
+        public readonly string $value
     ) {
         parent::__construct($value);
         $this->validate();
