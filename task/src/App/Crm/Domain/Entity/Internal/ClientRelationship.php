@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity\Internal;
 
-use App\Crm\Domain\ValueObject\RelationshipType;
+use App\Crm\Domain\Enums\RelationshipType;
+use App\Crm\Domain\ValueObject\RelationshipNotes;
+use App\Crm\Domain\ValueObject\Uuid\RelationshipId;
+use App\Crm\Domain\ValueObject\Uuid\ClientId;
 
 /**
  * @internal
  */
 final class ClientRelationship
 {
-    private ?string $id = null;
+    private ?RelationshipId $id = null;
 
     public function __construct(
-        private string $parentUuid,
-        private string $childUuid,
+        private ClientId $parentUuid,
+        private ClientId $childUuid,
         private RelationshipType $relationshipType,
-        private ?string $notes = null,
+        private ?RelationshipNotes $notes = null,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
@@ -26,52 +29,52 @@ final class ClientRelationship
     }
 
     public static function create(
-        string $parentUuid,
-        string $childUuid,
+        ClientId $parentUuid,
+        ClientId $childUuid,
         RelationshipType $relationshipType,
-        ?string $notes = null
+        ?RelationshipNotes $notes = null
     ): self {
         return new self($parentUuid, $childUuid, $relationshipType, $notes);
     }
 
     public static function fromDatabase(
-        string $parentUuid,
-        string $childUuid,
+        ClientId $parentUuid,
+        ClientId $childUuid,
         RelationshipType $relationshipType,
-        ?string $notes = null,
+        ?RelationshipNotes $notes = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
     ): self {
         return new self($parentUuid, $childUuid, $relationshipType, $notes, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?string
+    public function getId(): ?RelationshipId
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(RelationshipId $id): void
     {
         $this->id = $id;
     }
 
-    public function getParentUuid(): string
+    public function getParentUuid(): ClientId
     {
         return $this->parentUuid;
     }
 
-    public function setParentUuid(string $parentUuid): void
+    public function setParentUuid(ClientId $parentUuid): void
     {
         $this->parentUuid = $parentUuid;
         $this->touch();
     }
 
-    public function getChildUuid(): string
+    public function getChildUuid(): ClientId
     {
         return $this->childUuid;
     }
 
-    public function setChildUuid(string $childUuid): void
+    public function setChildUuid(ClientId $childUuid): void
     {
         $this->childUuid = $childUuid;
         $this->touch();
@@ -88,12 +91,12 @@ final class ClientRelationship
         $this->touch();
     }
 
-    public function getNotes(): ?string
+    public function getNotes(): ?RelationshipNotes
     {
         return $this->notes;
     }
 
-    public function setNotes(?string $notes): void
+    public function setNotes(?RelationshipNotes $notes): void
     {
         $this->notes = $notes;
         $this->touch();

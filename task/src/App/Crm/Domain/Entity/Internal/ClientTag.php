@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity\Internal;
 
+use App\Crm\Domain\ValueObject\TagName;
+use App\Crm\Domain\ValueObject\TagColor;
+use App\Crm\Domain\ValueObject\TagDescription;
+use App\Crm\Domain\ValueObject\Uuid\TagId;
+
 /**
  * @internal
  */
 final class ClientTag
 {
-    private ?string $id = null;
+    private ?TagId $id = null;
 
     public function __construct(
-        private string $name,
-        private ?string $color = null,
-        private ?string $description = null,
+        private TagName $name,
+        private ?TagColor $color = null,
+        private ?TagDescription $description = null,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
@@ -23,61 +28,61 @@ final class ClientTag
     }
 
     public static function create(
-        string $name,
-        ?string $color = null,
-        ?string $description = null
+        TagName $name,
+        ?TagColor $color = null,
+        ?TagDescription $description = null
     ): self {
         return new self($name, $color, $description);
     }
 
     public static function fromDatabase(
-        string $name,
-        ?string $color = null,
-        ?string $description = null,
+        TagName $name,
+        ?TagColor $color = null,
+        ?TagDescription $description = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
     ): self {
         return new self($name, $color, $description, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?string
+    public function getId(): ?TagId
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(TagId $id): void
     {
         $this->id = $id;
     }
 
-    public function getName(): string
+    public function getName(): TagName
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(TagName $name): void
     {
         $this->name = $name;
         $this->touch();
     }
 
-    public function getColor(): ?string
+    public function getColor(): ?TagColor
     {
         return $this->color;
     }
 
-    public function setColor(?string $color): void
+    public function setColor(?TagColor $color): void
     {
         $this->color = $color;
         $this->touch();
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): ?TagDescription
     {
         return $this->description;
     }
 
-    public function setDescription(?string $description): void
+    public function setDescription(?TagDescription $description): void
     {
         $this->description = $description;
         $this->touch();

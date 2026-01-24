@@ -8,7 +8,7 @@ use App\Crm\Domain\ValueObject\ClientName;
 use App\Crm\Domain\ValueObject\ClientNotes;
 use App\Crm\Domain\ValueObject\ClientRating;
 use App\Crm\Domain\ValueObject\ClientSource;
-use App\Crm\Domain\ValueObject\ClientStatus;
+use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\ValueObject\Country;
 use App\Crm\Domain\ValueObject\IsCompany;
 use App\Crm\Domain\ValueObject\Nip;

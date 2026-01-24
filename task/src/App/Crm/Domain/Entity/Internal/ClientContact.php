@@ -4,25 +4,32 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity\Internal;
 
-use App\Crm\Domain\ValueObject\ContactType;
-use App\Crm\Domain\ValueObject\ContactRole;
+use App\Crm\Domain\Enums\ContactType;
+use App\Crm\Domain\Enums\ContactRole;
+use App\Crm\Domain\ValueObject\ContactValue;
+use App\Crm\Domain\ValueObject\CountryPrefix;
+use App\Crm\Domain\ValueObject\IsPrimary;
+use App\Crm\Domain\ValueObject\IsActive;
+use App\Crm\Domain\ValueObject\IsVerified;
+use App\Crm\Domain\ValueObject\Uuid\ContactId;
+use App\Crm\Domain\ValueObject\Uuid\ClientId;
 
 /**
  * @internal
  */
 final class ClientContact
 {
-    private ?string $id = null;
+    private ?ContactId $id = null;
 
     public function __construct(
-        private string $clientUuid,
+        private ClientId $clientUuid,
         private ContactType $type,
-        private string $value,
-        private ?string $countryPrefix = null,
+        private ContactValue $value,
+        private ?CountryPrefix $countryPrefix = null,
         private ?ContactRole $contactRole = null,
-        private bool $isPrimary = false,
-        private bool $isActive = true,
-        private bool $isVerified = false,
+        private IsPrimary $isPrimary = new IsPrimary(false),
+        private IsActive $isActive = new IsActive(true),
+        private IsVerified $isVerified = new IsVerified(false),
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
@@ -31,12 +38,12 @@ final class ClientContact
     }
 
     public static function create(
-        string $clientUuid,
+        ClientId $clientUuid,
         ContactType $type,
-        string $value,
-        ?string $countryPrefix = null,
+        ContactValue $value,
+        ?CountryPrefix $countryPrefix = null,
         ?ContactRole $contactRole = null,
-        bool $isPrimary = false
+        IsPrimary $isPrimary = new IsPrimary(false)
     ): self {
         return new self(
             $clientUuid,
@@ -49,13 +56,13 @@ final class ClientContact
     }
 
     public static function fromDatabase(
-        string $clientUuid,
+        ClientId $clientUuid,
         ContactType $type,
-        string $value,
-        bool $isPrimary = false,
-        bool $isActive = true,
-        bool $isVerified = false,
-        ?string $countryPrefix = null,
+        ContactValue $value,
+        IsPrimary $isPrimary,
+        IsActive $isActive,
+        IsVerified $isVerified,
+        ?CountryPrefix $countryPrefix = null,
         ?ContactRole $contactRole = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
@@ -74,22 +81,22 @@ final class ClientContact
         );
     }
 
-    public function getId(): ?string
+    public function getId(): ?ContactId
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(ContactId $id): void
     {
         $this->id = $id;
     }
 
-    public function getClientUuid(): string
+    public function getClientUuid(): ClientId
     {
         return $this->clientUuid;
     }
 
-    public function setClientUuid(string $clientUuid): void
+    public function setClientUuid(ClientId $clientUuid): void
     {
         $this->clientUuid = $clientUuid;
         $this->touch();
@@ -106,23 +113,23 @@ final class ClientContact
         $this->touch();
     }
 
-    public function getValue(): string
+    public function getValue(): ContactValue
     {
         return $this->value;
     }
 
-    public function setValue(string $value): void
+    public function setValue(ContactValue $value): void
     {
         $this->value = $value;
         $this->touch();
     }
 
-    public function getCountryPrefix(): ?string
+    public function getCountryPrefix(): ?CountryPrefix
     {
         return $this->countryPrefix;
     }
 
-    public function setCountryPrefix(?string $countryPrefix): void
+    public function setCountryPrefix(?CountryPrefix $countryPrefix): void
     {
         $this->countryPrefix = $countryPrefix;
         $this->touch();
@@ -139,48 +146,48 @@ final class ClientContact
         $this->touch();
     }
 
-    public function isPrimary(): bool
+    public function isPrimary(): IsPrimary
     {
         return $this->isPrimary;
     }
 
-    public function setPrimary(bool $isPrimary): void
+    public function setPrimary(IsPrimary $isPrimary): void
     {
         $this->isPrimary = $isPrimary;
         $this->touch();
     }
 
-    public function isActive(): bool
+    public function isActive(): IsActive
     {
         return $this->isActive;
     }
 
     public function activate(): void
     {
-        $this->isActive = true;
+        $this->isActive = IsActive::fromBool(true);
         $this->touch();
     }
 
     public function deactivate(): void
     {
-        $this->isActive = false;
+        $this->isActive = IsActive::fromBool(false);
         $this->touch();
     }
 
-    public function isVerified(): bool
+    public function isVerified(): IsVerified
     {
         return $this->isVerified;
     }
 
     public function verify(): void
     {
-        $this->isVerified = true;
+        $this->isVerified = IsVerified::fromBool(true);
         $this->touch();
     }
 
     public function unverify(): void
     {
-        $this->isVerified = false;
+        $this->isVerified = IsVerified::fromBool(false);
         $this->touch();
     }
 
