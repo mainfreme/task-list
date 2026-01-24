@@ -7,7 +7,7 @@ namespace App\ApplicationManager\Domain\ValueObject;
 final class ApiKey
 {
     private function __construct(
-        private readonly string $value
+        public readonly string $value
     ) {
         if (empty($this->value)) {
             throw new \InvalidArgumentException('API Key cannot be empty');

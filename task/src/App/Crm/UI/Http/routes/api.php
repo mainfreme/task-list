@@ -21,3 +21,4 @@ Route::middleware(['jwt'])->group(function () {
     Route::put('/v1/crm/{id}', [CrmController::class, 'update']);
     Route::delete('/v1/crm/{id}', [CrmController::class, 'destroy']);
 });
+

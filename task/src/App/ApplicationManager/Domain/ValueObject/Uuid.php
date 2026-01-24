@@ -9,7 +9,7 @@ use InvalidArgumentException;
 final class Uuid
 {
     private function __construct(
-        private readonly string $value
+        public readonly string $value
     ) {
         $this->validate($value);
     }
