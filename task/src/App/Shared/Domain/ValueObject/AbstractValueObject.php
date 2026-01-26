@@ -8,7 +8,11 @@ namespace App\Shared\Domain\ValueObject;
 abstract class AbstractValueObject
 {
     public function __construct(
-        public readonly string $value
+        protected readonly string $value
     ) {}
 
+    public function getValue(): string
+    {
+        return $this->value;
+    }
 }
