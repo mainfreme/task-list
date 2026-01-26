@@ -18,7 +18,7 @@ final class GenerateApiKeyHandler
     public function handle(GenerateApiKeyCommand $command): ApplicationManagerDTO
     {
         $newApiKey = ApiKey::generate();
-        
+
         try {
             $applicationManager = $this->repository->findById($command->id);
             $applicationManager->setApiKey($newApiKey);
@@ -35,9 +35,9 @@ final class GenerateApiKeyHandler
             id: $applicationManager->getId(),
             name: $applicationManager->getName(),
             apiKey: $newApiKey, // Return plain key only when regenerating
-            requestUrl: $requestUrl?->getValue(),
+            requestUrl: $requestUrl,
             isActive: $applicationManager->isActive(),
-            ipWhitelist: $ipWhitelist?->toArray()
+            ipWhitelist: $ipWhitelist
         );
     }
 }
