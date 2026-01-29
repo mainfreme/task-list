@@ -9,30 +9,23 @@ use App\Task\Application\Command\CreateTask\CreateTaskCommand;
 use App\Task\Application\Command\CreateTask\CreateTaskHandler;
 use App\Task\Application\Command\DeleteTask\DeleteTaskCommand;
 use App\Task\Application\Command\DeleteTask\DeleteTaskHandler;
-use App\Task\Application\Command\UpdateTask\UpdateTaskCommand;
 use App\Task\Application\Command\UpdateTask\UpdateTaskHandler;
-use App\Task\Application\Command\UpdateTaskStatus\UpdateTaskStatusCommand;
 use App\Task\Application\Command\UpdateTaskStatus\UpdateTaskStatusHandler;
 use App\Task\Application\Query\GetTask\GetTaskHandler;
 use App\Task\Application\Query\GetTask\GetTaskQuery;
 use App\Task\Application\Query\ListTasks\ListTasksHandler;
 use App\Task\Application\Query\ListTasks\ListTasksQuery;
 use App\Task\Domain\ValueObject\Uuid;
-use App\Task\Domain\ValueObject\Title;
-use App\Task\Domain\ValueObject\WebsiteUrl;
-use App\Task\Domain\ValueObject\Description;
-use App\Task\Domain\ValueObject\Phone;
-use App\Task\Domain\ValueObject\Email;
-use App\Task\Domain\ValueObject\Address;
-use App\Task\Domain\ValueObject\ApplicationManagerId;
-use App\Task\Domain\ValueObject\DueDate;
-use App\Task\Domain\ValueObject\DeliveryAddress;
-use App\Task\Domain\ValueObject\TaskStatus;
 use Illuminate\Http\JsonResponse;
+use App\Task\Application\Command\UpdateTaskStatus\UpdateTaskStatusCommand;
 use Illuminate\Http\Request;
 use App\Task\UI\Http\Requests\V1\CreateTaskRequest;
 use App\Task\UI\Http\Requests\V1\UpdateTaskRequest;
 use App\Task\Domain\Exception\TaskNotFoundException;
+use App\Task\UI\Http\Mappers\UpdateTaskCommandMapper;
+use App\Task\UI\Http\Mappers\UpdateTaskStatusCommandMapper;
+use App\Shared\Infrastructure\Mapper\GenericRequestMapper;
+use App\Task\UI\Http\Requests\V1\UpdateTaskStatusRequest;
 use OpenApi\Attributes as OA;
 
 final class TaskController extends ApiController
@@ -44,6 +37,9 @@ final class TaskController extends ApiController
         private readonly DeleteTaskHandler $deleteTaskHandler,
         private readonly GetTaskHandler $getTaskHandler,
         private readonly ListTasksHandler $listTasksHandler,
+        private readonly GenericRequestMapper $mapper,
+        private readonly UpdateTaskCommandMapper $updateTaskCommandMapper,
+        private readonly UpdateTaskStatusCommandMapper $updateTaskStatusCommandMapper,
     ) {
     }
 
@@ -75,19 +71,8 @@ final class TaskController extends ApiController
     )]
     public function store(CreateTaskRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        $command = new CreateTaskCommand(
-            title: Title::fromString($validated['title']),
-            websiteUrl: WebsiteUrl::fromString($validated['website_url']),
-            description: Description::fromString($validated['description']),
-            phone: Phone::fromString($validated['phone']),
-            email: Email::fromString($validated['email']),
-            address: Address::fromString($validated['address']),
-            applicationManagerId: ApplicationManagerId::fromNullable($request->attributes->get('application_manager_id')),
-            dueDate: DueDate::fromNullable($validated['due_date'] ?? null),
-            deliveryAddress: DeliveryAddress::fromNullable($validated['delivery_address'] ?? null),
-        );
+        /** @var CreateTaskCommand $command */
+        $command = $this->mapper->map($request, CreateTaskCommand::class);
 
         $taskDTO = $this->createTaskHandler->handle($command);
 
@@ -111,12 +96,8 @@ final class TaskController extends ApiController
     )]
     public function index(Request $request): JsonResponse
     {
-        $query = new ListTasksQuery(
-            page: (int) $request->input('page', 1),
-            perPage: (int) $request->input('per_page', 20),
-            status: $request->input('status'),
-            applicationManagerId: ApplicationManagerId::fromNullable($request->input('application_manager_id')),
-        );
+        /** @var ListTasksQuery $query */
+        $query = $this->mapper->map($request, ListTasksQuery::class);
 
         $result = $this->listTasksHandler->handle($query);
 
@@ -174,19 +155,7 @@ final class TaskController extends ApiController
     )]
     public function update(UpdateTaskRequest $request, string $id): JsonResponse
     {
-        $validated = $request->validated();
-
-        $command = new UpdateTaskCommand(
-            id: Uuid::fromString($id),
-            title: isset($validated['title']) ? Title::fromString($validated['title']) : null,
-            websiteUrl: isset($validated['website_url']) ? WebsiteUrl::fromString($validated['website_url']) : null,
-            description: isset($validated['description']) ? Description::fromString($validated['description']) : null,
-            phone: isset($validated['phone']) ? Phone::fromString($validated['phone']) : null,
-            email: isset($validated['email']) ? Email::fromString($validated['email']) : null,
-            address: isset($validated['address']) ? Address::fromString($validated['address']) : null,
-            dueDate: isset($validated['due_date']) ? DueDate::fromNullable($validated['due_date']) : null,
-            deliveryAddress: isset($validated['delivery_address']) ? DeliveryAddress::fromNullable($validated['delivery_address']) : null,
-        );
+        $command = $this->updateTaskCommandMapper->map($request, $id);
 
         $taskDTO = $this->updateTaskHandler->handle($command);
 
@@ -215,16 +184,10 @@ final class TaskController extends ApiController
             new OA\Response(response: 404, description: "Task not found")
         ]
     )]
-    public function updateStatus(Request $request, string $id): JsonResponse
+    public function updateStatus(UpdateTaskStatusRequest $request, string $id): JsonResponse
     {
-        $validated = $request->validate([
-            'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-        ]);
-
-        $command = new UpdateTaskStatusCommand(
-            id: Uuid::fromString($id),
-            status: TaskStatus::fromString($validated['status']),
-        );
+        /** @var UpdateTaskStatusCommand $command */
+        $command = $this->mapper->map($request, UpdateTaskStatusCommand::class);
 
         $taskDTO = $this->updateTaskStatusHandler->handle($command);
 
