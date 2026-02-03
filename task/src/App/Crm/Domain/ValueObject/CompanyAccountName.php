@@ -11,7 +11,7 @@ use InvalidArgumentException;
 final class CompanyAccountName extends AbstractValueObject implements ValueObjectInterface
 {
     private function __construct(
-        public readonly string $value
+        string $value
     ) {
         parent::__construct($value);
         $this->validate();

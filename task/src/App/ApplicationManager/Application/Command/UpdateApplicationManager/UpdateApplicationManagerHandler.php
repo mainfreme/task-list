@@ -44,13 +44,11 @@ final class UpdateApplicationManagerHandler
         $ipWhitelist = $applicationManager->getIpWhitelist();
 
         return new ApplicationManagerDTO(
-            id: $applicationManager->getId()->getValue(),
-            name: $applicationManager->getName()->getValue(),
-            requestUrl: $requestUrl?->getValue(),
+            id: $applicationManager->getId(),
+            name: $applicationManager->getName(),
+            requestUrl: $requestUrl,
             isActive: $applicationManager->isActive(),
-            ipWhitelist: $ipWhitelist?->toArray(),
-            createdAt: $applicationManager->getCreatedAt()->format('Y-m-d H:i:s'),
-            updatedAt: $applicationManager->getUpdatedAt()->format('Y-m-d H:i:s'),
+            ipWhitelist: $ipWhitelist
         );
     }
 }

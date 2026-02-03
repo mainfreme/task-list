@@ -81,7 +81,7 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
         // Note: We cannot reconstruct the original ApiKey from hash, so we create a placeholder
         // In real scenario, we might need to store the plain API key in a secure way or use a different approach
         // For now, we'll use a workaround - the API key will be regenerated when needed
-        $apiKey = ApiKey::fromString('placeholder'); // This is a limitation - we can't get original key from hash
+        $apiKey = ApiKey::generate(); // This is a limitation - we can't get original key from hash
 
         $entity = ApplicationManager::fromDatabase(
             ApplicationName::fromString($model->name),

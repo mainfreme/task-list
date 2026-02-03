@@ -22,7 +22,7 @@ use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
 use App\ApplicationManager\Domain\ValueObject\RequestUrl;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use OpenApi\Attributes as OA;
 
 final class ApplicationManagerController
 {
@@ -36,6 +36,28 @@ final class ApplicationManagerController
     ) {
     }
 
+    #[OA\Post(
+        path: "/v1/applications",
+        summary: "Create Application Manager",
+        tags: ["Application Managers"],
+        security: [["jwt" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["name"],
+                properties: [
+                    new OA\Property(property: "name", type: "string", example: "My App"),
+                    new OA\Property(property: "request_url", type: "string", format: "url", example: "https://myapp.com"),
+                    new OA\Property(property: "is_active", type: "boolean", example: true),
+                    new OA\Property(property: "ip_whitelist", type: "array", items: new OA\Items(type: "string", example: "127.0.0.1"))
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Application Manager created"),
+            new OA\Response(response: 422, description: "Validation error")
+        ]
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -58,6 +80,18 @@ final class ApplicationManagerController
         return response()->json($dto->toArray(), 201);
     }
 
+    #[OA\Get(
+        path: "/v1/applications",
+        summary: "List Application Managers",
+        tags: ["Application Managers"],
+        security: [["jwt" => []]],
+        parameters: [
+            new OA\Parameter(name: "is_active", in: "query", description: "Filter by active status", schema: new OA\Schema(type: "boolean"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "List of Application Managers")
+        ]
+    )]
     public function index(Request $request): JsonResponse
     {
         $query = new ListApplicationManagersQuery(
@@ -71,6 +105,19 @@ final class ApplicationManagerController
         ]);
     }
 
+    #[OA\Get(
+        path: "/v1/applications/{id}",
+        summary: "Get Application Manager details",
+        tags: ["Application Managers"],
+        security: [["jwt" => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, description: "Application Manager ID", schema: new OA\Schema(type: "string", format: "uuid"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Application Manager details"),
+            new OA\Response(response: 404, description: "Not found")
+        ]
+    )]
     public function show(string $id): JsonResponse
     {
         $query = new GetApplicationManagerQuery(id: Uuid::fromString($id));
@@ -79,6 +126,30 @@ final class ApplicationManagerController
         return response()->json($dto->toArray());
     }
 
+    #[OA\Put(
+        path: "/v1/applications/{id}",
+        summary: "Update Application Manager",
+        tags: ["Application Managers"],
+        security: [["jwt" => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, description: "Application Manager ID", schema: new OA\Schema(type: "string", format: "uuid"))
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "name", type: "string", example: "My App Updated"),
+                    new OA\Property(property: "request_url", type: "string", format: "url", example: "https://myapp-updated.com"),
+                    new OA\Property(property: "is_active", type: "boolean", example: false),
+                    new OA\Property(property: "ip_whitelist", type: "array", items: new OA\Items(type: "string", example: "192.168.1.1"))
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Application Manager updated"),
+            new OA\Response(response: 404, description: "Not found")
+        ]
+    )]
     public function update(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
@@ -108,6 +179,19 @@ final class ApplicationManagerController
         return response()->json($dto->toArray());
     }
 
+    #[OA\Post(
+        path: "/v1/applications/{id}/generate-api-key",
+        summary: "Generate API Key",
+        tags: ["Application Managers"],
+        security: [["jwt" => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, description: "Application Manager ID", schema: new OA\Schema(type: "string", format: "uuid"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "API Key generated"),
+            new OA\Response(response: 404, description: "Not found")
+        ]
+    )]
     public function generateApiKey(string $id): JsonResponse
     {
         $command = new GenerateApiKeyCommand(id: Uuid::fromString($id));
@@ -116,6 +200,27 @@ final class ApplicationManagerController
         return response()->json($dto->toArray());
     }
 
+    #[OA\Post(
+        path: "/v1/applications/{id}/generate-jwt-token",
+        summary: "Generate JWT Token",
+        tags: ["Application Managers"],
+        security: [["jwt" => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, description: "Application Manager ID", schema: new OA\Schema(type: "string", format: "uuid"))
+        ],
+        requestBody: new OA\RequestBody(
+            required: false,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "expiration_minutes", type: "integer", example: 60)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "JWT Token generated"),
+            new OA\Response(response: 404, description: "Not found")
+        ]
+    )]
     public function generateJwtToken(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
