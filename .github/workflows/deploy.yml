@@ -1,0 +1,75 @@
+name: CI/CD Backend Docker Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run tests in Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run Laravel tests in app container
+        run: |
+          docker compose -f docker-compose.yml pull
+          docker compose -f docker-compose.yml build app
+          docker compose -f docker-compose.yml run --rm app php artisan test
+
+  deploy:
+    name: Deploy to VPN server over SSH
+    needs: test
+    runs-on: ubuntu-latest
+
+    env:
+      SERVER_APP_PATH: ${{ secrets.SERVER_APP_PATH }}
+      DEPLOY_BRANCH: main # zmień na docelową gałąź, jeśli potrzeba (np. main)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Rekomendowane: użycie klucza SSH zamiast hasła.
+      # Jeśli przejdziesz na klucz, dodaj SSH_PRIVATE_KEY do sekretów i odkomentuj poniższą sekcję,
+      # a sekcję z hasłem usuń.
+      #
+      # - name: Add SSH key
+      #   uses: webfactory/ssh-agent@v0.8.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy via SSH using password
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            set -e
+
+            echo "Przechodzę do katalogu aplikacji: ${SERVER_APP_PATH}"
+            cd "${SERVER_APP_PATH}"
+
+            echo "Aktualny katalog:"
+            pwd
+
+            echo "Pobieram najnowszy kod z gałęzi ${DEPLOY_BRANCH}"
+            git fetch --all
+            git checkout "${DEPLOY_BRANCH}"
+            git pull origin "${DEPLOY_BRANCH}"
+
+            echo "Buduję i restartuję stack Dockera"
+            docker compose pull || true
+            docker compose up -d --build
+
+            echo "Opcjonalne czyszczenie starych obrazów"
+            docker image prune -f || true
+
