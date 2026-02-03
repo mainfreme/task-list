@@ -53,6 +53,7 @@ final class JwtMiddleware
             $ipWhitelist = $applicationManager->getIpWhitelist();
             if ($ipWhitelist !== null && !$ipWhitelist->isEmpty()) {
                 $clientIp = $request->ip();
+                
                 if (!$ipWhitelist->allows($clientIp)) {
                     return response()->json([
                         'error' => 'IP address not allowed',
