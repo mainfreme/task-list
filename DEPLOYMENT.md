@@ -198,10 +198,107 @@ Jeśli **serwer jest dostępny tylko przez VPN**:
 
 ---
 
-## 7. Dalsze ulepszenia (opcjonalne)
+## 7. Konfiguracja HTTPS i SSL
+
+SSL/HTTPS jest obsługiwany przez **zewnętrzny nginx-proxy** (osobny projekt/stack Docker).
+
+### Architektura
+
+```
+Internet → nginx-proxy (port 443, SSL) → nginx (ten projekt, port 80) → app (PHP-FPM)
+```
+
+- **nginx-proxy** – zewnętrzny kontener, obsługuje SSL, certyfikaty, przekierowania HTTP→HTTPS
+- **nginx** (ten projekt) – serwuje aplikację Laravel przez HTTP (wewnętrzna sieć Docker)
+- **app** – kontener PHP-FPM z aplikacją
+
+### Konfiguracja w nginx-proxy
+
+Konfiguracja SSL dla `softwellhouse.pl` znajduje się w projekcie **nginx-proxy**:
+
+```nginx
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name softwellhouse.pl www.softwellhouse.pl;
+
+    ssl_certificate /etc/ssl/certs/certificate.txt;
+    ssl_certificate_key /etc/ssl/certs/private.key;
+
+    location / {
+        proxy_pass http://nginx:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+### Wymagania
+
+1. **nginx-proxy musi działać** i mieć skonfigurowaną domenę `softwellhouse.pl`
+2. **Sieć `proxy-network`** musi być współdzielona między nginx-proxy a tym projektem
+3. **Certyfikaty SSL** są zarządzane w projekcie nginx-proxy (nie w tym repo)
+
+### Trust Proxies w Laravel
+
+W pliku `bootstrap/app.php` jest skonfigurowane `trustProxies(at: '*')`, dzięki czemu Laravel wie, że request przyszedł przez HTTPS (z nagłówka `X-Forwarded-Proto`)
+
+---
+
+## 8. Konfiguracja produkcyjna (.env)
+
+Na serwerze produkcyjnym skopiuj `.env.production` jako `.env`:
+
+```bash
+cd /var/www/app-backend/task
+cp .env.production .env
+```
+
+**Kluczowe różnice od lokalnego `.env`**:
+
+| Zmienna | Wartość produkcyjna |
+|---------|---------------------|
+| `APP_ENV` | `production` |
+| `APP_DEBUG` | `false` |
+| `APP_URL` | `https://softwellhouse.pl` |
+| `LOG_LEVEL` | `error` |
+| `SESSION_DOMAIN` | `softwellhouse.pl` |
+| `L5_SWAGGER_CONST_HOST` | `https://softwellhouse.pl` |
+| `L5_SWAGGER_GENERATE_ALWAYS` | `false` |
+
+**Ważne**: Zmień `DB_PASSWORD` i `JWT_SECRET` na bezpieczne wartości produkcyjne.
+
+### Dokumentacja Swagger na produkcji
+
+Po wdrożeniu z prawidłowym `.env.production`:
+- Dokumentacja będzie dostępna pod: `https://softwellhouse.pl/api/documentation`
+- Swagger UI będzie używał HTTPS dla wszystkich requestów
+
+Jeśli dokumentacja nie działa, sprawdź:
+
+1. Czy plik `.env` ma poprawne wartości (`APP_URL`, `L5_SWAGGER_CONST_HOST`).
+2. Wygeneruj ponownie dokumentację:
+
+   ```bash
+   docker compose exec app php artisan l5-swagger:generate
+   ```
+
+3. Wyczyść cache:
+
+   ```bash
+   docker compose exec app php artisan config:clear
+   docker compose exec app php artisan cache:clear
+   ```
+
+---
+
+## 9. Dalsze ulepszenia (opcjonalne)
 
 - Oddzielne gałęzie na staging/produkcję (np. `develop` → staging, `main` → prod).
 - Osobne sekrety dla staging/produkcji (`SSH_HOST_STAGING`, `SSH_HOST_PROD` itp.).
 - Health-check po deployu (krok w workflow, który odpala żądanie HTTP na endpoint `/health`).
 - Rollback (tagowanie wersji i możliwość powrotu do poprzedniego taga).
+- Automatyczne odnawianie certyfikatów Let's Encrypt (cron + certbot renew).
 

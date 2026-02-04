@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust all proxies (nginx-proxy) - niezbędne dla HTTPS za reverse proxy
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'api.key' => App\ApplicationManager\Infrastructure\Middleware\ApiKeyMiddleware::class,
             'jwt' => App\ApplicationManager\Infrastructure\Middleware\JwtMiddleware::class,

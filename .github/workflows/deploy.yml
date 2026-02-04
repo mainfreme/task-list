@@ -66,10 +66,28 @@ jobs:
             git checkout "${DEPLOY_BRANCH}"
             git pull origin "${DEPLOY_BRANCH}"
 
+            echo "Ustawiam plik .env dla produkcji"
+            cd task
+            if [ -f .env.production ]; then
+              cp .env.production .env
+              echo ".env.production skopiowany jako .env"
+            fi
+            cd ..
+
             echo "Buduję i restartuję stack Dockera"
             docker compose pull || true
             docker compose up -d --build
 
+            echo "Czekam na uruchomienie kontenerów..."
+            sleep 10
+
+            echo "Czyszczę cache i generuję dokumentację Swagger"
+            docker compose exec -T app php artisan config:clear || true
+            docker compose exec -T app php artisan cache:clear || true
+            docker compose exec -T app php artisan l5-swagger:generate || true
+
             echo "Opcjonalne czyszczenie starych obrazów"
             docker image prune -f || true
+
+            echo "Deploy zakończony pomyślnie!"
 
