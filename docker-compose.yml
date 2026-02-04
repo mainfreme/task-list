@@ -15,7 +15,6 @@ services:
         container_name: app
         restart: unless-stopped
         working_dir: /var/www
-        external: true
         volumes:
             - ./task:/var/www
         environment:
