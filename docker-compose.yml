@@ -2,7 +2,7 @@ networks:
     network:
         driver: bridge
     proxy-network:
-        driver: bridge  # sieć dla proxy i aplikacji
+        external: true # Ta sieć jest tworzona i zarządzana przez inny projekt (nginx-proxy)
 
 volumes:
     db_data:
@@ -15,6 +15,7 @@ services:
         container_name: app
         restart: unless-stopped
         working_dir: /var/www
+        external: true
         volumes:
             - ./task:/var/www
         environment:
@@ -53,13 +54,13 @@ services:
         networks:
             - network
 
-    nginx-proxy:
-        image: nginx:latest
-        container_name: nginx-proxy
-        restart: unless-stopped
-        ports:
-            - "80:80"    # host port 80 → proxy
-        volumes:
-            - ./proxy/conf.d:/etc/nginx/conf.d:ro
-        networks:
-            - proxy-network   # tylko sieć proxy
+#    nginx-proxy:
+#        image: nginx:latest
+#        container_name: nginx-proxy
+#        restart: unless-stopped
+#        ports:
+#            - "80:80"    # host port 80 → proxy
+#        volumes:
+#            - ./proxy/conf.d:/etc/nginx/conf.d:ro
+#        networks:
+#            - proxy-network   # tylko sieć proxy
