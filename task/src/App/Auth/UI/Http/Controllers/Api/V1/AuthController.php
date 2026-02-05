@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Auth\UI\Http\Controllers\Api\V1;
 
-use App\Auth\Domain\Entity\User;
-use App\Auth\Application\DTO\UserDTO;   
-use App\Auth\Domain\Enum\UserRoleEnum;
-use App\Auth\Domain\Repository\UserRepositoryInterface;
-use App\Auth\Infrastructure\Service\JwtTokenService;
+use App\Auth\Application\Command\LoginUser\LoginUserCommand;
+use App\Auth\Application\Command\LoginUser\LoginUserHandler;
+use App\Auth\Application\Command\RegisterUser\RegisterUserCommand;
+use App\Auth\Application\Command\RegisterUser\RegisterUserHandler;
+use App\Auth\Application\Query\GetCurrentUser\GetCurrentUserHandler;
+use App\Auth\Application\Query\GetCurrentUser\GetCurrentUserQuery;
+use App\Auth\Domain\Exception\EmailAlreadyExistsException;
+use App\Auth\Domain\Exception\InvalidCredentialsException;
 use App\Auth\UI\Http\Requests\V1\LoginRequest;
 use App\Auth\UI\Http\Requests\V1\RegisterRequest;
 use App\Shared\Domain\ValueObject\Email;
@@ -22,8 +25,9 @@ use OpenApi\Attributes as OA;
 final class AuthController extends ApiController
 {
     public function __construct(
-        private readonly UserRepositoryInterface $userRepository,
-        private readonly JwtTokenService $jwtService,
+        private readonly RegisterUserHandler $registerHandler,
+        private readonly LoginUserHandler $loginHandler,
+        private readonly GetCurrentUserHandler $getCurrentUserHandler,
     ) {
     }
 
@@ -65,29 +69,19 @@ final class AuthController extends ApiController
     {
         $validated = $request->validated();
 
-        // Check if email already exists
-        if ($this->userRepository->exists(Email::fromString($validated['email']))) {
-            return $this->conflict(
-                message: 'Email already registered',
-            );
-        }
-
-        $userDto = new UserDTO(
-            id: Uuid::generate(),
+        $command = new RegisterUserCommand(
             name: $validated['name'],
             email: Email::fromString($validated['email']),
             password: $validated['password'],
-            role: UserRoleEnum::USER,
         );
 
-        $this->userRepository->save($userDto);
+        try {
+            $response = $this->registerHandler->handle($command);
+        } catch (EmailAlreadyExistsException) {
+            return $this->conflict(message: 'Email already registered');
+        }
 
-        $token = $this->jwtService->generateToken($userDto);
-
-        return $this->created([
-            'user' => $userDto->toArray(),
-            'token' => $token,
-        ]);
+        return $this->created($response->toArray());
     }
 
     #[OA\Post(
@@ -126,28 +120,18 @@ final class AuthController extends ApiController
     {
         $validated = $request->validated();
 
-        $user = $this->userRepository->findByEmail(Email::fromString($validated['email']));
+        $command = new LoginUserCommand(
+            email: Email::fromString($validated['email']),
+            password: $validated['password'],
+        );
 
-        if (!$user || !$user->verifyPassword($validated['password'])) {
-            return $this->unauthorized(
-                message: 'Invalid email or password',
-            );
+        try {
+            $response = $this->loginHandler->handle($command);
+        } catch (InvalidCredentialsException) {
+            return $this->unauthorized(message: 'Invalid email or password');
         }
 
-        $userDto = new UserDTO(
-            id: $user->getId(),
-            name: $user->getName(),
-            email: $user->getEmail(),
-            password: $user->getPassword(),
-            role: $user->getRole(),
-        );
-        
-        $token = $this->jwtService->generateToken($userDto);
-
-        return $this->success([
-            'user' => $user->toArray(),
-            'token' => $token,
-        ]);
+        return $this->success($response->toArray());
     }
 
     #[OA\Post(
@@ -198,11 +182,16 @@ final class AuthController extends ApiController
     )]
     public function me(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->attributes->get('user');
+        $userId = $request->attributes->get('user_id');
+
+        $query = new GetCurrentUserQuery(
+            userId: Uuid::fromString($userId),
+        );
+
+        $userDto = $this->getCurrentUserHandler->handle($query);
 
         return $this->success([
-            'user' => $user->toArray(),
+            'user' => $userDto->toArray(),
         ]);
     }
 }

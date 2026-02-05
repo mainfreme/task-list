@@ -116,7 +116,7 @@ final class User
         ];
     }
 
-    public function toSaveDTO(): UserDTO
+    public function toDTO(): UserDTO
     {
         return new UserDTO(
             id: $this->id,
