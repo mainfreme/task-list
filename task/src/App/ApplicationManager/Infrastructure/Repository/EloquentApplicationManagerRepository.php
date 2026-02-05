@@ -8,11 +8,11 @@ use App\ApplicationManager\Domain\Entity\ApplicationManager;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
-use App\ApplicationManager\Domain\ValueObject\Uuid;
 use App\ApplicationManager\Domain\ValueObject\ApplicationName;
 use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
 use App\ApplicationManager\Domain\ValueObject\RequestUrl;
 use App\ApplicationManager\Infrastructure\Eloquent\ApplicationManagerModel;
+use App\Shared\Domain\ValueObject\Uuid;
 use Illuminate\Support\Facades\Hash;
 
 final class EloquentApplicationManagerRepository implements ApplicationManagerRepositoryInterface

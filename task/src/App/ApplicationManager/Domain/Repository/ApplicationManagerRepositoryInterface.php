@@ -7,7 +7,7 @@ namespace App\ApplicationManager\Domain\Repository;
 use App\ApplicationManager\Domain\Entity\ApplicationManager;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
-use App\ApplicationManager\Domain\ValueObject\Uuid;
+use App\Shared\Domain\ValueObject\Uuid;
 
 interface ApplicationManagerRepositoryInterface
 {

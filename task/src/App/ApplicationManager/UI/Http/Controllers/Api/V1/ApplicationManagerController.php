@@ -16,10 +16,13 @@ use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicatio
 use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicationManagerQuery;
 use App\ApplicationManager\Application\Query\ListApplicationManagers\ListApplicationManagersHandler;
 use App\ApplicationManager\Application\Query\ListApplicationManagers\ListApplicationManagersQuery;
-use App\ApplicationManager\Domain\ValueObject\Uuid;
 use App\ApplicationManager\Domain\ValueObject\ApplicationName;
 use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
 use App\ApplicationManager\Domain\ValueObject\RequestUrl;
+use App\ApplicationManager\UI\Http\Requests\V1\CreateApplicationManagerRequest;
+use App\ApplicationManager\UI\Http\Requests\V1\GenerateJwtTokenRequest;
+use App\ApplicationManager\UI\Http\Requests\V1\UpdateApplicationManagerRequest;
+use App\Shared\Domain\ValueObject\Uuid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -58,15 +61,9 @@ final class ApplicationManagerController
             new OA\Response(response: 422, description: "Validation error")
         ]
     )]
-    public function store(Request $request): JsonResponse
+    public function store(CreateApplicationManagerRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'request_url' => 'nullable|string|url|max:255',
-            'is_active' => 'sometimes|boolean',
-            'ip_whitelist' => 'nullable|array',
-            'ip_whitelist.*' => 'ip',
-        ]);
+        $validated = $request->validated();
 
         $command = new CreateApplicationManagerCommand(
             name: ApplicationName::fromString($validated['name']),
@@ -150,15 +147,9 @@ final class ApplicationManagerController
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateApplicationManagerRequest $request, string $id): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'request_url' => 'nullable|string|url|max:255',
-            'is_active' => 'sometimes|boolean',
-            'ip_whitelist' => 'nullable|array',
-            'ip_whitelist.*' => 'ip',
-        ]);
+        $validated = $request->validated();
 
         $command = new UpdateApplicationManagerCommand(
             id: Uuid::fromString($id),
@@ -221,11 +212,9 @@ final class ApplicationManagerController
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function generateJwtToken(Request $request, string $id): JsonResponse
+    public function generateJwtToken(GenerateJwtTokenRequest $request, string $id): JsonResponse
     {
-        $validated = $request->validate([
-            'expiration_minutes' => 'nullable|integer|min:1|max:525600', // Max 1 year
-        ]);
+        $validated = $request->validated();
 
         $command = new GenerateJwtTokenCommand(
             uuid: Uuid::fromString($id),

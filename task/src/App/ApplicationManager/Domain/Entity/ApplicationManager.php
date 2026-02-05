@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\ApplicationManager\Domain\Entity;
 
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
-use App\ApplicationManager\Domain\ValueObject\Uuid;
 use App\ApplicationManager\Domain\ValueObject\ApplicationName;
 use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
 use App\ApplicationManager\Domain\ValueObject\RequestUrl;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final class ApplicationManager
 {

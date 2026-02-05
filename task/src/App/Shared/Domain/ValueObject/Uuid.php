@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\ApplicationManager\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject;
 
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 final class Uuid
@@ -12,6 +13,11 @@ final class Uuid
         public readonly string $value
     ) {
         $this->validate($value);
+    }
+
+    public static function generate(): self
+    {
+        return new self(Str::uuid7()->toString());
     }
 
     public static function fromString(string $value): self
