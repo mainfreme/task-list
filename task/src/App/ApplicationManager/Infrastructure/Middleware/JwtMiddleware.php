@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\ApplicationManager\Infrastructure\Middleware;
 
-use Closure;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
-use App\ApplicationManager\Domain\ValueObject\Uuid;
+use App\Shared\Domain\ValueObject\Uuid;
+use Closure;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
@@ -53,7 +53,7 @@ final class JwtMiddleware
             $ipWhitelist = $applicationManager->getIpWhitelist();
             if ($ipWhitelist !== null && !$ipWhitelist->isEmpty()) {
                 $clientIp = $request->ip();
-                
+
                 if (!$ipWhitelist->allows($clientIp)) {
                     return response()->json([
                         'error' => 'IP address not allowed',
@@ -121,7 +121,7 @@ final class JwtMiddleware
     private function getJwtSecret(): string
     {
         $secret = env('JWT_SECRET');
-        
+
         if (!$secret) {
             throw new \RuntimeException('JWT_SECRET is not configured in .env file');
         }
