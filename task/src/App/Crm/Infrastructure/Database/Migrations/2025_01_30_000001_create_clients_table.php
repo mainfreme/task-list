@@ -13,7 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         // Create enum type for client status if using PostgreSQL native enums
-        DB::statement("CREATE TYPE client_status AS ENUM ('lead', 'prospect', 'active', 'inactive', 'archived')");
+        DB::statement("
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'client_status') THEN
+                CREATE TYPE client_status AS ENUM ('lead','prospect','active','inactive','archived');
+            END IF;
+        END$$;
+        ");
 
         Schema::create('clients', function (Blueprint $table) {
             $table->uuid('id')->primary();
