@@ -30,7 +30,7 @@ final class UserModel extends Model
     ];
 
     protected $casts = [
-        'roles' => 'array',
+        'roles' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
