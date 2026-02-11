@@ -19,7 +19,7 @@ class CrmUsersSeeder extends Seeder
         $users = [
             [
                 'id' => (string) Str::uuid(),
-                'email' => 'anna.kowalska@crm.local',
+                'email' => 'bialonj@gmail.com',
                 'roles' => json_encode(['admin', 'manager']),
                 'password' => Hash::make('secret123'),
                 'remember_token' => Str::random(10),
@@ -28,7 +28,7 @@ class CrmUsersSeeder extends Seeder
             ],
             [
                 'id' => (string) Str::uuid(),
-                'email' => 'tomasz.nowak@crm.local',
+                'email' => 'tomasz.nowak@softwellhouse.pl',
                 'roles' => json_encode(['sales']),
                 'password' => Hash::make('secret123'),
                 'remember_token' => Str::random(10),
@@ -37,7 +37,7 @@ class CrmUsersSeeder extends Seeder
             ],
             [
                 'id' => (string) Str::uuid(),
-                'email' => 'monika.zielinska@crm.local',
+                'email' => 'monika.zielinska@softwellhouse.pl',
                 'roles' => json_encode(['support']),
                 'password' => Hash::make('secret123'),
                 'remember_token' => Str::random(10),
