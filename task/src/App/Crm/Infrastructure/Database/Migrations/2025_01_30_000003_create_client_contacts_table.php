@@ -13,8 +13,22 @@ return new class extends Migration
     public function up(): void
     {
         // Create enum types for contact type and role if using PostgreSQL native enums
-        DB::statement("CREATE TYPE contact_type AS ENUM ('email', 'phone', 'mobile', 'fax', 'website', 'other')");
-        DB::statement("CREATE TYPE contact_role AS ENUM ('billing', 'technical', 'admin', 'sales', 'other')");
+        DB::statement("
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'contact_type') THEN
+                CREATE TYPE contact_type AS ENUM ('email', 'phone', 'mobile', 'fax', 'website', 'other');
+            END IF;
+        END$$;
+        ");
+        DB::statement("
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'contact_role') THEN
+                CREATE TYPE contact_role AS ENUM ('billing', 'technical', 'admin', 'sales', 'other');
+            END IF;
+        END$$;
+        ");
 
         Schema::create('client_contacts', function (Blueprint $table) {
             $table->uuid('id')->primary();

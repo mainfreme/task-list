@@ -13,7 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         // Create enum type for relationship type if using PostgreSQL native enums
-        DB::statement("CREATE TYPE relationship_type AS ENUM ('parent_company', 'subsidiary', 'partner', 'competitor')");
+        DB::statement("
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'relationship_type') THEN
+                CREATE TYPE relationship_type AS ENUM ('parent_company', 'subsidiary', 'partner', 'competitor');
+            END IF;
+        END$$;
+        ");
 
         Schema::create('client_relationships', function (Blueprint $table) {
             $table->uuid('id')->primary();

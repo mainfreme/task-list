@@ -13,8 +13,15 @@ return new class extends Migration
     public function up(): void
     {
         // Create enum type for address type if using PostgreSQL native enums
-        DB::statement("CREATE TYPE address_type AS ENUM ('billing', 'shipping', 'registered_office', 'delivery', 'other')");
 
+        DB::statement("
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'address_type') THEN
+                CREATE TYPE address_type AS ENUM ('billing', 'shipping', 'registered_office', 'delivery', 'other');
+            END IF;
+        END$$;
+        ");
         Schema::create('addresses', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('client_uuid');

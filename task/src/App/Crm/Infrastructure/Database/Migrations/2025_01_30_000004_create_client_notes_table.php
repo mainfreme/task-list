@@ -13,7 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         // Create enum type for note type if using PostgreSQL native enums
-        DB::statement("CREATE TYPE note_type AS ENUM ('note', 'call', 'meeting', 'email', 'task')");
+        DB::statement("
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'note_type') THEN
+                CREATE TYPE note_type AS ENUM ('note', 'call', 'meeting', 'email', 'task');
+            END IF;
+        END$$;
+        ");
 
         Schema::create('client_notes', function (Blueprint $table) {
             $table->uuid('id')->primary();
