@@ -20,7 +20,7 @@ class CrmUsersSeeder extends Seeder
             [
                 'id' => (string) Str::uuid(),
                 'email' => 'bialonj@gmail.com',
-                'roles' => json_encode(['admin', 'manager']),
+                'roles' => 'admin',
                 'password' => Hash::make('secret123'),
                 'remember_token' => Str::random(10),
                 'created_at' => $now->copy()->subDays(20),
@@ -29,7 +29,7 @@ class CrmUsersSeeder extends Seeder
             [
                 'id' => (string) Str::uuid(),
                 'email' => 'tomasz.nowak@softwellhouse.pl',
-                'roles' => json_encode(['sales']),
+                'roles' => 'sales',
                 'password' => Hash::make('secret123'),
                 'remember_token' => Str::random(10),
                 'created_at' => $now->copy()->subDays(15),
@@ -38,7 +38,7 @@ class CrmUsersSeeder extends Seeder
             [
                 'id' => (string) Str::uuid(),
                 'email' => 'monika.zielinska@softwellhouse.pl',
-                'roles' => json_encode(['support']),
+                'roles' => 'support',
                 'password' => Hash::make('secret123'),
                 'remember_token' => Str::random(10),
                 'created_at' => $now->copy()->subDays(10),

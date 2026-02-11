@@ -44,7 +44,7 @@ final class EloquentUserRepository implements UserRepositoryInterface
         $model->name = $dto->name;
         $model->email = $dto->email->getValue();
         $model->password = $dto->password;
-        $model->role = $dto->role->value;
+        $model->roles = $dto->role->value;
 
         $model->save();
     }
@@ -61,7 +61,7 @@ final class EloquentUserRepository implements UserRepositoryInterface
             name: $model->name ?? '',
             email: Email::fromString($model->email),
             password: $model->password,
-            role: UserRoleEnum::from($model->role),
+            role: UserRoleEnum::from($model->roles),
             createdAt: $model->created_at ? \DateTimeImmutable::createFromMutable($model->created_at) : null,
             updatedAt: $model->updated_at ? \DateTimeImmutable::createFromMutable($model->updated_at) : null
         );
