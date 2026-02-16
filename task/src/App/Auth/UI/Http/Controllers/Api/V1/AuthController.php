@@ -184,8 +184,12 @@ final class AuthController extends ApiController
     {
         $userId = $request->attributes->get('user_id');
 
+        if (!$userId instanceof Uuid) {
+            $userId = Uuid::fromString($userId);
+        }
+
         $query = new GetCurrentUserQuery(
-            userId: Uuid::fromString($userId),
+            userId: $userId,
         );
 
         $userDto = $this->getCurrentUserHandler->handle($query);
