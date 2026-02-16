@@ -10,6 +10,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final class UserJwtMiddleware
 {
@@ -36,7 +37,7 @@ final class UserJwtMiddleware
 
         try {
             $decoded = $this->verifyToken($token);
-            $userId = $this->extractUserId($decoded);
+            $userId = Uuid::fromString($this->extractUserId($decoded));
             $user = $this->repository->findById($userId);
 
             if (!$user) {
