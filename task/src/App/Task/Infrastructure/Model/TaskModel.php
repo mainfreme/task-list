@@ -2,35 +2,37 @@
 
 declare(strict_types=1);
 
-namespace App\Auth\Infrastructure\Eloquent;
+namespace App\Task\Infrastructure\Model;
 
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
-final class UserModel extends Model
+final class TaskModel extends Model
 {
     use HasUuids;
 
-    protected $table = 'users';
+    protected $table = 'tasks';
 
     protected $keyType = 'string';
 
     public $incrementing = false;
 
     protected $fillable = [
-        'name',
+        'title',
+        'website_url',
+        'description',
+        'phone',
         'email',
-        'password',
-        'roles',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
+        'address',
+        'status',
+        'application_manager_id',
+        'due_date',
+        'delivery_address',
     ];
 
     protected $casts = [
-        'roles' => 'string',
+        'due_date' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

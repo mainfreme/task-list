@@ -7,7 +7,7 @@ namespace App\Task\Domain\Repository;
 use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\ValueObject\TaskStatus;
-use App\Task\Domain\ValueObject\Uuid;
+use App\Shared\Domain\ValueObject\Uuid;
 use App\Task\Domain\ValueObject\ApplicationManagerId;
 
 interface TaskRepositoryInterface

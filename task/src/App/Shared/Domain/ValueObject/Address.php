@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Task\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject;
 
-use App\Shared\Domain\ValueObject\AbstractValueObject;
-use App\Shared\Domain\ValueObject\ValueObjectInterface;
 use InvalidArgumentException;
 
 final class Address extends AbstractValueObject implements ValueObjectInterface

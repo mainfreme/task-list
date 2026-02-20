@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Task\UI\Http\Mappers;
 
+use App\Shared\Domain\ValueObject\Address;
+use App\Shared\Domain\ValueObject\Phone;
 use App\Shared\Infrastructure\Mapper\Attribute\MapField;
 use App\Shared\Infrastructure\Mapper\Attribute\MapFrom;
 use App\Task\Application\Command\UpdateTask\UpdateTaskCommand;
-use App\Task\Domain\ValueObject\Address;
 use App\Task\Domain\ValueObject\DeliveryAddress;
 use App\Task\Domain\ValueObject\Description;
 use App\Task\Domain\ValueObject\DueDate;
 use App\Task\Domain\ValueObject\Email;
-use App\Task\Domain\ValueObject\Phone;
 use App\Task\Domain\ValueObject\Title;
 use App\Task\Domain\ValueObject\Uuid;
 use App\Task\Domain\ValueObject\WebsiteUrl;

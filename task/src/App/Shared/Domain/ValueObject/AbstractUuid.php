@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Crm\Domain\ValueObject\Uuid;
+namespace App\Shared\Domain\ValueObject;
 
 use Illuminate\Support\Str;
 use InvalidArgumentException;

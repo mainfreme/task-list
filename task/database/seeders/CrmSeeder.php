@@ -13,6 +13,7 @@ class CrmSeeder extends Seeder
     {
         $this->call([
             CrmUsersSeeder::class,
+            ProfileSeeder::class,
             CrmClientsSeeder::class,
             CrmAddressesSeeder::class,
             CrmClientContactsSeeder::class,
