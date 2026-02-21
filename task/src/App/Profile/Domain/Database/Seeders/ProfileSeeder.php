@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Database\Seeders;
+namespace App\Profile\Domain\Database\Seeders;
 
 use App\Auth\Infrastructure\Model\UserModel;
 use App\Profile\Infrastructure\Model\ProfileModel;
