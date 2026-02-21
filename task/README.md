@@ -57,6 +57,7 @@ L5_SWAGGER_CONST_HOST=http://localhost
 ```
 
 **Generowanie JWT_SECRET:**
+
 ```bash
 php -r "echo bin2hex(random_bytes(32));"
 ```
@@ -92,7 +93,7 @@ php artisan l5-swagger:generate
 php artisan serve
 ```
 
-Aplikacja będzie dostępna pod adresem: **http://localhost:8000**
+Aplikacja będzie dostępna pod adresem: **[http://localhost:8000](http://localhost:8000)**
 
 ### MAMP / Apache / Nginx
 
@@ -101,48 +102,50 @@ Ustaw katalog główny serwera na folder `public/`:
 - **Document Root:** `.../task/public`
 - **URL:** np. `http://localhost/task/public` lub skonfigurowany virtual host
 
-## Endpointy API
+## **ProfileName**Endpointy API
 
-| Ścieżka | Opis |
-|---------|------|
-| `GET /api/documentation` | Dokumentacja Swagger UI |
-| `POST /api/v1/auth/register` | Rejestracja użytkownika |
-| `POST /api/v1/auth/login` | Logowanie użytkownika |
-| `GET /api/v1/auth/me` | Aktualny użytkownik (wymaga JWT) |
-| `POST /api/v1/applications/{id}/generate-api-key` | Generowanie klucza API |
-| `POST /api/v1/applications/{id}/generate-jwt-token` | Generowanie tokenu JWT |
+
+| Ścieżka                                             | Opis                             |
+| --------------------------------------------------- | -------------------------------- |
+| `GET /api/documentation`                            | Dokumentacja Swagger UI          |
+| `POST /api/v1/auth/register`                        | Rejestracja użytkownika          |
+| `POST /api/v1/auth/login`                           | Logowanie użytkownika            |
+| `GET /api/v1/auth/me`                               | Aktualny użytkownik (wymaga JWT) |
+| `POST /api/v1/applications/{id}/generate-api-key`   | Generowanie klucza API           |
+| `POST /api/v1/applications/{id}/generate-jwt-token` | Generowanie tokenu JWT           |
+
 
 ## Pierwsze kroki po uruchomieniu
 
 1. **Pobierz ID aplikacji** (po seedzie):
-   ```bash
+  ```bash
    php artisan tinker
    >>> \DB::table('applications')->first()->id;
-   ```
-
+  ```
 2. **Wygeneruj klucz API i JWT** (np. dla pierwszej aplikacji):
-   ```bash
+  ```bash
    curl -X POST http://localhost:8000/api/v1/applications/{APPLICATION_ID}/generate-api-key
    curl -X POST http://localhost:8000/api/v1/applications/{APPLICATION_ID}/generate-jwt-token
-   ```
-
+  ```
 3. **Zarejestruj użytkownika**:
-   ```bash
+  ```bash
    curl -X POST http://localhost:8000/api/v1/auth/register \
      -H "Content-Type: application/json" \
      -d '{"name":"Test","email":"test@example.com","password":"password123","password_confirmation":"password123"}'
-   ```
+  ```
 
 ## Skrypty
 
-| Komenda | Opis |
-|---------|------|
-| `composer cs-fix` | Automatyczna naprawa stylu kodu (PHP CS Fixer) |
-| `composer cs-fix-check` | Sprawdzenie stylu bez zmian (dry-run) |
-| `php artisan migrate:fresh` | Reset bazy i migracje |
-| `php artisan db:seed` | Seedowanie danych |
-| `php artisan l5-swagger:generate` | Generowanie dokumentacji Swagger |
-| `php artisan test` | Uruchomienie testów |
+
+| Komenda                           | Opis                                           |
+| --------------------------------- | ---------------------------------------------- |
+| `composer cs-fix`                 | Automatyczna naprawa stylu kodu (PHP CS Fixer) |
+| `composer cs-fix-check`           | Sprawdzenie stylu bez zmian (dry-run)          |
+| `php artisan migrate:fresh`       | Reset bazy i migracje                          |
+| `php artisan db:seed`             | Seedowanie danych                              |
+| `php artisan l5-swagger:generate` | Generowanie dokumentacji Swagger               |
+| `php artisan test`                | Uruchomienie testów                            |
+
 
 ## Struktura projektu
 
@@ -165,3 +168,4 @@ Szczegóły architektury: [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Crm** – klienci, kontakty, adresy, notatki, relacje
 - **Profile** – profile użytkowników
 - **ApplicationManager** – aplikacje zewnętrzne, klucze API, tokeny JWT
+

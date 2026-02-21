@@ -189,6 +189,157 @@ paths:
       security:
         -
           jwt: []
+  /v1/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: 'Register a new user'
+      operationId: 52fc8a22e8303b87fda1e59043c901d0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
+              properties:
+                name:
+                  type: string
+                  example: 'Jan Kowalski'
+                email:
+                  type: string
+                  format: email
+                  example: jan@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: password123
+                password_confirmation:
+                  type: string
+                  format: password
+                  example: password123
+              type: object
+      responses:
+        201:
+          description: 'User registered successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: 'User registered successfully'
+                  user:
+                    type: object
+                  token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  expires_in:
+                    type: integer
+                    example: 1440
+                type: object
+        422:
+          description: 'Validation error'
+        409:
+          description: 'Email already exists'
+  /v1/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: 'Login user'
+      operationId: 4af8f6684af295e99741749d138e5209
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: jan@example.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+              type: object
+      responses:
+        200:
+          description: 'Login successful'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: 'Login successful'
+                  user:
+                    type: object
+                  token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  expires_in:
+                    type: integer
+                    example: 1440
+                type: object
+        401:
+          description: 'Invalid credentials'
+        422:
+          description: 'Validation error'
+  /v1/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: 'Logout user'
+      operationId: 66460fe1d830e4770314faf06b9cb6f4
+      responses:
+        200:
+          description: 'Logout successful'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: 'Logout successful'
+                type: object
+        401:
+          description: Unauthorized
+      security:
+        -
+          user_jwt: []
+  /v1/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: 'Get current user data'
+      operationId: d34ad93cdfadad3a53c4e2e11890d776
+      responses:
+        200:
+          description: 'User data'
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+      security:
+        -
+          user_jwt: []
   /v1/crm:
     get:
       tags:
@@ -313,6 +464,66 @@ paths:
           description: 'Client deleted successfully'
         404:
           description: 'Client not found'
+      security:
+        -
+          jwt: []
+  /v1/me:
+    get:
+      tags:
+        - profile
+      summary: 'Get my Profile'
+      operationId: 5f1822ce20835de81fbd0ce1fa6412e9
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - id
+              properties:
+                id:
+                  type: string
+                  example: ''
+              type: object
+      responses:
+        200:
+          description: 'Get My Profile'
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthenticated
+      security:
+        -
+          jwt: []
+    put:
+      tags:
+        - profile
+      summary: 'Update my Profile'
+      operationId: 5216b7a1f3a04eef46b276425e280bcf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - email
+              properties:
+                name:
+                  type: string
+                  example: 'John Doe'
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+              type: object
+      responses:
+        200:
+          description: 'Update My Profile'
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthenticated
       security:
         -
           jwt: []
@@ -557,11 +768,17 @@ components:
       scheme: bearer
 tags:
   -
+    name: Authentication
+    description: 'User authentication endpoints'
+  -
     name: 'Application Managers'
     description: 'Application Managers'
   -
     name: CRM
     description: CRM
+  -
+    name: profile
+    description: profile
   -
     name: Tasks
     description: Tasks
