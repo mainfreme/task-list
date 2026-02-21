@@ -6,29 +6,31 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-sodium": "*",
+        "darkaonline/l5-swagger": "^8.6",
+        "firebase/php-jwt": "^6.10",
+        "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "darkaonline/l5-swagger": "^8.6",
-        "tymon/jwt-auth": "^2.1",
         "lcobucci/jwt": "^4.0",
-        "firebase/php-jwt": "^6.10",
-        "namshi/jose": "^7.2",
-        "spatie/laravel-data": "^4.0",
-        "spatie/laravel-permission": "^6.0",
-        "spatie/laravel-fractal": "^6.0",
-        "mezzio/mezzio-problem-details": "^1.0",
         "league/flysystem-aws-s3-v3": "^3.0",
+        "mezzio/mezzio-problem-details": "^1.0",
+        "namshi/jose": "^7.2",
         "predis/predis": "^2.0",
-        "guzzlehttp/guzzle": "^7.8",
-        "ext-json": "*",
-        "ext-pdo": "*",
-        "ext-mbstring": "*",
-        "ext-openssl": "*",
-        "ext-sodium": "*"
+        "sentry/sentry-laravel": "^4.20",
+        "spatie/laravel-data": "^4.0",
+        "spatie/laravel-fractal": "^6.0",
+        "spatie/laravel-permission": "^6.0",
+        "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "friendsofphp/php-cs-fixer": "^3.0",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
@@ -52,6 +54,8 @@
         }
     },
     "scripts": {
+        "cs-fix": "vendor/bin/php-cs-fixer fix",
+        "cs-fix-check": "vendor/bin/php-cs-fixer fix --dry-run --diff",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -85,4 +89,3 @@
     "minimum-stability": "stable",
     "prefer-stable": true
 }
-
