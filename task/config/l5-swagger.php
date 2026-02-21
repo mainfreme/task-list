@@ -215,6 +215,12 @@ return [
                     'in' => 'header', // The location of the API key. Valid values are "query" or "header".
                 ],
                 */
+                'jwt' => [
+                    'type' => 'http',
+                    'description' => 'Token JWT z endpointu POST /api/v1/auth/login. Wpisz token (bez "Bearer ").',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
+                ],
             ],
             'security' => [
                 /*
@@ -298,7 +304,7 @@ return [
                 /*
                  * If set to true, it persists authorization data, and it would not be lost on browser close/refresh
                  */
-                'persist_authorization' => env('L5_SWAGGER_UI_PERSIST_AUTHORIZATION', false),
+                'persist_authorization' => env('L5_SWAGGER_UI_PERSIST_AUTHORIZATION', true),
 
                 'oauth2' => [
                     /*

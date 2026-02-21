@@ -107,7 +107,7 @@ Ustaw katalog główny serwera na folder `public/`:
 
 | Ścieżka                                             | Opis                             |
 | --------------------------------------------------- | -------------------------------- |
-| `GET /api/documentation`                            | Dokumentacja Swagger UI          |
+| `GET /api/documentation`                            | Dokumentacja Swagger UI (chroniona Basic Auth) |
 | `POST /api/v1/auth/register`                        | Rejestracja użytkownika          |
 | `POST /api/v1/auth/login`                           | Logowanie użytkownika            |
 | `GET /api/v1/auth/me`                               | Aktualny użytkownik (wymaga JWT) |
@@ -133,6 +133,10 @@ Ustaw katalog główny serwera na folder `public/`:
      -H "Content-Type: application/json" \
      -d '{"name":"Test","email":"test@example.com","password":"password123","password_confirmation":"password123"}'
   ```
+
+## Zabezpieczenie dokumentacji API (Nginx)
+
+Dokumentacja Swagger (`/api/documentation`, `/api/document`) może być chroniona HTTP Basic Auth przez Nginx. Instrukcja: [nginx/README.md](nginx/README.md).
 
 ## Skrypty
 
