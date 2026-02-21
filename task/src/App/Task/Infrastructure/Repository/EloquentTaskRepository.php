@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Task\Infrastructure\Repository;
 
+use App\Shared\Domain\ValueObject\Address;
+use App\Shared\Domain\ValueObject\Phone;
+use App\Shared\Domain\ValueObject\Uuid;
 use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
+use App\Task\Domain\ValueObject\ApplicationManagerId;
+use App\Task\Domain\ValueObject\DeliveryAddress;
+use App\Task\Domain\ValueObject\Description;
+use App\Task\Domain\ValueObject\DueDate;
+use App\Task\Domain\ValueObject\Email;
 use App\Task\Domain\ValueObject\TaskStatus;
-use App\Task\Domain\ValueObject\Uuid;
 use App\Task\Domain\ValueObject\Title;
 use App\Task\Domain\ValueObject\WebsiteUrl;
-use App\Task\Domain\ValueObject\Description;
-use App\Task\Domain\ValueObject\Phone;
-use App\Task\Domain\ValueObject\Email;
-use App\Task\Domain\ValueObject\Address;
-use App\Task\Domain\ValueObject\DeliveryAddress;
-use App\Task\Domain\ValueObject\DueDate;
-use App\Task\Domain\ValueObject\ApplicationManagerId;
-use App\Task\Infrastructure\Eloquent\TaskModel;
+use App\Task\Infrastructure\Model\TaskModel;
 
 final class EloquentTaskRepository implements TaskRepositoryInterface
 {

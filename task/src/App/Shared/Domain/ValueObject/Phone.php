@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Task\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject;
 
-use App\Shared\Domain\ValueObject\AbstractValueObject;
-use App\Shared\Domain\ValueObject\ValueObjectInterface;
 use InvalidArgumentException;
 
 final class Phone extends AbstractValueObject implements ValueObjectInterface
@@ -36,7 +34,7 @@ final class Phone extends AbstractValueObject implements ValueObjectInterface
         if (empty(trim($this->value))) {
             throw new InvalidArgumentException('Phone number cannot be empty');
         }
-        
+
         // Basic phone validation (can be improved)
         if (!preg_match('/^[+0-9\s-]+$/', $this->value)) {
             throw new InvalidArgumentException('Invalid phone number format');

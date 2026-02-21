@@ -8,7 +8,7 @@ use App\Auth\Application\DTO\UserDTO;
 use App\Auth\Domain\Entity\User;
 use App\Auth\Domain\Enum\UserRoleEnum;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
-use App\Auth\Infrastructure\Eloquent\UserModel;
+use App\Auth\Infrastructure\Model\UserModel;
 use App\Shared\Domain\ValueObject\Email;
 use App\Shared\Domain\ValueObject\Uuid;
 

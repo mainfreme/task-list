@@ -7,8 +7,6 @@ namespace App\Task\Application\Command\DeleteTask;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Task\Domain\Exception\TaskNotFoundException;
 
-use App\Task\Domain\ValueObject\Uuid;
-
 final class DeleteTaskHandler
 {
     public function __construct(private readonly TaskRepositoryInterface $repository) {}
