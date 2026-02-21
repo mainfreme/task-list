@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Task\UI\Http\Requests\V1;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 final class CreateTaskRequest extends FormRequest

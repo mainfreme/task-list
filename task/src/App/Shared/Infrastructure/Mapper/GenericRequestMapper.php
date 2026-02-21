@@ -39,7 +39,7 @@ final class GenericRequestMapper
 
         /** @var MapField $mapField */
         $mapField = $attributes[0]->newInstance();
-        
+
         // 1. Determine Key (Auto-map if null)
         $key = $mapField->key ?? $property->getName();
 
@@ -64,8 +64,8 @@ final class GenericRequestMapper
                         $value = $typeName::fromString((string) $value);
                     } elseif (method_exists($typeName, 'fromNullable')) {
                         $value = $typeName::fromNullable($value);
-                    } else if (enum_exists($typeName) && method_exists($typeName, 'tryFrom')) {
-                         $value = $typeName::tryFrom($value);
+                    } elseif (enum_exists($typeName) && method_exists($typeName, 'tryFrom')) {
+                        $value = $typeName::tryFrom($value);
                     }
                 }
             }
@@ -73,8 +73,8 @@ final class GenericRequestMapper
 
         // 4. Set Property
         if ($value !== null || ($property->getType()?->allowsNull())) {
-             $property->setAccessible(true);
-             $property->setValue($instance, $value);
+            $property->setAccessible(true);
+            $property->setValue($instance, $value);
         }
     }
 

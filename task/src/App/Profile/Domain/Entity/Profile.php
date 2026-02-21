@@ -18,7 +18,8 @@ final class Profile
         private Phone $phone,
         private string $avatar,
         private \DateTimeImmutable $birthDate,
-    ) {}
+    ) {
+    }
 
     public static function create(
         Uuid $userId,
@@ -29,6 +30,7 @@ final class Profile
         \DateTimeImmutable $birthDate,
     ): self {
         $profileId = ProfileId::generate();
+
         return new self($profileId, $userId, $firstName, $lastName, $phone, $avatar, $birthDate);
     }
 

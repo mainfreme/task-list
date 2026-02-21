@@ -26,7 +26,7 @@ final class UpdateProfileHandler
         if ($profile->lastName !== null) {
             $userProfile->setLastName($profile->lastName);
         }
-        
+
         if ($profile->phone !== null) {
             $userProfile->setPhone($profile->phone);
         }

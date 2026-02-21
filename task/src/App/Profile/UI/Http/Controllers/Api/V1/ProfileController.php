@@ -4,44 +4,43 @@ declare(strict_types=1);
 
 namespace App\Profile\UI\Http\Controllers\Api\V1;
 
+use App\Profile\Application\Command\UpdateProfileCommand;
+use App\Profile\Application\Command\UpdateProfileHandler;
 use App\Profile\Application\Query\GetUserProfileHandler;
 use App\Profile\Application\Query\GetUserProfileQuery;
-use Illuminate\Http\JsonResponse;
-use App\Shared\UI\Http\Controllers\Api\ApiController;
-use OpenApi\Attributes as OA;
-use App\Shared\Domain\ValueObject\Uuid;
-use App\Profile\UI\Http\Requests\UpdateProfileRequest;
-use App\Profile\Application\Command\UpdateProfileHandler;
 use App\Profile\UI\Http\Mappers\ProfileMapper;
-use App\Profile\Application\Command\UpdateProfileCommand;
-use App\Shared\Domain\ValueObject\Phone;
+use App\Profile\UI\Http\Requests\UpdateProfileRequest;
+use App\Shared\Domain\ValueObject\Uuid;
+use App\Shared\UI\Http\Controllers\Api\ApiController;
+use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 final class ProfileController extends ApiController
 {
-
     public function __construct(
         private readonly GetUserProfileHandler $userProfileHandler,
         private readonly UpdateProfileHandler $updateProfileHandler,
-    ){}
+    ) {
+    }
 
     #[OA\Get(
-        path: "/v1/me",
-        summary: "Get my Profile",
-        tags: ["profile"],
-        security: [["jwt" => []]],
+        path: '/v1/me',
+        summary: 'Get my Profile',
+        tags: ['profile'],
+        security: [['jwt' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["id"],
+                required: ['id'],
                 properties: [
-                    new OA\Property(property: "id", type: "string", example: ""),
+                    new OA\Property(property: 'id', type: 'string', example: ''),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Get My Profile"),
-            new OA\Response(response: 400, description: "Bad Request"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'Get My Profile'),
+            new OA\Response(response: 400, description: 'Bad Request'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function show(string $userId): JsonResponse
@@ -55,24 +54,24 @@ final class ProfileController extends ApiController
 
 
     #[OA\Put(
-        path: "/v1/me",
-        summary: "Update my Profile",
-        tags: ["profile"],
-        security: [["jwt" => []]],
+        path: '/v1/me',
+        summary: 'Update my Profile',
+        tags: ['profile'],
+        security: [['jwt' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["name", "email"],
+                required: ['name', 'email'],
                 properties: [
-                    new OA\Property(property: "name", type: "string", example: "John Doe"),
-                    new OA\Property(property: "email", type: "string", format: "email", example: "john@example.com"),
+                    new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Update My Profile"),
-            new OA\Response(response: 400, description: "Bad Request"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'Update My Profile'),
+            new OA\Response(response: 400, description: 'Bad Request'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function update(UpdateProfileRequest $request): JsonResponse
@@ -89,5 +88,5 @@ final class ProfileController extends ApiController
 
         return $this->noContent();
     }
-    
+
 }

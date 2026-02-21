@@ -4,30 +4,29 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Aggregate;
 
+use App\Crm\Domain\Dto\ClientDto;
+use App\Crm\Domain\Dto\ClientNoteDto;
 use App\Crm\Domain\Entity\Internal\Address;
 use App\Crm\Domain\Entity\Internal\ClientContact;
 use App\Crm\Domain\Entity\Internal\ClientTag;
 use App\Crm\Domain\Entity\Internal\CompanyAccount;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\ValueObject\ClientName;
 use App\Crm\Domain\ValueObject\ClientNotes;
 use App\Crm\Domain\ValueObject\ClientRating;
 use App\Crm\Domain\ValueObject\ClientSource;
-use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\ValueObject\Country;
 use App\Crm\Domain\ValueObject\IsCompany;
+use App\Crm\Domain\ValueObject\IsDeleted;
 use App\Crm\Domain\ValueObject\Nip;
 use App\Crm\Domain\ValueObject\Pesel;
 use App\Crm\Domain\ValueObject\Regon;
-use App\Crm\Domain\Dto\ClientDto;
-use App\Crm\Domain\Dto\ClientNoteDto;
+use App\Crm\Domain\ValueObject\Uuid\ClientId;
 use Illuminate\Support\Collection;
-
-use App\Crm\Domain\ValueObject\IsDeleted;
 
 /**
  * CrmClientAggregate - Read-only aggregate representing Client with all related entities
- * 
+ *
  * This aggregate follows DDD principles:
  * - Immutable (read-only, no setters)
  * - Contains collections of related entities
@@ -44,17 +43,17 @@ final class CrmClientAggregate
      */
     private function __construct(
         private readonly ClientId $id,
-        private  ClientName $name,
-        private  Nip $nip,
-        private  Country $country,
-        private  ClientStatus $status,
-        private  IsCompany $isCompany,
-        private  ?Regon $regon,
-        private  ?Pesel $pesel,
-        private  ?ClientSource $source,
-        private  ?ClientRating $rating,
-        private  ?ClientNotes $notes,
-        private  ?\DateTimeImmutable $lastContactedAt,
+        private ClientName $name,
+        private Nip $nip,
+        private Country $country,
+        private ClientStatus $status,
+        private IsCompany $isCompany,
+        private ?Regon $regon,
+        private ?Pesel $pesel,
+        private ?ClientSource $source,
+        private ?ClientRating $rating,
+        private ?ClientNotes $notes,
+        private ?\DateTimeImmutable $lastContactedAt,
         private ?\DateTimeImmutable $nextContactAt,
         private Collection $addresses,
         private Collection $contacts,
@@ -97,7 +96,7 @@ final class CrmClientAggregate
     /**
      * Reconstitute aggregate from persistence
      * Used to rebuild aggregate from database/repository with all data
-     * 
+     *
      * @param Collection<Address> $addresses
      * @param Collection<ClientContact> $contacts
      * @param Collection<ClientTag> $tags
@@ -216,6 +215,7 @@ final class CrmClientAggregate
     public function softDelete(): self
     {
         $this->isDeleted = IsDeleted::fromBool(true);
+
         return $this;
     }
 
@@ -255,60 +255,70 @@ final class CrmClientAggregate
     public function addNote(ClientNoteDto $clientNoteDto): self
     {
         $this->clientNoteDto = $clientNoteDto;
+
         return $this;
     }
 
     public function removeNote(): self
     {
         $this->clientNoteDto->softDelete();
+
         return $this;
     }
 
     public function addAddress(Address $address): self
     {
         $this->addresses->add($address);
+
         return $this;
     }
 
     public function removeAddress(Address $address): self
     {
         $this->addresses->remove($address);
+
         return $this;
     }
 
     public function addContact(ClientContact $contact): self
     {
         $this->contacts->add($contact);
+
         return $this;
     }
 
     public function removeContact(ClientContact $contact): self
     {
         $this->contacts->remove($contact);
+
         return $this;
     }
 
     public function addTag(ClientTag $tag): self
     {
         $this->tags->add($tag);
+
         return $this;
     }
 
     public function removeTag(ClientTag $tag): self
     {
         $this->tags->remove($tag);
+
         return $this;
     }
 
     public function addAccount(CompanyAccount $account): self
     {
         $this->accounts->add($account);
+
         return $this;
     }
 
     public function removeAccount(CompanyAccount $account): self
     {
         $this->accounts->remove($account);
+
         return $this;
     }
 }

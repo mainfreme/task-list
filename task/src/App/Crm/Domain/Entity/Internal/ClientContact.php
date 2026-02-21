@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity\Internal;
 
-use App\Crm\Domain\Enums\ContactType;
 use App\Crm\Domain\Enums\ContactRole;
+use App\Crm\Domain\Enums\ContactType;
 use App\Crm\Domain\ValueObject\ContactValue;
 use App\Crm\Domain\ValueObject\CountryPrefix;
-use App\Crm\Domain\ValueObject\IsPrimary;
 use App\Crm\Domain\ValueObject\IsActive;
+use App\Crm\Domain\ValueObject\IsPrimary;
 use App\Crm\Domain\ValueObject\IsVerified;
-use App\Crm\Domain\ValueObject\Uuid\ContactId;
 use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Crm\Domain\ValueObject\Uuid\ContactId;
 
 /**
  * @internal

@@ -29,7 +29,7 @@ final class ApplicationManagerDTO
             'name' => $this->name->getValue(),
             'request_url' => $this->requestUrl?->getValue(),
             'is_active' => $this->isActive,
-            'ip_whitelist' => $this->ipWhitelist?->toArray()
+            'ip_whitelist' => $this->ipWhitelist?->toArray(),
         ];
 
         if ($this->apiKey !== null) {

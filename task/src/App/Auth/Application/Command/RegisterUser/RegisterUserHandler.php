@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Auth\Application\Command\RegisterUser;
 
 use App\Auth\Application\DTO\AuthResponseDTO;
-use App\Auth\Application\DTO\UserDTO;
 use App\Auth\Domain\Entity\User;
 use App\Auth\Domain\Exception\EmailAlreadyExistsException;
 use App\Auth\Domain\Repository\UserRepositoryInterface;

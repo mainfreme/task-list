@@ -1,6 +1,8 @@
 <?php
 
-namespace Database\Seeders;
+declare(strict_types=1);
+
+namespace App\Crm\Infrastructure\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +20,7 @@ class CrmClientNotesSeeder extends Seeder
 
         if (empty($clientIds) || empty($userIds)) {
             $this->command->warn('No clients or users found. Skipping CRM client notes seeding.');
+
             return;
         }
 

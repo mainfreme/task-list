@@ -21,7 +21,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
-#[OA\Tag(name: "Authentication", description: "User authentication endpoints")]
+#[OA\Tag(name: 'Authentication', description: 'User authentication endpoints')]
 final class AuthController extends ApiController
 {
     public function __construct(
@@ -32,37 +32,37 @@ final class AuthController extends ApiController
     }
 
     #[OA\Post(
-        path: "/v1/auth/register",
-        summary: "Register a new user",
-        tags: ["Authentication"],
+        path: '/v1/auth/register',
+        summary: 'Register a new user',
+        tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["name", "email", "password", "password_confirmation"],
+                required: ['name', 'email', 'password', 'password_confirmation'],
                 properties: [
-                    new OA\Property(property: "name", type: "string", example: "Jan Kowalski"),
-                    new OA\Property(property: "email", type: "string", format: "email", example: "jan@example.com"),
-                    new OA\Property(property: "password", type: "string", format: "password", minLength: 8, example: "password123"),
-                    new OA\Property(property: "password_confirmation", type: "string", format: "password", example: "password123"),
+                    new OA\Property(property: 'name', type: 'string', example: 'Jan Kowalski'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'jan@example.com'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8, example: 'password123'),
+                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'password123'),
                 ]
             )
         ),
         responses: [
             new OA\Response(
                 response: 201,
-                description: "User registered successfully",
+                description: 'User registered successfully',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "User registered successfully"),
-                        new OA\Property(property: "user", type: "object"),
-                        new OA\Property(property: "token", type: "string"),
-                        new OA\Property(property: "token_type", type: "string", example: "Bearer"),
-                        new OA\Property(property: "expires_in", type: "integer", example: 1440),
+                        new OA\Property(property: 'message', type: 'string', example: 'User registered successfully'),
+                        new OA\Property(property: 'user', type: 'object'),
+                        new OA\Property(property: 'token', type: 'string'),
+                        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
+                        new OA\Property(property: 'expires_in', type: 'integer', example: 1440),
                     ]
                 )
             ),
-            new OA\Response(response: 422, description: "Validation error"),
-            new OA\Response(response: 409, description: "Email already exists")
+            new OA\Response(response: 422, description: 'Validation error'),
+            new OA\Response(response: 409, description: 'Email already exists'),
         ]
     )]
     public function register(RegisterRequest $request): JsonResponse
@@ -85,35 +85,35 @@ final class AuthController extends ApiController
     }
 
     #[OA\Post(
-        path: "/v1/auth/login",
-        summary: "Login user",
-        tags: ["Authentication"],
+        path: '/v1/auth/login',
+        summary: 'Login user',
+        tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["email", "password"],
+                required: ['email', 'password'],
                 properties: [
-                    new OA\Property(property: "email", type: "string", format: "email", example: "jan@example.com"),
-                    new OA\Property(property: "password", type: "string", format: "password", example: "password123"),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'jan@example.com'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
                 ]
             )
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Login successful",
+                description: 'Login successful',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Login successful"),
-                        new OA\Property(property: "user", type: "object"),
-                        new OA\Property(property: "token", type: "string"),
-                        new OA\Property(property: "token_type", type: "string", example: "Bearer"),
-                        new OA\Property(property: "expires_in", type: "integer", example: 1440),
+                        new OA\Property(property: 'message', type: 'string', example: 'Login successful'),
+                        new OA\Property(property: 'user', type: 'object'),
+                        new OA\Property(property: 'token', type: 'string'),
+                        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
+                        new OA\Property(property: 'expires_in', type: 'integer', example: 1440),
                     ]
                 )
             ),
-            new OA\Response(response: 401, description: "Invalid credentials"),
-            new OA\Response(response: 422, description: "Validation error")
+            new OA\Response(response: 401, description: 'Invalid credentials'),
+            new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
     public function login(LoginRequest $request): JsonResponse
@@ -135,27 +135,27 @@ final class AuthController extends ApiController
     }
 
     #[OA\Post(
-        path: "/v1/auth/logout",
-        summary: "Logout user",
-        tags: ["Authentication"],
-        security: [["user_jwt" => []]],
+        path: '/v1/auth/logout',
+        summary: 'Logout user',
+        tags: ['Authentication'],
+        security: [['user_jwt' => []]],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Logout successful",
+                description: 'Logout successful',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Logout successful"),
+                        new OA\Property(property: 'message', type: 'string', example: 'Logout successful'),
                     ]
                 )
             ),
-            new OA\Response(response: 401, description: "Unauthorized")
+            new OA\Response(response: 401, description: 'Unauthorized'),
         ]
     )]
     public function logout(Request $request): JsonResponse
     {
         // Since we're using stateless JWT, logout is handled on client side
-        // by removing the 
+        // by removing the
 
         return $this->success(
             message: 'Logout successful',
@@ -163,21 +163,21 @@ final class AuthController extends ApiController
     }
 
     #[OA\Get(
-        path: "/v1/auth/me",
-        summary: "Get current user data",
-        tags: ["Authentication"],
-        security: [["user_jwt" => []]],
+        path: '/v1/auth/me',
+        summary: 'Get current user data',
+        tags: ['Authentication'],
+        security: [['user_jwt' => []]],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "User data",
+                description: 'User data',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "user", type: "object"),
+                        new OA\Property(property: 'user', type: 'object'),
                     ]
                 )
             ),
-            new OA\Response(response: 401, description: "Unauthorized")
+            new OA\Response(response: 401, description: 'Unauthorized'),
         ]
     )]
     public function me(Request $request): JsonResponse

@@ -1,6 +1,8 @@
-<?php return array (
-  'providers' => 
-  array (
+<?php
+
+return  [
+  'providers' =>
+   [
     0 => 'Illuminate\\Auth\\AuthServiceProvider',
     1 => 'Illuminate\\Broadcasting\\BroadcastServiceProvider',
     2 => 'Illuminate\\Bus\\BusServiceProvider',
@@ -43,9 +45,9 @@
     39 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
     40 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
     41 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
-  ),
-  'eager' => 
-  array (
+  ],
+  'eager' =>
+   [
     0 => 'Illuminate\\Auth\\AuthServiceProvider',
     1 => 'Illuminate\\Cookie\\CookieServiceProvider',
     2 => 'Illuminate\\Database\\DatabaseServiceProvider',
@@ -72,9 +74,9 @@
     23 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
     24 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
     25 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
-  ),
-  'deferred' => 
-  array (
+  ],
+  'deferred' =>
+   [
     'Illuminate\\Broadcasting\\BroadcastManager' => 'Illuminate\\Broadcasting\\BroadcastServiceProvider',
     'Illuminate\\Contracts\\Broadcasting\\Factory' => 'Illuminate\\Broadcasting\\BroadcastServiceProvider',
     'Illuminate\\Contracts\\Broadcasting\\Broadcaster' => 'Illuminate\\Broadcasting\\BroadcastServiceProvider',
@@ -231,56 +233,56 @@
     'Laravel\\Sail\\Console\\InstallCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'Laravel\\Sail\\Console\\PublishCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'command.tinker' => 'Laravel\\Tinker\\TinkerServiceProvider',
-  ),
-  'when' => 
-  array (
-    'Illuminate\\Broadcasting\\BroadcastServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Bus\\BusServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Cache\\CacheServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Foundation\\Providers\\ConsoleSupportServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Concurrency\\ConcurrencyServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Hashing\\HashServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Mail\\MailServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Auth\\Passwords\\PasswordResetServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Pipeline\\PipelineServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Queue\\QueueServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Redis\\RedisServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Translation\\TranslationServiceProvider' => 
-    array (
-    ),
-    'Illuminate\\Validation\\ValidationServiceProvider' => 
-    array (
-    ),
-    'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider' => 
-    array (
-    ),
-    'Laravel\\Sail\\SailServiceProvider' => 
-    array (
-    ),
-    'Laravel\\Tinker\\TinkerServiceProvider' => 
-    array (
-    ),
-  ),
-);
+  ],
+  'when' =>
+   [
+    'Illuminate\\Broadcasting\\BroadcastServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Bus\\BusServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Cache\\CacheServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Foundation\\Providers\\ConsoleSupportServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Concurrency\\ConcurrencyServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Hashing\\HashServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Mail\\MailServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Auth\\Passwords\\PasswordResetServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Pipeline\\PipelineServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Queue\\QueueServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Redis\\RedisServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Translation\\TranslationServiceProvider' =>
+     [
+    ],
+    'Illuminate\\Validation\\ValidationServiceProvider' =>
+     [
+    ],
+    'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider' =>
+     [
+    ],
+    'Laravel\\Sail\\SailServiceProvider' =>
+     [
+    ],
+    'Laravel\\Tinker\\TinkerServiceProvider' =>
+     [
+    ],
+  ],
+];

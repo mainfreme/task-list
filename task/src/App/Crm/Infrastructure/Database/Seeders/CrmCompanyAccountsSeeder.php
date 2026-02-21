@@ -1,6 +1,8 @@
 <?php
 
-namespace Database\Seeders;
+declare(strict_types=1);
+
+namespace App\Crm\Infrastructure\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,7 @@ class CrmCompanyAccountsSeeder extends Seeder
 
         if (empty($clientIds)) {
             $this->command->warn('No clients found. Skipping CRM company accounts seeding.');
+
             return;
         }
 
@@ -27,10 +30,12 @@ class CrmCompanyAccountsSeeder extends Seeder
 
         $now = now();
 
+        $getAddressId = fn (string $clientId): ?string => $addressByClient->get($clientId)?->first()?->id;
+
         $accounts = [
             [
                 'id' => (string) Str::uuid(),
-                'address_uuid' => $addressByClient[$clientIds[0]]->first()->id ?? null,
+                'address_uuid' => $getAddressId($clientIds[0]),
                 'client_uuid' => $clientIds[0],
                 'name' => 'Bank Pekao',
                 'number' => '10203040506070809000000001',
@@ -45,7 +50,7 @@ class CrmCompanyAccountsSeeder extends Seeder
             ],
             [
                 'id' => (string) Str::uuid(),
-                'address_uuid' => $addressByClient[$clientIds[1]]->first()->id ?? null,
+                'address_uuid' => $getAddressId($clientIds[1]),
                 'client_uuid' => $clientIds[1],
                 'name' => 'mBank',
                 'number' => '11402005580000012345678901',
@@ -60,7 +65,7 @@ class CrmCompanyAccountsSeeder extends Seeder
             ],
             [
                 'id' => (string) Str::uuid(),
-                'address_uuid' => $addressByClient[$clientIds[2]]->first()->id ?? null,
+                'address_uuid' => $getAddressId($clientIds[2]),
                 'client_uuid' => $clientIds[2],
                 'name' => 'Santander Bank',
                 'number' => '10901012340000056789012345',

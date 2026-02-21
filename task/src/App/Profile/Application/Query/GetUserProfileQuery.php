@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Profile\Application\Query;
 
 use App\Shared\Domain\ValueObject\Uuid;

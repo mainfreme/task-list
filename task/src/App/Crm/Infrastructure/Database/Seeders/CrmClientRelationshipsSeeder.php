@@ -1,6 +1,8 @@
 <?php
 
-namespace Database\Seeders;
+declare(strict_types=1);
+
+namespace App\Crm\Infrastructure\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,7 @@ class CrmClientRelationshipsSeeder extends Seeder
 
         if (count($clientIds) < 2) {
             $this->command->warn('Not enough clients found. Skipping CRM client relationships seeding.');
+
             return;
         }
 

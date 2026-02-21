@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity\Internal;
 
-use App\Crm\Domain\ValueObject\TagName;
 use App\Crm\Domain\ValueObject\TagColor;
 use App\Crm\Domain\ValueObject\TagDescription;
+use App\Crm\Domain\ValueObject\TagName;
 use App\Crm\Domain\ValueObject\Uuid\TagId;
 
 /**

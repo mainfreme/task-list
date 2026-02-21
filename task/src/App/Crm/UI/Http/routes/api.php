@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Crm\UI\Http\routes;
 
-use Illuminate\Support\Facades\Route;
 use App\Crm\Domain\ValueObject\Uuid\ClientId;
 use App\Crm\UI\Http\Controllers\Api\V1\CrmController;
+use Illuminate\Support\Facades\Route;
 
 // Custom route binding for ClientId - converts string to ClientId Value Object
 Route::bind('id', function (string $value) {
@@ -21,4 +21,3 @@ Route::middleware(['jwt'])->group(function () {
     Route::put('/v1/crm/{id}', [CrmController::class, 'update']);
     Route::delete('/v1/crm/{id}', [CrmController::class, 'destroy']);
 });
-

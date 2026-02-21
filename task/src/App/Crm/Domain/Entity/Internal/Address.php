@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\Enums\AddressType;
-use App\Crm\Domain\ValueObject\Street;
-use App\Crm\Domain\ValueObject\PostalCode;
-use App\Crm\Domain\ValueObject\City;
-use App\Crm\Domain\ValueObject\StateProvince;
-use App\Crm\Domain\ValueObject\Country;
 use App\Crm\Domain\ValueObject\AdditionalInfo;
-use App\Crm\Domain\ValueObject\HouseNumber;
 use App\Crm\Domain\ValueObject\ApartmentNumber;
-use App\Crm\Domain\ValueObject\IsPrimary;
+use App\Crm\Domain\ValueObject\City;
+use App\Crm\Domain\ValueObject\Country;
+use App\Crm\Domain\ValueObject\HouseNumber;
 use App\Crm\Domain\ValueObject\IsActive;
+use App\Crm\Domain\ValueObject\IsPrimary;
 use App\Crm\Domain\ValueObject\Latitude;
 use App\Crm\Domain\ValueObject\Longitude;
+use App\Crm\Domain\ValueObject\PostalCode;
+use App\Crm\Domain\ValueObject\StateProvince;
+use App\Crm\Domain\ValueObject\Street;
 use App\Crm\Domain\ValueObject\Uuid\AddressId;
 use App\Crm\Domain\ValueObject\Uuid\ClientId;
 

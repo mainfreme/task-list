@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\ApplicationManager\Infrastructure\Middleware;
 
-use Closure;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
+use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

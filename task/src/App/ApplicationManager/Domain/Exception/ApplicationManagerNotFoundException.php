@@ -15,6 +15,6 @@ final class ApplicationManagerNotFoundException extends Exception
 
     public static function byApiKey(string $apiKey): self
     {
-        return new self("ApplicationManager with API Key not found");
+        return new self('ApplicationManager with API Key not found');
     }
 }

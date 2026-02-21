@@ -6,8 +6,8 @@ namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\Enums\NoteType;
 use App\Crm\Domain\ValueObject\NoteContent;
-use App\Crm\Domain\ValueObject\Uuid\NoteId;
 use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Crm\Domain\ValueObject\Uuid\NoteId;
 use App\Crm\Domain\ValueObject\Uuid\UserId;
 
 /**

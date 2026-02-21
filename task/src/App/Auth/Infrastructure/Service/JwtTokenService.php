@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Auth\Infrastructure\Service;
 
-use App\Auth\Domain\Entity\User;
 use App\Auth\Application\DTO\UserDTO;
 use Firebase\JWT\JWT;
 
@@ -36,7 +35,7 @@ final class JwtTokenService
     private function getJwtSecret(): string
     {
         $secret = env('JWT_SECRET');
-        
+
         if (!$secret) {
             throw new \RuntimeException('JWT_SECRET is not configured in .env file');
         }

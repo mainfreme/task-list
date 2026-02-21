@@ -1,136 +1,138 @@
-<?php return array (
-  'barryvdh/laravel-ide-helper' => 
-  array (
-    'providers' => 
-    array (
+<?php
+
+return  [
+  'barryvdh/laravel-ide-helper' =>
+   [
+    'providers' =>
+     [
       0 => 'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider',
-    ),
-  ),
-  'darkaonline/l5-swagger' => 
-  array (
-    'aliases' => 
-    array (
+    ],
+  ],
+  'darkaonline/l5-swagger' =>
+   [
+    'aliases' =>
+     [
       'L5Swagger' => 'L5Swagger\\L5SwaggerFacade',
-    ),
-    'providers' => 
-    array (
+    ],
+    'providers' =>
+     [
       0 => 'L5Swagger\\L5SwaggerServiceProvider',
-    ),
-  ),
-  'laravel/sail' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'laravel/sail' =>
+   [
+    'providers' =>
+     [
       0 => 'Laravel\\Sail\\SailServiceProvider',
-    ),
-  ),
-  'laravel/sanctum' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'laravel/sanctum' =>
+   [
+    'providers' =>
+     [
       0 => 'Laravel\\Sanctum\\SanctumServiceProvider',
-    ),
-  ),
-  'laravel/telescope' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'laravel/telescope' =>
+   [
+    'providers' =>
+     [
       0 => 'Laravel\\Telescope\\TelescopeServiceProvider',
-    ),
-  ),
-  'laravel/tinker' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'laravel/tinker' =>
+   [
+    'providers' =>
+     [
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
-    ),
-  ),
-  'nesbot/carbon' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'nesbot/carbon' =>
+   [
+    'providers' =>
+     [
       0 => 'Carbon\\Laravel\\ServiceProvider',
-    ),
-  ),
-  'nunomaduro/collision' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'nunomaduro/collision' =>
+   [
+    'providers' =>
+     [
       0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    ),
-  ),
-  'nunomaduro/termwind' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'nunomaduro/termwind' =>
+   [
+    'providers' =>
+     [
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    ),
-  ),
-  'sentry/sentry-laravel' => 
-  array (
-    'aliases' => 
-    array (
+    ],
+  ],
+  'sentry/sentry-laravel' =>
+   [
+    'aliases' =>
+     [
       'Sentry' => 'Sentry\\Laravel\\Facade',
-    ),
-    'providers' => 
-    array (
+    ],
+    'providers' =>
+     [
       0 => 'Sentry\\Laravel\\ServiceProvider',
       1 => 'Sentry\\Laravel\\Tracing\\ServiceProvider',
-    ),
-  ),
-  'spatie/laravel-data' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'spatie/laravel-data' =>
+   [
+    'providers' =>
+     [
       0 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
-    ),
-  ),
-  'spatie/laravel-fractal' => 
-  array (
-    'aliases' => 
-    array (
+    ],
+  ],
+  'spatie/laravel-fractal' =>
+   [
+    'aliases' =>
+     [
       'Fractal' => 'Spatie\\Fractal\\Facades\\Fractal',
-    ),
-    'providers' => 
-    array (
+    ],
+    'providers' =>
+     [
       0 => 'Spatie\\Fractal\\FractalServiceProvider',
-    ),
-  ),
-  'spatie/laravel-ignition' => 
-  array (
-    'aliases' => 
-    array (
+    ],
+  ],
+  'spatie/laravel-ignition' =>
+   [
+    'aliases' =>
+     [
       'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
-    ),
-    'providers' => 
-    array (
+    ],
+    'providers' =>
+     [
       0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    ),
-  ),
-  'spatie/laravel-permission' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'spatie/laravel-permission' =>
+   [
+    'providers' =>
+     [
       0 => 'Spatie\\Permission\\PermissionServiceProvider',
-    ),
-  ),
-  'spatie/php-structure-discoverer' => 
-  array (
-    'providers' => 
-    array (
+    ],
+  ],
+  'spatie/php-structure-discoverer' =>
+   [
+    'providers' =>
+     [
       0 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
-    ),
-  ),
-  'tymon/jwt-auth' => 
-  array (
-    'aliases' => 
-    array (
+    ],
+  ],
+  'tymon/jwt-auth' =>
+   [
+    'aliases' =>
+     [
       'JWTAuth' => 'Tymon\\JWTAuth\\Facades\\JWTAuth',
       'JWTFactory' => 'Tymon\\JWTAuth\\Facades\\JWTFactory',
-    ),
-    'providers' => 
-    array (
+    ],
+    'providers' =>
+     [
       0 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
-    ),
-  ),
-);
+    ],
+  ],
+];

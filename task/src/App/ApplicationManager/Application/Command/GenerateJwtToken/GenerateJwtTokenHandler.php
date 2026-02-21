@@ -43,7 +43,7 @@ final class GenerateJwtTokenHandler
     private function getJwtSecret(): string
     {
         $secret = env('JWT_SECRET');
-        
+
         if (!$secret) {
             throw new \RuntimeException('JWT_SECRET is not configured in .env file');
         }

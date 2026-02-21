@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Auth\Infrastructure\Middleware;
 
-use Closure;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
+use App\Shared\Domain\ValueObject\Uuid;
+use Closure;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Shared\Domain\ValueObject\Uuid;
 
 final class UserJwtMiddleware
 {
@@ -100,7 +100,7 @@ final class UserJwtMiddleware
     private function getJwtSecret(): string
     {
         $secret = env('JWT_SECRET');
-        
+
         if (!$secret) {
             throw new \RuntimeException('JWT_SECRET is not configured in .env file');
         }

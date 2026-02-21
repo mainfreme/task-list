@@ -6,7 +6,6 @@ namespace App\Task\Application\Command\UpdateTask;
 
 use App\Task\Application\DTO\TaskDTO;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
-use App\Shared\Domain\ValueObject\Uuid;
 
 final class UpdateTaskHandler
 {

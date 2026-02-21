@@ -9,7 +9,8 @@ abstract class AbstractValueObject
 {
     public function __construct(
         protected readonly string $value
-    ) {}
+    ) {
+    }
 
     public function getValue(): string
     {
