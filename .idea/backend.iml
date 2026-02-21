@@ -8,6 +8,26 @@
       <sourceFolder url="file://$MODULE_DIR$/task/src/App" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/task/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/react/promise" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/react/stream" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/react/socket" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/react/dns" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/react/event-loop" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/react/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/react/child-process" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/evenement/evenement" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/friendsofphp/php-cs-fixer" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/fidry/cpu-core-counter" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/symfony/stopwatch" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/clue/ndjson-react" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/symfony/polyfill-php81" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/symfony/psr-http-message-bridge" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/symfony/polyfill-php84" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/symfony/options-resolver" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/sentry/sentry-laravel" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/sentry/sentry" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/nyholm/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/task/vendor/jean85/pretty-package-versions" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
