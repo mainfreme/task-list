@@ -19,6 +19,7 @@ class CrmClientContactsSeeder extends Seeder
 
         if (empty($clientIds)) {
             $this->command->warn('No clients found. Skipping CRM client contacts seeding.');
+
             return;
         }
 

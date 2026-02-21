@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
-use InvalidArgumentException;
 use App\Crm\Domain\Enums\AddressType;
 use App\Shared\Domain\ValueObject\AbstractValueObject;
+use InvalidArgumentException;
 
 final class Address extends AbstractValueObject
 {
@@ -17,7 +17,7 @@ final class Address extends AbstractValueObject
     private const MAX_COUNTRY_LENGTH = 100;
     private const MAX_HOUSE_NUMBER_LENGTH = 10;
     private const MAX_APARTMENT_NUMBER_LENGTH = 15;
-    
+
     private const MIN_LATITUDE = -90.0;
     private const MAX_LATITUDE = 90.0;
     private const MIN_LONGITUDE = -180.0;

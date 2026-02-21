@@ -16,7 +16,7 @@ final class MigrationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $modulesPath = base_path('src/App');
-        
+
         if (!File::isDirectory($modulesPath)) {
             return;
         }
@@ -26,7 +26,7 @@ final class MigrationServiceProvider extends ServiceProvider
 
         foreach ($moduleDirectories as $modulePath) {
             $moduleName = basename($modulePath);
-            
+
             // Skip Shared module (it doesn't have its own migrations)
             if ($moduleName === 'Shared') {
                 continue;
@@ -34,7 +34,7 @@ final class MigrationServiceProvider extends ServiceProvider
 
             // Check if module has Database/Migrations directory in Infrastructure
             $migrationsPath = $modulePath . '/Infrastructure/Database/Migrations';
-            
+
             if (File::isDirectory($migrationsPath)) {
                 $this->loadMigrationsFrom($migrationsPath);
             }

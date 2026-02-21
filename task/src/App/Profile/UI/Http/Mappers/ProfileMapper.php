@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Profile\UI\Http\Mappers;
 
-use App\Profile\Domain\Entity\Profile;
 use App\Profile\Application\DTO\ProfileDTO;
+use App\Profile\Domain\Entity\Profile;
 use App\Profile\Domain\ValueObject\ProfileId;
-use App\Shared\Domain\ValueObject\Phone;
-use App\Profile\UI\Http\Requests\UpdateProfileRequest;
 use App\Profile\Infrastructure\Model\ProfileModel;
+use App\Profile\UI\Http\Requests\UpdateProfileRequest;
+use App\Shared\Domain\ValueObject\Phone;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class ProfileMapper
 {
-
     public static function fromRequest(UpdateProfileRequest $request): ProfileDTO
     {
         return new ProfileDTO(

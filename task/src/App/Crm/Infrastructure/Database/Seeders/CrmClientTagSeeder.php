@@ -19,6 +19,7 @@ class CrmClientTagSeeder extends Seeder
 
         if (empty($clientIds) || empty($tagIds)) {
             $this->command->warn('No clients or tags found. Skipping CRM client_tag seeding.');
+
             return;
         }
 

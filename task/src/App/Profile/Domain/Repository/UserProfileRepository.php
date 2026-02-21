@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Profile\Domain\Repository;
 
-use App\Shared\Domain\ValueObject\Uuid;
-use App\Profile\Domain\ValueObject\ProfileId;
 use App\Profile\Domain\Entity\Profile;
+use App\Profile\Domain\ValueObject\ProfileId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 interface UserProfileRepository
 {

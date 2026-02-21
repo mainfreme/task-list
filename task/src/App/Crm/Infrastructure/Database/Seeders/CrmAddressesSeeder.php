@@ -19,6 +19,7 @@ class CrmAddressesSeeder extends Seeder
 
         if (empty($clientIds)) {
             $this->command->warn('No clients found. Skipping CRM addresses seeding.');
+
             return;
         }
 

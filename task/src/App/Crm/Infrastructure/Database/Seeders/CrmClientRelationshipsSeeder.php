@@ -19,6 +19,7 @@ class CrmClientRelationshipsSeeder extends Seeder
 
         if (count($clientIds) < 2) {
             $this->command->warn('Not enough clients found. Skipping CRM client relationships seeding.');
+
             return;
         }
 

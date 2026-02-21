@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Profile\Infrastructure\Repository;
 
+use App\Profile\Domain\Entity\Profile;
 use App\Profile\Domain\Repository\UserProfileRepository;
 use App\Profile\Domain\ValueObject\ProfileId;
-use App\Profile\Domain\Entity\Profile;
-use App\Shared\Domain\ValueObject\Uuid;
 use App\Profile\Infrastructure\Model\ProfileModel;
 use App\Profile\UI\Http\Mappers\ProfileMapper;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final class EloquentUserProfileRepository implements UserProfileRepository
 {
@@ -19,7 +19,7 @@ final class EloquentUserProfileRepository implements UserProfileRepository
             ->where('user_id', $userId->getValue())
             ->first();
 
-    return $model ? ProfileMapper::toDomain($model) : null;
+        return $model ? ProfileMapper::toDomain($model) : null;
     }
 
     public function findByProfileId(ProfileId $profileId): ?Profile

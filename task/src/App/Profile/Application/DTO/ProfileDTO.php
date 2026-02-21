@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Profile\Application\DTO;
 
-use App\Shared\Domain\ValueObject\Phone;
 use App\Profile\Domain\ValueObject\ProfileId;
+use App\Shared\Domain\ValueObject\Phone;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class ProfileDTO

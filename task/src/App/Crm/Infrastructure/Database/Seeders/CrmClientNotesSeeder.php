@@ -20,6 +20,7 @@ class CrmClientNotesSeeder extends Seeder
 
         if (empty($clientIds) || empty($userIds)) {
             $this->command->warn('No clients or users found. Skipping CRM client notes seeding.');
+
             return;
         }
 

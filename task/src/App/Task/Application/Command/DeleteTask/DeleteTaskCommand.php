@@ -8,5 +8,7 @@ use App\Shared\Domain\ValueObject\Uuid;
 
 final class DeleteTaskCommand
 {
-    public function __construct(public readonly Uuid $id) {}
+    public function __construct(public readonly Uuid $id)
+    {
+    }
 }

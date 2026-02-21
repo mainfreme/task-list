@@ -6,8 +6,8 @@ namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\Enums\RelationshipType;
 use App\Crm\Domain\ValueObject\RelationshipNotes;
-use App\Crm\Domain\ValueObject\Uuid\RelationshipId;
 use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Crm\Domain\ValueObject\Uuid\RelationshipId;
 
 /**
  * @internal

@@ -2,8 +2,8 @@
 
 namespace App\Profile\Application\Query;
 
-use App\Profile\Domain\Repository\UserProfileRepository;
 use App\Profile\Application\DTO\ProfileDTO;
+use App\Profile\Domain\Repository\UserProfileRepository;
 
 final class GetUserProfileHandler
 {
@@ -15,6 +15,7 @@ final class GetUserProfileHandler
     public function handle(GetUserProfileQuery $query): ProfileDTO
     {
         $user = $this->repository->findByUserId($query->userId);
+
         return $user->toDTO();
     }
 }

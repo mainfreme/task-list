@@ -6,18 +6,17 @@ namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\ValueObject\ClientName;
-use App\Crm\Domain\ValueObject\Nip;
-use App\Crm\Domain\ValueObject\Country;
-use App\Crm\Domain\ValueObject\Regon;
-use App\Crm\Domain\ValueObject\Pesel;
-use App\Crm\Domain\ValueObject\ClientSource;
-use App\Crm\Domain\ValueObject\ClientRating;
 use App\Crm\Domain\ValueObject\ClientNotes;
+use App\Crm\Domain\ValueObject\ClientRating;
+use App\Crm\Domain\ValueObject\ClientSource;
+use App\Crm\Domain\ValueObject\Country;
 use App\Crm\Domain\ValueObject\IsCompany;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
-use App\Crm\Domain\ValueObject\Uuid\AddressId;
-
 use App\Crm\Domain\ValueObject\IsDeleted;
+use App\Crm\Domain\ValueObject\Nip;
+use App\Crm\Domain\ValueObject\Pesel;
+use App\Crm\Domain\ValueObject\Regon;
+use App\Crm\Domain\ValueObject\Uuid\AddressId;
+use App\Crm\Domain\ValueObject\Uuid\ClientId;
 
 /**
  * @internal

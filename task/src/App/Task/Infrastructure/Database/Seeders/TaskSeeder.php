@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Task\Infrastructure\Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class TaskSeeder extends Seeder

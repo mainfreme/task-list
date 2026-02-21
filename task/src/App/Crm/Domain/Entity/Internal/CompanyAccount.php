@@ -6,15 +6,15 @@ namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\ValueObject\AccountName;
 use App\Crm\Domain\ValueObject\AccountNumber;
-use App\Crm\Domain\ValueObject\SwiftCode;
-use App\Crm\Domain\ValueObject\Iban;
 use App\Crm\Domain\ValueObject\Bic;
 use App\Crm\Domain\ValueObject\CompanyAccountName;
+use App\Crm\Domain\ValueObject\Iban;
 use App\Crm\Domain\ValueObject\IsActive;
 use App\Crm\Domain\ValueObject\IsPrimary;
+use App\Crm\Domain\ValueObject\SwiftCode;
 use App\Crm\Domain\ValueObject\Uuid\AccountId;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
 use App\Crm\Domain\ValueObject\Uuid\AddressId;
+use App\Crm\Domain\ValueObject\Uuid\ClientId;
 
 /**
  * @internal

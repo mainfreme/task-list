@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\ApplicationManager\Infrastructure\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 final class ApplicationManagerModel extends Model
 {

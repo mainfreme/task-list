@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\ValueObject;
 
-use App\Shared\Domain\ValueObject\ValueObjectInterface;
 use App\Shared\Domain\ValueObject\AbstractValueObject;
+use App\Shared\Domain\ValueObject\ValueObjectInterface;
 use InvalidArgumentException;
 
 final class Iban extends AbstractValueObject implements ValueObjectInterface
@@ -74,7 +74,7 @@ final class Iban extends AbstractValueObject implements ValueObjectInterface
 
     public function equals(ValueObjectInterface $other): bool
     {
-        return strtoupper(preg_replace('/\s+/', '', $this->value)) === 
+        return strtoupper(preg_replace('/\s+/', '', $this->value)) ===
                strtoupper(preg_replace('/\s+/', '', $other->getValue()));
     }
 }
