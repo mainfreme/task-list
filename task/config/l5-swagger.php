@@ -13,8 +13,8 @@ return [
                  * Route for accessing api documentation interface
                  * Wszystkie trasy muszą być pod /api/ (nginx-proxy przekazuje tylko /api/ do backendu)
                  */
-                'api' => 'documentation',
-                'docs' => 'docs',
+                'api' => 'api/documentation',
+                'docs' => 'api/docs',
                 'oauth2_callback' => 'oauth2-callback',
             ],
             'group_options' => [
