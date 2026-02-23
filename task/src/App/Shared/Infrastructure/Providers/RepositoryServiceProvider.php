@@ -8,6 +8,8 @@ use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterfa
 use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
 use App\Auth\Infrastructure\Repository\EloquentUserRepository;
+use App\Profile\Domain\Repository\UserProfileRepository;
+use App\Profile\Infrastructure\Repository\EloquentUserProfileRepository;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Task\Infrastructure\Repository\EloquentTaskRepository;
 use Illuminate\Support\ServiceProvider;
@@ -32,6 +34,11 @@ final class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             EloquentUserRepository::class
+        );
+
+        $this->app->bind(
+            UserProfileRepository::class,
+            EloquentUserProfileRepository::class
         );
     }
 
