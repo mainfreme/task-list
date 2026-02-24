@@ -16,9 +16,9 @@ use App\Task\Application\Command\UpdateTaskStatus\UpdateTaskStatusHandler;
 use App\Task\Application\Query\GetTask\GetTaskHandler;
 use App\Task\Application\Query\GetTask\GetTaskQuery;
 use App\Task\Application\Query\ListTasks\ListTasksHandler;
-use App\Task\Application\Query\ListTasks\ListTasksQuery;
+use App\Task\UI\Http\Mappers\ListTasksQueryMapper;
 use App\Task\Domain\Exception\TaskNotFoundException;
-use App\Task\Domain\ValueObject\Uuid;
+use App\Shared\Domain\ValueObject\Uuid;
 use App\Task\UI\Http\Mappers\UpdateTaskCommandMapper;
 use App\Task\UI\Http\Mappers\UpdateTaskStatusCommandMapper;
 use App\Task\UI\Http\Requests\V1\CreateTaskRequest;
@@ -96,8 +96,9 @@ final class TaskController extends ApiController
     )]
     public function index(Request $request): JsonResponse
     {
-        /** @var ListTasksQuery $query */
-        $query = $this->mapper->map($request, ListTasksQuery::class);
+        /** @var ListTasksQueryMapper $queryMapper */
+        $queryMapper = $this->mapper->map($request, ListTasksQueryMapper::class);
+        $query = $queryMapper->toQuery();
 
         $result = $this->listTasksHandler->handle($query);
 
