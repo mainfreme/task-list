@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->registered(fn ($app) => $app->useAppPath($app->basePath('src/App')))
     ->withProviders([
         RepositoryServiceProvider::class,
         MigrationServiceProvider::class,
