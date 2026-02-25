@@ -7,8 +7,8 @@ namespace App\ApplicationManager\UI\Http\routes;
 use App\ApplicationManager\UI\Http\Controllers\Api\V1\ApplicationManagerController;
 use Illuminate\Support\Facades\Route;
 
-// Application Manager endpoints
-Route::middleware(['jwt'])->group(function () {
+// Application Manager endpoints - dashboard dla zalogowanych użytkowników (user JWT)
+Route::middleware(['user.jwt'])->group(function () {
     Route::post('/v1/applications', [ApplicationManagerController::class, 'store']);
     Route::get('/v1/applications', [ApplicationManagerController::class, 'index']);
     Route::get('/v1/applications/{id}', [ApplicationManagerController::class, 'show']);
