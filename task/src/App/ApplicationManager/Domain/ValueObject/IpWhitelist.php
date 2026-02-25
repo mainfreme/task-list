@@ -61,6 +61,10 @@ final class IpWhitelist
         }
 
         foreach ($this->values as $entry) {
+            if ($entry === '*') {
+                return true;
+            }
+
             if ($entry === $ip) {
                 return true;
             }
@@ -90,6 +94,11 @@ final class IpWhitelist
 
             if ($value === '') {
                 throw new InvalidArgumentException('IP whitelist cannot contain empty values');
+            }
+
+            if ($value === '*') {
+                $normalized[] = $value;
+                continue;
             }
 
             if (!$this->isValidIpOrCidr($value)) {

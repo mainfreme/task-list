@@ -22,7 +22,27 @@ final class UpdateApplicationManagerRequest extends FormRequest
             'request_url' => 'nullable|string|url|max:255',
             'is_active' => 'sometimes|boolean',
             'ip_whitelist' => 'nullable|array',
-            'ip_whitelist.*' => 'ip',
+            'ip_whitelist.*' => ['required', 'string', function (string $attribute, mixed $value, \Closure $fail): void {
+                if ($value === '*') {
+                    return;
+                }
+                if (filter_var($value, FILTER_VALIDATE_IP) !== false) {
+                    return;
+                }
+                if (str_contains($value, '/')) {
+                    [$ip, $prefix] = explode('/', $value, 2);
+                    if ($ip !== '' && $prefix !== '' && ctype_digit($prefix)) {
+                        $prefixInt = (int) $prefix;
+                        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false && $prefixInt >= 0 && $prefixInt <= 32) {
+                            return;
+                        }
+                        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false && $prefixInt >= 0 && $prefixInt <= 128) {
+                            return;
+                        }
+                    }
+                }
+                $fail('Each IP whitelist entry must be a valid IP address, CIDR, or *');
+            }],
         ];
     }
 
@@ -33,7 +53,7 @@ final class UpdateApplicationManagerRequest extends FormRequest
             'request_url.url' => 'Request URL must be a valid URL',
             'is_active.boolean' => 'Active status must be a boolean',
             'ip_whitelist.array' => 'IP whitelist must be an array',
-            'ip_whitelist.*.ip' => 'Each IP whitelist entry must be a valid IP address',
+            'ip_whitelist.*' => 'Each IP whitelist entry must be a valid IP address, CIDR, or *',
         ];
     }
 
