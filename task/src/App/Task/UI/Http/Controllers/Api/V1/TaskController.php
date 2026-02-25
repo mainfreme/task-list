@@ -219,4 +219,9 @@ final class TaskController extends ApiController
             return $this->notFound($e->getMessage());
         }
     }
+
+    public function statusCounts()
+    {
+
+    }
 }

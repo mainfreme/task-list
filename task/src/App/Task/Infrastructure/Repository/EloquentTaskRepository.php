@@ -19,6 +19,8 @@ use App\Task\Domain\ValueObject\TaskStatus;
 use App\Task\Domain\ValueObject\Title;
 use App\Task\Domain\ValueObject\WebsiteUrl;
 use App\Task\Infrastructure\Model\TaskModel;
+use App\Task\Domain\DTO\Stats\CountStatusesTaskDto;
+use Illuminate\Support\Facades\DB;
 
 final class EloquentTaskRepository implements TaskRepositoryInterface
 {
@@ -125,5 +127,20 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
         $entity->setId(Uuid::fromString($model->id));
 
         return $entity;
+    }
+
+    public function groupByStatus(CountStatusesTaskDto $dto): array
+    {
+        return TaskModel::select('status', DB::raw('COUNT(*) as count'))
+            ->when($dto->applicationManagerId, fn ($query) => $query->where('application_manager_id', $dto->applicationManagerId->getValue()))
+            ->when($dto->site, fn ($query) => $query->where('website_url', $dto->site))
+            ->when($dto->status, fn ($query) => $query->where('status', $dto->status))
+            ->groupBy('status')
+            ->get()
+            ->map(fn (TaskModel $model) => [
+                'status' => TaskStatus::fromString($model->status),
+                'count' => $model->count,
+            ])
+            ->toArray();
     }
 }
