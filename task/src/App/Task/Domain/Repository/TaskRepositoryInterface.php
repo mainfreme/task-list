@@ -9,6 +9,7 @@ use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\ValueObject\ApplicationManagerId;
 use App\Task\Domain\ValueObject\TaskStatus;
+use App\Task\Domain\DTO\Stats\CountStatusesTaskDto;
 
 interface TaskRepositoryInterface
 {
@@ -36,7 +37,7 @@ interface TaskRepositoryInterface
 
     public function save(Task $task): void;
 
-    public function delete(Task $task): void;
+    public function groupByStatus(CountStatusesTaskDto $dto): array;
 
     public function softDelete(Task $task): void;
 }
