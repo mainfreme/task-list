@@ -6,19 +6,18 @@ namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\Enums\RelationshipType;
 use App\Crm\Domain\ValueObject\RelationshipNotes;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
-use App\Crm\Domain\ValueObject\Uuid\RelationshipId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 /**
  * @internal
  */
 final class ClientRelationship
 {
-    private ?RelationshipId $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
-        private ClientId $parentUuid,
-        private ClientId $childUuid,
+        private Uuid $parentUuid,
+        private Uuid $childUuid,
         private RelationshipType $relationshipType,
         private ?RelationshipNotes $notes = null,
         private ?\DateTimeImmutable $createdAt = null,
@@ -29,8 +28,8 @@ final class ClientRelationship
     }
 
     public static function create(
-        ClientId $parentUuid,
-        ClientId $childUuid,
+        Uuid $parentUuid,
+        Uuid $childUuid,
         RelationshipType $relationshipType,
         ?RelationshipNotes $notes = null
     ): self {
@@ -38,8 +37,8 @@ final class ClientRelationship
     }
 
     public static function fromDatabase(
-        ClientId $parentUuid,
-        ClientId $childUuid,
+        Uuid $parentUuid,
+        Uuid $childUuid,
         RelationshipType $relationshipType,
         ?RelationshipNotes $notes = null,
         ?\DateTimeImmutable $createdAt = null,
@@ -48,33 +47,33 @@ final class ClientRelationship
         return new self($parentUuid, $childUuid, $relationshipType, $notes, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?RelationshipId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(RelationshipId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
 
-    public function getParentUuid(): ClientId
+    public function getParentUuid(): Uuid
     {
         return $this->parentUuid;
     }
 
-    public function setParentUuid(ClientId $parentUuid): void
+    public function setParentUuid(Uuid $parentUuid): void
     {
         $this->parentUuid = $parentUuid;
         $this->touch();
     }
 
-    public function getChildUuid(): ClientId
+    public function getChildUuid(): Uuid
     {
         return $this->childUuid;
     }
 
-    public function setChildUuid(ClientId $childUuid): void
+    public function setChildUuid(Uuid $childUuid): void
     {
         $this->childUuid = $childUuid;
         $this->touch();

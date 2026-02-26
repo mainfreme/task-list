@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Profile\Application\DTO;
 
-use App\Profile\Domain\ValueObject\ProfileId;
 use App\Shared\Domain\ValueObject\Phone;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class ProfileDTO
 {
     public function __construct(
-        public readonly ProfileId $id,
+        public readonly Uuid $id,
         public readonly Uuid $userId,
         public readonly string $firstName,
         public readonly string $lastName,

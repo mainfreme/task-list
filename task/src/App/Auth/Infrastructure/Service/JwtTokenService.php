@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Auth\Infrastructure\Service;
 
 use App\Auth\Application\DTO\UserDTO;
+use App\Auth\Domain\Service\JwtTokenServiceInterface;
 use Firebase\JWT\JWT;
 
-final class JwtTokenService
+final class JwtTokenService implements JwtTokenServiceInterface
 {
     public function generateToken(UserDTO $user): string
     {

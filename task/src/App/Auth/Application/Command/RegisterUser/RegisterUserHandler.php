@@ -8,13 +8,13 @@ use App\Auth\Application\DTO\AuthResponseDTO;
 use App\Auth\Domain\Entity\User;
 use App\Auth\Domain\Exception\EmailAlreadyExistsException;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
-use App\Auth\Infrastructure\Service\JwtTokenService;
+use App\Auth\Domain\Service\JwtTokenServiceInterface;
 
 final class RegisterUserHandler
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
-        private readonly JwtTokenService $jwtTokenService,
+        private readonly JwtTokenServiceInterface $jwtTokenService,
     ) {
     }
 

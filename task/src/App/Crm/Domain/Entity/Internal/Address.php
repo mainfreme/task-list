@@ -17,18 +17,17 @@ use App\Crm\Domain\ValueObject\Longitude;
 use App\Crm\Domain\ValueObject\PostalCode;
 use App\Crm\Domain\ValueObject\StateProvince;
 use App\Crm\Domain\ValueObject\Street;
-use App\Crm\Domain\ValueObject\Uuid\AddressId;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 /**
  * @internal
  */
 final class Address
 {
-    private ?AddressId $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
-        private ClientId $clientUuid,
+        private Uuid $clientUuid,
         private Street $street,
         private PostalCode $postalCode,
         private City $city,
@@ -52,7 +51,7 @@ final class Address
     }
 
     public static function create(
-        ClientId $clientUuid,
+        Uuid $clientUuid,
         Street $street,
         PostalCode $postalCode,
         City $city,
@@ -80,7 +79,7 @@ final class Address
     }
 
     public static function fromDatabase(
-        ClientId $clientUuid,
+        Uuid $clientUuid,
         Street $street,
         PostalCode $postalCode,
         City $city,
@@ -119,22 +118,22 @@ final class Address
         );
     }
 
-    public function getId(): ?AddressId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(AddressId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
 
-    public function getClientUuid(): ClientId
+    public function getClientUuid(): Uuid
     {
         return $this->clientUuid;
     }
 
-    public function setClientUuid(ClientId $clientUuid): void
+    public function setClientUuid(Uuid $clientUuid): void
     {
         $this->clientUuid = $clientUuid;
         $this->touch();

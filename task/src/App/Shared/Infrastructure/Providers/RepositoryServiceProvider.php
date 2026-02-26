@@ -7,7 +7,9 @@ namespace App\Shared\Infrastructure\Providers;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
 use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
+use App\Auth\Domain\Service\JwtTokenServiceInterface;
 use App\Auth\Infrastructure\Repository\EloquentUserRepository;
+use App\Auth\Infrastructure\Service\JwtTokenService;
 use App\Profile\Domain\Repository\UserProfileRepository;
 use App\Profile\Infrastructure\Repository\EloquentUserProfileRepository;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
@@ -34,6 +36,11 @@ final class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             EloquentUserRepository::class
+        );
+
+        $this->app->bind(
+            JwtTokenServiceInterface::class,
+            JwtTokenService::class
         );
 
         $this->app->bind(

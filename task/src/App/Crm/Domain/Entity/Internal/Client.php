@@ -15,22 +15,21 @@ use App\Crm\Domain\ValueObject\IsDeleted;
 use App\Crm\Domain\ValueObject\Nip;
 use App\Crm\Domain\ValueObject\Pesel;
 use App\Crm\Domain\ValueObject\Regon;
-use App\Crm\Domain\ValueObject\Uuid\AddressId;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 /**
  * @internal
  */
 final class Client
 {
-    private ?ClientId $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
         private ClientName $name,
         private Nip $nip,
         private Country $country,
         private ClientStatus $status = ClientStatus::LEAD,
-        private ?AddressId $addressUuid = null,
+        private ?Uuid $addressUuid = null,
         private ?Regon $regon = null,
         private ?Pesel $pesel = null,
         private ?ClientSource $source = null,
@@ -55,7 +54,7 @@ final class Client
         IsCompany $isCompany,
         ?Regon $regon = null,
         ?Pesel $pesel = null,
-        ?AddressId $addressUuid = null
+        ?Uuid $addressUuid = null
     ): self {
         return new self(
             $name,
@@ -81,7 +80,7 @@ final class Client
         Country $country,
         ClientStatus $status,
         IsCompany $isCompany,
-        ?AddressId $addressUuid = null,
+        ?Uuid $addressUuid = null,
         ?Regon $regon = null,
         ?Pesel $pesel = null,
         ?ClientSource $source = null,
@@ -115,12 +114,12 @@ final class Client
         );
     }
 
-    public function getId(): ?ClientId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(ClientId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
@@ -191,12 +190,12 @@ final class Client
         $this->touch();
     }
 
-    public function getAddressUuid(): ?AddressId
+    public function getAddressUuid(): ?Uuid
     {
         return $this->addressUuid;
     }
 
-    public function setAddressUuid(?AddressId $addressUuid): void
+    public function setAddressUuid(?Uuid $addressUuid): void
     {
         $this->addressUuid = $addressUuid;
         $this->touch();

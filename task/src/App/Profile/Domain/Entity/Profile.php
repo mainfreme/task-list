@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Profile\Domain\Entity;
 
-use App\Profile\Domain\ValueObject\ProfileId;
 use App\Shared\Domain\ValueObject\Phone;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class Profile
 {
     public function __construct(
-        private ?ProfileId $id = null,
+        private ?Uuid $id = null,
         private Uuid $userId,
         private string $firstName,
         private string $lastName,
@@ -29,13 +28,13 @@ final class Profile
         string $avatar,
         \DateTimeImmutable $birthDate,
     ): self {
-        $profileId = ProfileId::generate();
+        $profileId = Uuid::generate();
 
         return new self($profileId, $userId, $firstName, $lastName, $phone, $avatar, $birthDate);
     }
 
     public static function fromDatabase(
-        ProfileId $profileId,
+        Uuid $profileId,
         Uuid $userId,
         string $firstName,
         string $lastName,
@@ -46,12 +45,12 @@ final class Profile
         return new self($profileId, $userId, $firstName, $lastName, $phone, $avatar, $birthDate);
     }
 
-    public function getId(): ?ProfileId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(ProfileId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }

@@ -7,13 +7,13 @@ namespace App\Auth\Application\Command\LoginUser;
 use App\Auth\Application\DTO\AuthResponseDTO;
 use App\Auth\Domain\Exception\InvalidCredentialsException;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
-use App\Auth\Infrastructure\Service\JwtTokenService;
+use App\Auth\Domain\Service\JwtTokenServiceInterface;
 
 final class LoginUserHandler
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
-        private readonly JwtTokenService $jwtTokenService,
+        private readonly JwtTokenServiceInterface $jwtTokenService,
     ) {
     }
 

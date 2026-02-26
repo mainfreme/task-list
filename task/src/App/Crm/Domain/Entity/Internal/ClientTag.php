@@ -7,14 +7,14 @@ namespace App\Crm\Domain\Entity\Internal;
 use App\Crm\Domain\ValueObject\TagColor;
 use App\Crm\Domain\ValueObject\TagDescription;
 use App\Crm\Domain\ValueObject\TagName;
-use App\Crm\Domain\ValueObject\Uuid\TagId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 /**
  * @internal
  */
 final class ClientTag
 {
-    private ?TagId $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
         private TagName $name,
@@ -45,12 +45,12 @@ final class ClientTag
         return new self($name, $color, $description, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?TagId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(TagId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
