@@ -1,0 +1,38 @@
+---
+description: Wytyczne pisania testów jednostkowych – przypadki brzegowe, unikanie trywialnych asercji
+alwaysApply: true
+---
+
+# Wytyczne testów jednostkowych (backend/task)
+
+Stosuj te zasady przy pisaniu i review testów PHPUnit w tym projekcie.
+
+## 1. Czego unikać
+
+- **Trywialne asercje** – nie testuj „czy PHP przypisuje wartość do zmiennej”. Np. unikaj: `assertSame($x, $x)`, przechwycenie argumentu mocka tylko po to, żeby zrobić `assertSame($task, $capturedTask)` (to weryfikuje mock, nie zachowanie kodu).
+- **Asercje value objectów w złym miejscu** – w testach middleware/handlerów nie testuj logiki value objectów (np. `$whitelist->isEmpty()` w ApiKeyMiddlewareTest). Value objects testuj w testach domeny (np. IpWhitelistTest).
+- **Nazwy testów niezgodne z zakresem** – np. `test_handle_accepts_all_valid_status_transitions` przy sprawdzaniu tylko jednego przejścia. Albo zmień nazwę na konkretną, albo przetestuj wszystkie przypadki (dataProvider / osobne testy).
+
+## 2. Co weryfikować
+
+- **Jeden test = jeden konkretny scenariusz** – np. „gdy task ma dueDate, DTO zwraca ten dueDate”, „gdy whitelist jest pusta (nie null), middleware przepuszcza”.
+- **Zachowanie, nie referencje** – zamiast „mock dostał ten sam obiekt” weryfikuj warunek: np. `softDelete` wywołane z argumentem spełniającym `Mockery::on(fn (Task $t) => $t->getId()->getValue() === $expectedId)`.
+- **Symulacja zależności** – gdy repozytorium „przypisuje ID w save”, symuluj to jawnie (np. `andReturnUsing` ustawiające id na encji), żeby było widać, co test weryfikuje.
+
+## 3. Przypadki brzegowe (obowiązkowo uwzględniaj)
+
+- **null vs pusty** – np. `ipWhitelist === null` vs `ipWhitelist->isEmpty()`; osobne testy dla odpowiedzi DTO/middleware.
+- **Opcjonalne pola** – gdy encja/komenda ma pola opcjonalne: test z **wszystkimi null** i test z **wszystkimi ustawionymi**; sprawdzenie, że DTO/odpowiedź zwraca dokładnie te wartości.
+- **Idempotencja** – np. ustawienie tego samego statusu drugi raz: czy save jest wywoływane (lub czy nie), zgodnie z wymaganiami.
+- **Nie znaleziono** – test „not found” + **brak wywołania** dalszych metod (np. `shouldNotReceive('save')`, `shouldNotReceive('softDelete')`).
+- **Granice wartości** – w value objects: puste, tylko whitespace, min/max długość, nieprawidłowy format; w testach domeny, nie w testach aplikacji.
+
+## 4. Konkretne asercje
+
+- Zamiast samego `assertInstanceOf` dla wygenerowanej wartości: dodaj **konkretny warunek** (np. regex dla UUID v4, długość, format).
+- **Wszystkie warianty enumów/etykiet** – jeśli testujesz etykiety lub wartości enum, przetestuj **wszystkie** (dataProvider lub osobne asercje), żeby zmiana w enumie nie umknęła.
+- Dla DTO: sprawdzaj **mapowanie encja → DTO** (np. task z dueDate/deliveryAddress → result.dueDate, result.deliveryAddress), nie tylko „zwraca DTO”.
+
+## 5. Odniesienie
+
+Szczegółowy przegląd i przykłady: `tests/TEST_REVIEW.md`.
