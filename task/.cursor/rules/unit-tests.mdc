@@ -33,6 +33,38 @@ Stosuj te zasady przy pisaniu i review testów PHPUnit w tym projekcie.
 - **Wszystkie warianty enumów/etykiet** – jeśli testujesz etykiety lub wartości enum, przetestuj **wszystkie** (dataProvider lub osobne asercje), żeby zmiana w enumie nie umknęła.
 - Dla DTO: sprawdzaj **mapowanie encja → DTO** (np. task z dueDate/deliveryAddress → result.dueDate, result.deliveryAddress), nie tylko „zwraca DTO”.
 
-## 5. Odniesienie
+## 5. Zmienne środowiskowe w testach Laravel
+
+- **NIE używaj `putenv()`, `$_ENV`, `$_SERVER`** do ustawiania zmiennych w testach. Laravel `env()` używa immutable repository, które może być już zainicjalizowane z wartościami z `.env`.
+- **Używaj `phpunit.xml.dist`** – dodaj zmienne w sekcji `<php><env name="VAR" value="..."/></php>`. To jest najbardziej niezawodny sposób.
+- Alternatywnie stwórz `.env.testing` – Laravel automatycznie go użyje gdy `APP_ENV=testing`.
+- **Przykład (phpunit.xml.dist):**
+  ```xml
+  <php>
+      <env name="JWT_SECRET" value="test-secret-key"/>
+      <env name="JWT_ALGORITHM" value="HS256"/>
+  </php>
+  ```
+
+## 6. Asercje w callbackach (middleware, next, andReturnUsing)
+
+- **NIGDY nie umieszczaj asercji tylko wewnątrz callbacka** (np. `$next = function ($req) { $this->assertSame(...); }`). Jeśli callback nie zostanie wywołany (bo middleware zwróci wcześniej), asercje się nie wykonają i test przejdzie mimo błędu.
+- **Przechwytuj wartości** w callbacku i **asertuj PO wywołaniu** testowanej metody:
+  ```php
+  $nextCalled = false;
+  $capturedValue = null;
+  $next = function ($req) use (&$nextCalled, &$capturedValue) {
+      $nextCalled = true;
+      $capturedValue = $req->attributes->get('user_id');
+      return response()->json(['ok' => true], 200);
+  };
+
+  $response = $middleware->handle($request, $next);
+
+  $this->assertTrue($nextCalled, 'Next must be called');
+  $this->assertSame($expectedId, $capturedValue->getValue());
+  ```
+
+## 7. Odniesienie
 
 Szczegółowy przegląd i przykłady: `tests/TEST_REVIEW.md`.
