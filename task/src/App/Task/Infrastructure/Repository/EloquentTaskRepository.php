@@ -7,6 +7,7 @@ namespace App\Task\Infrastructure\Repository;
 use App\Shared\Domain\ValueObject\Address;
 use App\Shared\Domain\ValueObject\Phone;
 use App\Shared\Domain\ValueObject\Uuid;
+use App\Task\Domain\DTO\Stats\CountStatusesTaskDto;
 use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
@@ -19,7 +20,6 @@ use App\Task\Domain\ValueObject\TaskStatus;
 use App\Task\Domain\ValueObject\Title;
 use App\Task\Domain\ValueObject\WebsiteUrl;
 use App\Task\Infrastructure\Model\TaskModel;
-use App\Task\Domain\DTO\Stats\CountStatusesTaskDto;
 use Illuminate\Support\Facades\DB;
 
 final class EloquentTaskRepository implements TaskRepositoryInterface

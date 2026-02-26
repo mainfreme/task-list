@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Task\Domain\Repository;
 
 use App\Shared\Domain\ValueObject\Uuid;
+use App\Task\Domain\DTO\Stats\CountStatusesTaskDto;
 use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\ValueObject\ApplicationManagerId;
 use App\Task\Domain\ValueObject\TaskStatus;
-use App\Task\Domain\DTO\Stats\CountStatusesTaskDto;
 
 interface TaskRepositoryInterface
 {
