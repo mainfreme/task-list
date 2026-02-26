@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Task\UI\Http\Controllers\Api\V1;
 
+use App\Shared\Domain\ValueObject\Uuid;
 use App\Shared\Infrastructure\Mapper\GenericRequestMapper;
 use App\Shared\UI\Http\Controllers\Api\ApiController;
 use App\Task\Application\Command\CreateTask\CreateTaskCommand;
@@ -16,9 +17,8 @@ use App\Task\Application\Command\UpdateTaskStatus\UpdateTaskStatusHandler;
 use App\Task\Application\Query\GetTask\GetTaskHandler;
 use App\Task\Application\Query\GetTask\GetTaskQuery;
 use App\Task\Application\Query\ListTasks\ListTasksHandler;
-use App\Task\UI\Http\Mappers\ListTasksQueryMapper;
 use App\Task\Domain\Exception\TaskNotFoundException;
-use App\Shared\Domain\ValueObject\Uuid;
+use App\Task\UI\Http\Mappers\ListTasksQueryMapper;
 use App\Task\UI\Http\Mappers\UpdateTaskCommandMapper;
 use App\Task\UI\Http\Mappers\UpdateTaskStatusCommandMapper;
 use App\Task\UI\Http\Requests\V1\CreateTaskRequest;

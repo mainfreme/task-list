@@ -10,6 +10,8 @@ use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyComm
 use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyHandler;
 use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenCommand;
 use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenHandler;
+use App\ApplicationManager\Application\Command\UpdateApplicationManager\ChangeStatusCommand;
+use App\ApplicationManager\Application\Command\UpdateApplicationManager\ChangeStatusHandler;
 use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerCommand;
 use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerHandler;
 use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicationManagerHandler;
@@ -19,10 +21,12 @@ use App\ApplicationManager\Application\Query\ListApplicationManagers\ListApplica
 use App\ApplicationManager\Domain\ValueObject\ApplicationName;
 use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
 use App\ApplicationManager\Domain\ValueObject\RequestUrl;
+use App\ApplicationManager\UI\Http\Requests\V1\ChangeStatusRequest;
 use App\ApplicationManager\UI\Http\Requests\V1\CreateApplicationManagerRequest;
 use App\ApplicationManager\UI\Http\Requests\V1\GenerateJwtTokenRequest;
 use App\ApplicationManager\UI\Http\Requests\V1\UpdateApplicationManagerRequest;
 use App\Shared\Domain\ValueObject\Uuid;
+use App\Shared\UI\Http\Controllers\Api\ApiController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;

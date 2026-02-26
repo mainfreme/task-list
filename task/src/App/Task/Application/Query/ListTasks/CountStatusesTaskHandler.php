@@ -2,10 +2,9 @@
 
 namespace App\Task\Application\Query\ListTasks;
 
-use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Task\Application\DTO\TaskStatusesCountDTO;
 use App\Task\Domain\DTO\Stats\CountStatusesTaskDto;
-
+use App\Task\Domain\Repository\TaskRepositoryInterface;
 
 final class CountStatusesTaskHandler
 {

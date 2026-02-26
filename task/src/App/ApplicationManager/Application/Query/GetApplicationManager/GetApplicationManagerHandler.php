@@ -24,7 +24,7 @@ final class GetApplicationManagerHandler
             id: $applicationManager->getId(),
             name: $applicationManager->getName(),
             requestUrl: $requestUrl,
-            apiKey: $applicationManager->getApiKey(),
+            apiKeyHash: $applicationManager->getApiKey(),
             isActive: $applicationManager->isActive(),
             ipWhitelist: $ipWhitelist,
         );
