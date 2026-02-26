@@ -6,7 +6,6 @@ namespace App\Profile\Infrastructure\Repository;
 
 use App\Profile\Domain\Entity\Profile;
 use App\Profile\Domain\Repository\UserProfileRepository;
-use App\Profile\Domain\ValueObject\ProfileId;
 use App\Profile\Infrastructure\Model\ProfileModel;
 use App\Profile\UI\Http\Mappers\ProfileMapper;
 use App\Shared\Domain\ValueObject\Uuid;
@@ -22,10 +21,10 @@ final class EloquentUserProfileRepository implements UserProfileRepository
         return $model ? ProfileMapper::toDomain($model) : null;
     }
 
-    public function findByProfileId(ProfileId $profileId): ?Profile
+    public function findByProfileId(Uuid $profileId): ?Profile
     {
         $model = ProfileModel::query()
-            ->where('id', $profileId->value())
+            ->where('id', $profileId->getValue())
             ->first();
 
         return $model ? ProfileMapper::toDomain($model) : null;

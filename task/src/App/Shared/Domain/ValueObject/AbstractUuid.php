@@ -9,10 +9,10 @@ use InvalidArgumentException;
 
 abstract class AbstractUuid
 {
-    protected function __construct(
+    public function __construct(
         public readonly string $value
     ) {
-        $this->validate($value);
+        $this->validate();
     }
 
     /**
@@ -34,11 +34,11 @@ abstract class AbstractUuid
     /**
      * Validate UUID format
      */
-    protected function validate(string $value): void
+    protected function validate(): void
     {
-        if (!Str::isUuid($value)) {
+        if (!Str::isUuid($this->getValue())) {
             throw new InvalidArgumentException(
-                sprintf('Invalid UUID format: %s', $value)
+                sprintf('Invalid UUID format: %s', $this->getValue())
             );
         }
     }
@@ -48,7 +48,7 @@ abstract class AbstractUuid
      */
     public function toString(): string
     {
-        return $this->value;
+        return $this->getValue();
     }
 
     /**
@@ -56,7 +56,7 @@ abstract class AbstractUuid
      */
     public function __toString(): string
     {
-        return $this->value;
+        return $this->getValue();
     }
 
     /**
@@ -64,13 +64,13 @@ abstract class AbstractUuid
      */
     public function equals(AbstractUuid $other): bool
     {
-        return $this->value === $other->value;
+        return $this->getValue() === $other->getValue();
     }
 
     /**
      * Get the UUID value
      */
-    public function value(): string
+    public function getValue(): string
     {
         return $this->value;
     }

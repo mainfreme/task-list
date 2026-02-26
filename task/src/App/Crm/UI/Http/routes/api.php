@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Crm\UI\Http\routes;
 
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
 use App\Crm\UI\Http\Controllers\Api\V1\CrmController;
+use App\Shared\Domain\ValueObject\Uuid;
 use Illuminate\Support\Facades\Route;
 
-// Custom route binding for ClientId - converts string to ClientId Value Object
+// Custom route binding for Uuid - converts string to Uuid Value Object
 Route::bind('id', function (string $value) {
-    return ClientId::fromString($value);
+    return Uuid::fromString($value);
 });
 
 // CRM endpoints - protected with JWT authentication

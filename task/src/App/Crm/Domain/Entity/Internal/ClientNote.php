@@ -6,20 +6,18 @@ namespace App\Crm\Domain\Entity\Internal;
 
 use App\Crm\Domain\Enums\NoteType;
 use App\Crm\Domain\ValueObject\NoteContent;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
-use App\Crm\Domain\ValueObject\Uuid\NoteId;
-use App\Crm\Domain\ValueObject\Uuid\UserId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 /**
  * @internal
  */
 final class ClientNote
 {
-    private ?NoteId $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
-        private ClientId $clientUuid,
-        private UserId $userUuid,
+        private Uuid $clientUuid,
+        private Uuid $userUuid,
         private NoteContent $content,
         private NoteType $type = NoteType::NOTE,
         private ?\DateTimeImmutable $createdAt = null,
@@ -30,8 +28,8 @@ final class ClientNote
     }
 
     public static function create(
-        ClientId $clientUuid,
-        UserId $userUuid,
+        Uuid $clientUuid,
+        Uuid $userUuid,
         NoteContent $content,
         NoteType $type = NoteType::NOTE
     ): self {
@@ -39,8 +37,8 @@ final class ClientNote
     }
 
     public static function fromDatabase(
-        ClientId $clientUuid,
-        UserId $userUuid,
+        Uuid $clientUuid,
+        Uuid $userUuid,
         NoteContent $content,
         NoteType $type,
         ?\DateTimeImmutable $createdAt = null,
@@ -49,33 +47,33 @@ final class ClientNote
         return new self($clientUuid, $userUuid, $content, $type, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?NoteId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(NoteId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
 
-    public function getClientUuid(): ClientId
+    public function getClientUuid(): Uuid
     {
         return $this->clientUuid;
     }
 
-    public function setClientUuid(ClientId $clientUuid): void
+    public function setClientUuid(Uuid $clientUuid): void
     {
         $this->clientUuid = $clientUuid;
         $this->touch();
     }
 
-    public function getUserUuid(): UserId
+    public function getUserUuid(): Uuid
     {
         return $this->userUuid;
     }
 
-    public function setUserUuid(UserId $userUuid): void
+    public function setUserUuid(Uuid $userUuid): void
     {
         $this->userUuid = $userUuid;
         $this->touch();

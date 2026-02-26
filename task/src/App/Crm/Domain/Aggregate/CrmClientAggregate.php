@@ -21,7 +21,7 @@ use App\Crm\Domain\ValueObject\IsDeleted;
 use App\Crm\Domain\ValueObject\Nip;
 use App\Crm\Domain\ValueObject\Pesel;
 use App\Crm\Domain\ValueObject\Regon;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Shared\Domain\ValueObject\Uuid;
 use Illuminate\Support\Collection;
 
 /**
@@ -42,7 +42,7 @@ final class CrmClientAggregate
      * @param Collection<CompanyAccount> $accounts
      */
     private function __construct(
-        private readonly ClientId $id,
+        private readonly Uuid $id,
         private ClientName $name,
         private Nip $nip,
         private Country $country,
@@ -66,12 +66,12 @@ final class CrmClientAggregate
 
     /**
      * Create a new client aggregate
-     * Generates ClientId with UUID v7
+     * Generates Uuid with UUID v7
      */
     public static function create(ClientDto $dto): self
     {
         return new self(
-            id: ClientId::generate(),
+            id: Uuid::generate(),
             name: $dto->name,
             nip: $dto->nip,
             country: $dto->country,
@@ -103,7 +103,7 @@ final class CrmClientAggregate
      * @param Collection<CompanyAccount> $accounts
      */
     public static function reconstitute(
-        ClientId $id,
+        Uuid $id,
         ClientName $name,
         Nip $nip,
         Country $country,
@@ -147,7 +147,7 @@ final class CrmClientAggregate
     }
 
     // Getters for main properties
-    public function getId(): ClientId
+    public function getId(): Uuid
     {
         return $this->id;
     }

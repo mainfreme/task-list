@@ -34,14 +34,12 @@ final class CreateApplicationManagerHandler
         $this->repository->save($applicationManager);
 
         return new ApplicationManagerDTO(
-            id: $applicationManager->getId()->getValue(),
-            name: $applicationManager->getName()->getValue(),
-            apiKey: $apiKey->value(), // Return plain key only on creation
-            requestUrl: $requestUrl?->getValue(),
+            id: $applicationManager->getId(),
+            name: $applicationManager->getName(),
+            apiKeyHash: $apiKey,
+            requestUrl: $requestUrl,
             isActive: $applicationManager->isActive(),
-            ipWhitelist: $ipWhitelist?->toArray(),
-            createdAt: $applicationManager->getCreatedAt()->format('Y-m-d H:i:s'),
-            updatedAt: $applicationManager->getUpdatedAt()->format('Y-m-d H:i:s'),
+            ipWhitelist: $ipWhitelist,
         );
     }
 }

@@ -12,26 +12,24 @@ use App\Crm\Domain\ValueObject\Iban;
 use App\Crm\Domain\ValueObject\IsActive;
 use App\Crm\Domain\ValueObject\IsPrimary;
 use App\Crm\Domain\ValueObject\SwiftCode;
-use App\Crm\Domain\ValueObject\Uuid\AccountId;
-use App\Crm\Domain\ValueObject\Uuid\AddressId;
-use App\Crm\Domain\ValueObject\Uuid\ClientId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 /**
  * @internal
  */
 final class CompanyAccount
 {
-    private ?AccountId $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
-        private ClientId $clientUuid,
+        private Uuid $clientUuid,
         private AccountName $name,
         private AccountNumber $number,
         private SwiftCode $swiftCode,
         private Iban $iban,
         private Bic $bic,
         private CompanyAccountName $accountName,
-        private ?AddressId $addressUuid = null,
+        private ?Uuid $addressUuid = null,
         private IsActive $isActive = new IsActive(true),
         private IsPrimary $isPrimary = new IsPrimary(false),
         private ?\DateTimeImmutable $createdAt = null,
@@ -42,14 +40,14 @@ final class CompanyAccount
     }
 
     public static function create(
-        ClientId $clientUuid,
+        Uuid $clientUuid,
         AccountName $name,
         AccountNumber $number,
         SwiftCode $swiftCode,
         Iban $iban,
         Bic $bic,
         CompanyAccountName $accountName,
-        ?AddressId $addressUuid = null,
+        ?Uuid $addressUuid = null,
         IsPrimary $isPrimary = new IsPrimary(false)
     ): self {
         return new self(
@@ -67,7 +65,7 @@ final class CompanyAccount
     }
 
     public static function fromDatabase(
-        ClientId $clientUuid,
+        Uuid $clientUuid,
         AccountName $name,
         AccountNumber $number,
         SwiftCode $swiftCode,
@@ -76,7 +74,7 @@ final class CompanyAccount
         CompanyAccountName $accountName,
         IsActive $isActive,
         IsPrimary $isPrimary,
-        ?AddressId $addressUuid = null,
+        ?Uuid $addressUuid = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
     ): self {
@@ -96,22 +94,22 @@ final class CompanyAccount
         );
     }
 
-    public function getId(): ?AccountId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(AccountId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
 
-    public function getClientUuid(): ClientId
+    public function getClientUuid(): Uuid
     {
         return $this->clientUuid;
     }
 
-    public function setClientUuid(ClientId $clientUuid): void
+    public function setClientUuid(Uuid $clientUuid): void
     {
         $this->clientUuid = $clientUuid;
         $this->touch();
@@ -183,12 +181,12 @@ final class CompanyAccount
         $this->touch();
     }
 
-    public function getAddressUuid(): ?AddressId
+    public function getAddressUuid(): ?Uuid
     {
         return $this->addressUuid;
     }
 
-    public function setAddressUuid(?AddressId $addressUuid): void
+    public function setAddressUuid(?Uuid $addressUuid): void
     {
         $this->addressUuid = $addressUuid;
         $this->touch();

@@ -6,11 +6,11 @@ namespace App\Crm\Domain\Entity;
 
 use App\Crm\Domain\ValueObject\Email;
 use App\Crm\Domain\ValueObject\Password;
-use App\Crm\Domain\ValueObject\Uuid\UserId;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final class User
 {
-    private ?UserId $id = null;
+    private ?Uuid $id = null;
 
     public function __construct(
         private Email $email,
@@ -43,12 +43,12 @@ final class User
         return new self($email, $password, $roles, $rememberToken, $createdAt, $updatedAt);
     }
 
-    public function getId(): ?UserId
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(UserId $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }

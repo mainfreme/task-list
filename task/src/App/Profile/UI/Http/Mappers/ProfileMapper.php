@@ -6,7 +6,6 @@ namespace App\Profile\UI\Http\Mappers;
 
 use App\Profile\Application\DTO\ProfileDTO;
 use App\Profile\Domain\Entity\Profile;
-use App\Profile\Domain\ValueObject\ProfileId;
 use App\Profile\Infrastructure\Model\ProfileModel;
 use App\Profile\UI\Http\Requests\UpdateProfileRequest;
 use App\Shared\Domain\ValueObject\Phone;
@@ -17,7 +16,7 @@ final class ProfileMapper
     public static function fromRequest(UpdateProfileRequest $request): ProfileDTO
     {
         return new ProfileDTO(
-            id: ProfileId::fromString($request['id']),
+            id: Uuid::fromString($request['id']),
             userId: Uuid::fromString($request['user_id']),
             firstName: $request['first_name'],
             lastName: $request['last_name'],
@@ -30,7 +29,7 @@ final class ProfileMapper
     public static function toDomain(ProfileModel $model): Profile
     {
         return new Profile(
-            id: ProfileId::fromString($model->id),
+            id: Uuid::fromString($model->id),
             userId: Uuid::fromString($model->user_id),
             firstName: $model->first_name,
             lastName: $model->last_name,

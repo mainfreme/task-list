@@ -1,0 +1,19 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src/
+        - app/
+        - bootstrap/
+        - config/
+        - database/
+        - routes/
+    level: 5
+    ignoreErrors:
+        # Laravel magic - można stopniowo usuwać po naprawieniu
+        # - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::#'
+    excludePaths:
+        - vendor/
+        - storage/
+        - bootstrap/cache/
