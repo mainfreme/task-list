@@ -17,12 +17,12 @@ use Illuminate\Support\Facades\Hash;
 
 final class EloquentApplicationManagerRepository implements ApplicationManagerRepositoryInterface
 {
-    public function findById(Uuid $id): ApplicationManager
+    public function findById(Uuid $uuid): ApplicationManager
     {
-        $model = ApplicationManagerModel::find($id->getValue());
+        $model = ApplicationManagerModel::find($uuid->getValue());
 
         if (!$model) {
-            throw ApplicationManagerNotFoundException::byId($id->getValue());
+            throw ApplicationManagerNotFoundException::byId($uuid->getValue());
         }
 
         return $this->toEntity($model);

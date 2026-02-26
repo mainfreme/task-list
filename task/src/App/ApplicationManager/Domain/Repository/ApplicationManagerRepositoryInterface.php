@@ -14,7 +14,7 @@ interface ApplicationManagerRepositoryInterface
     /**
      * @throws ApplicationManagerNotFoundException
      */
-    public function findById(Uuid $id): ApplicationManager;
+    public function findById(Uuid $uuid): ApplicationManager;
 
     /**
      * @throws ApplicationManagerNotFoundException

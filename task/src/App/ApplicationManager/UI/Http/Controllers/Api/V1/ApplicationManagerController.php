@@ -10,6 +10,9 @@ use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyComm
 use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyHandler;
 use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenCommand;
 use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenHandler;
+use App\ApplicationManager\Application\Command\UpdateApplicationManager\ChangeStatusCommand;    
+use App\ApplicationManager\Application\Command\UpdateApplicationManager\ChangeStatusHandler;
+use App\ApplicationManager\UI\Http\Requests\V1\ChangeStatusRequest;
 use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerCommand;
 use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerHandler;
 use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicationManagerHandler;
@@ -26,8 +29,9 @@ use App\Shared\Domain\ValueObject\Uuid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
+use App\Shared\UI\Http\Controllers\Api\ApiController;
 
-final class ApplicationManagerController
+final class ApplicationManagerController extends ApiController
 {
     public function __construct(
         private readonly CreateApplicationManagerHandler $createHandler,
@@ -36,6 +40,7 @@ final class ApplicationManagerController
         private readonly GenerateJwtTokenHandler $generateJwtTokenHandler,
         private readonly GetApplicationManagerHandler $getHandler,
         private readonly ListApplicationManagersHandler $listHandler,
+        private readonly ChangeStatusHandler $changeStatusHandler,
     ) {
     }
 
@@ -229,5 +234,40 @@ final class ApplicationManagerController
             'token_type' => 'Bearer',
             'expires_in' => $expirationMinutes,
         ]);
+    }
+
+    #[OA\Post(
+        path: '/v1/applications/{id}/change-status',
+        summary: 'Change Application Manager status',
+        tags: ['Application Managers'],
+        security: [['jwt' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Application Manager ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(
+            required: false,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Application Manager status changed'),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
+    public function changeStatus(ChangeStatusRequest $request, string $id): JsonResponse
+    {
+        $validated = $request->validated();
+
+        $command = new ChangeStatusCommand(
+            uuid: Uuid::fromString($id),
+            isActive: $validated['is_active'],
+        );
+
+        $this->changeStatusHandler->handle($command);
+
+        return $this->success();
     }
 }
