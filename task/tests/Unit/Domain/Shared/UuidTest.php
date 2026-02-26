@@ -51,11 +51,17 @@ final class UuidTest extends TestCase
         $this->assertTrue($uuid1->equals($uuid2));
     }
 
-    public function test_generate_creates_valid_uuid(): void
+    /** Generate zwraca UUID v7 (Str::uuid7) – weryfikacja regex + round-trip przez fromString */
+    public function test_generate_creates_valid_uuid_v7_format(): void
     {
         $uuid = Uuid::generate();
+        $value = $uuid->getValue();
 
-        $this->assertInstanceOf(Uuid::class, $uuid);
-        $this->assertInstanceOf(Uuid::class, Uuid::fromString($uuid->getValue()));
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
+            $value,
+            'Generated value must be valid UUID v7'
+        );
+        $this->assertSame($value, Uuid::fromString($value)->getValue());
     }
 }

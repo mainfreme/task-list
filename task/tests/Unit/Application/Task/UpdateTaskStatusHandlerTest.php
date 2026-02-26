@@ -68,14 +68,14 @@ final class UpdateTaskStatusHandlerTest extends TestCase
         $this->assertSame('cancelled', $result->status->value);
     }
 
-    public function test_handle_accepts_all_valid_status_transitions(): void
+    public function test_handle_accepts_pending_to_in_progress_transition(): void
     {
         $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
         $task = $this->createTask($uuid, TaskStatus::PENDING);
 
         $repository = Mockery::mock(TaskRepositoryInterface::class);
         $repository->shouldReceive('findById')->once()->andReturn($task);
-        $repository->shouldReceive('save')->once();
+        $repository->shouldReceive('save')->once()->with(Mockery::on(fn (Task $t) => $t->getStatus() === TaskStatus::IN_PROGRESS));
 
         $handler = new UpdateTaskStatusHandler($repository);
         $command = new UpdateTaskStatusCommand($uuid, TaskStatus::IN_PROGRESS);
@@ -83,6 +83,41 @@ final class UpdateTaskStatusHandlerTest extends TestCase
         $result = $handler->handle($command);
 
         $this->assertSame(TaskStatus::IN_PROGRESS, $result->status);
+    }
+
+    public function test_handle_accepts_in_progress_to_completed_transition(): void
+    {
+        $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
+        $task = $this->createTask($uuid, TaskStatus::IN_PROGRESS);
+
+        $repository = Mockery::mock(TaskRepositoryInterface::class);
+        $repository->shouldReceive('findById')->once()->andReturn($task);
+        $repository->shouldReceive('save')->once()->with(Mockery::on(fn (Task $t) => $t->getStatus() === TaskStatus::COMPLETED));
+
+        $handler = new UpdateTaskStatusHandler($repository);
+        $command = new UpdateTaskStatusCommand($uuid, TaskStatus::COMPLETED);
+
+        $result = $handler->handle($command);
+
+        $this->assertSame(TaskStatus::COMPLETED, $result->status);
+    }
+
+    /** Przypadek brzegowy: ustawienie tego samego statusu (idempotencja) – handler i tak wywołuje save */
+    public function test_handle_still_saves_when_status_unchanged(): void
+    {
+        $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
+        $task = $this->createTask($uuid, TaskStatus::COMPLETED);
+
+        $repository = Mockery::mock(TaskRepositoryInterface::class);
+        $repository->shouldReceive('findById')->once()->andReturn($task);
+        $repository->shouldReceive('save')->once();
+
+        $handler = new UpdateTaskStatusHandler($repository);
+        $command = new UpdateTaskStatusCommand($uuid, TaskStatus::COMPLETED);
+
+        $handler->handle($command);
+
+        $this->assertSame(TaskStatus::COMPLETED, $task->getStatus());
     }
 
     private function createTask(Uuid $id, TaskStatus $status): Task

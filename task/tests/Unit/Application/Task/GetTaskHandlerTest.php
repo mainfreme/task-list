@@ -12,7 +12,10 @@ use App\Task\Application\Query\GetTask\GetTaskQuery;
 use App\Task\Domain\Entity\Task;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
+use App\Task\Domain\ValueObject\ApplicationManagerId;
+use App\Task\Domain\ValueObject\DeliveryAddress;
 use App\Task\Domain\ValueObject\Description;
+use App\Task\Domain\ValueObject\DueDate;
 use App\Task\Domain\ValueObject\Email;
 use App\Task\Domain\ValueObject\TaskStatus;
 use App\Task\Domain\ValueObject\Title;
@@ -68,6 +71,29 @@ final class GetTaskHandlerTest extends TestCase
         $this->assertSame('completed', $result->status->value);
     }
 
+    /** Przypadek brzegowy: task z opcjonalnymi polami → DTO zwraca te same wartości */
+    public function test_handle_returns_dto_with_optional_fields_when_set_on_entity(): void
+    {
+        $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
+        $appManagerId = ApplicationManagerId::fromString('550e8400-e29b-41d4-a716-446655440001');
+        $task = $this->createTaskWithOptionals($uuid, $appManagerId);
+
+        $repository = Mockery::mock(TaskRepositoryInterface::class);
+        $repository->shouldReceive('findById')->once()->andReturn($task);
+
+        $handler = new GetTaskHandler($repository);
+        $query = new GetTaskQuery($uuid);
+
+        $result = $handler->handle($query);
+
+        $this->assertInstanceOf(TaskDTO::class, $result);
+        $this->assertSame($appManagerId->getValue(), $result->applicationManagerId?->getValue());
+        $this->assertNotNull($result->dueDate);
+        $this->assertSame('2025-12-31', $result->dueDate->format('Y-m-d'));
+        $this->assertNotNull($result->deliveryAddress);
+        $this->assertSame('ul. Dostawy 5', $result->deliveryAddress?->getValue());
+    }
+
     private function createTask(Uuid $id): Task
     {
         $task = Task::fromDatabase(
@@ -78,6 +104,24 @@ final class GetTaskHandlerTest extends TestCase
             Email::fromString('get@example.com'),
             Address::fromString('ul. Test 1'),
             TaskStatus::COMPLETED
+        );
+        $task->setId($id);
+        return $task;
+    }
+
+    private function createTaskWithOptionals(Uuid $id, ApplicationManagerId $appManagerId): Task
+    {
+        $task = Task::fromDatabase(
+            Title::fromString('Zadanie z opcjonalnymi'),
+            WebsiteUrl::fromString('https://example.com'),
+            Description::fromString('Opis'),
+            Phone::fromString('+48123456789'),
+            Email::fromString('opt@example.com'),
+            Address::fromString('ul. Test 1'),
+            TaskStatus::PENDING,
+            $appManagerId,
+            DueDate::fromString('2025-12-31'),
+            DeliveryAddress::fromString('ul. Dostawy 5')
         );
         $task->setId($id);
         return $task;

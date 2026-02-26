@@ -180,10 +180,10 @@ final class ApiKeyMiddlewareTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
+    /** Przypadek brzegowy: whitelist pusta (nie null) – middleware przepuszcza request */
     public function test_passes_when_whitelist_empty_but_not_null(): void
     {
         $whitelist = IpWhitelist::fromArray([]);
-        $this->assertTrue($whitelist->isEmpty());
         $app = $this->createApplicationManager(active: true, ipWhitelist: $whitelist);
 
         $repository = Mockery::mock(ApplicationManagerRepositoryInterface::class);

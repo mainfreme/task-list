@@ -47,11 +47,12 @@ final class DeleteTaskHandlerTest extends TestCase
         $handler->handle($command);
     }
 
-    public function test_handle_calls_soft_delete_when_task_found(): void
+    /** Handler wywołuje softDelete dokładnie raz z taskiem załadowanym po id (ten sam id co w komendzie) */
+    public function test_handle_calls_soft_delete_with_task_loaded_by_given_id(): void
     {
         $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
         $task = $this->createTask($uuid);
-        $capturedTask = null;
+        $taskPassedToSoftDelete = null;
 
         $repository = Mockery::mock(TaskRepositoryInterface::class);
         $repository->shouldReceive('findById')
@@ -60,17 +61,17 @@ final class DeleteTaskHandlerTest extends TestCase
             ->andReturn($task);
         $repository->shouldReceive('softDelete')
             ->once()
-            ->andReturnUsing(function (Task $t) use (&$capturedTask) {
-                $capturedTask = $t;
-            });
+            ->with(Mockery::on(function (Task $t) use ($uuid, &$taskPassedToSoftDelete) {
+                $taskPassedToSoftDelete = $t;
+                return $t->getId() !== null && $t->getId()->getValue() === $uuid->getValue();
+            }));
 
         $handler = new DeleteTaskHandler($repository);
         $command = new DeleteTaskCommand($uuid);
 
         $handler->handle($command);
 
-        $this->assertSame($task, $capturedTask);
-        $this->assertSame($uuid->getValue(), $capturedTask->getId()?->getValue());
+        $this->assertSame($uuid->getValue(), $taskPassedToSoftDelete->getId()?->getValue(), 'softDelete must be called with task having the given id');
     }
 
     private function createTask(Uuid $id): Task

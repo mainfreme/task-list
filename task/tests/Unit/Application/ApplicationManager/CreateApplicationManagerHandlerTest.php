@@ -24,6 +24,10 @@ final class CreateApplicationManagerHandlerTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * Handler tworzy encję, wywołuje save; symulujemy repozytorium przypisujące ID w save.
+     * DTO musi zwracać to ID oraz dane z encji (nazwa, aktywność, hash klucza).
+     */
     public function test_handle_creates_application_manager_and_saves(): void
     {
         $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
@@ -31,10 +35,9 @@ final class CreateApplicationManagerHandlerTest extends TestCase
         $repository = Mockery::mock(ApplicationManagerRepositoryInterface::class);
         $repository->shouldReceive('save')
             ->once()
-            ->with(Mockery::on(function (ApplicationManager $am) use ($uuid) {
+            ->andReturnUsing(function (ApplicationManager $am) use ($uuid) {
                 $am->setId($uuid);
-                return $am->getName()->getValue() === 'Nowa Aplikacja';
-            }));
+            });
 
         $handler = new CreateApplicationManagerHandler($repository);
         $command = new CreateApplicationManagerCommand(
@@ -44,11 +47,29 @@ final class CreateApplicationManagerHandlerTest extends TestCase
         $result = $handler->handle($command);
 
         $this->assertInstanceOf(ApplicationManagerDTO::class, $result);
-        $this->assertSame($uuid->getValue(), $result->id->getValue());
+        $this->assertSame($uuid->getValue(), $result->id->getValue(), 'DTO id must match id assigned by repository in save');
         $this->assertSame('Nowa Aplikacja', $result->name->getValue());
         $this->assertTrue($result->isActive);
         $this->assertNotNull($result->apiKeyHash);
         $this->assertSame(64, strlen($result->apiKeyHash->value()));
+    }
+
+    /** Przypadek brzegowy: tylko wymagane pole (name), reszta null – DTO bez requestUrl i ipWhitelist */
+    public function test_handle_creates_with_only_required_name_optional_fields_null_in_dto(): void
+    {
+        $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
+
+        $repository = Mockery::mock(ApplicationManagerRepositoryInterface::class);
+        $repository->shouldReceive('save')->once()->andReturnUsing(fn (ApplicationManager $am) => $am->setId($uuid));
+
+        $handler = new CreateApplicationManagerHandler($repository);
+        $command = new CreateApplicationManagerCommand(ApplicationName::fromString('Minimal'));
+
+        $result = $handler->handle($command);
+
+        $this->assertNull($result->requestUrl);
+        $this->assertNull($result->ipWhitelist);
+        $this->assertSame('Minimal', $result->name->getValue());
     }
 
     public function test_handle_creates_inactive_application_when_specified(): void

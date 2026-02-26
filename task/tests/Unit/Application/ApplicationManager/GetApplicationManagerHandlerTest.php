@@ -96,6 +96,23 @@ final class GetApplicationManagerHandlerTest extends TestCase
         $this->assertSame(['192.168.1.1'], $result->ipWhitelist->toArray());
     }
 
+    /** Przypadek brzegowy: encja bez whitelisty → DTO z ipWhitelist === null */
+    public function test_handle_returns_null_ip_whitelist_when_entity_has_none(): void
+    {
+        $uuid = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
+        $app = $this->createApplicationManager($uuid, isActive: true, ipWhitelist: null);
+
+        $repository = Mockery::mock(ApplicationManagerRepositoryInterface::class);
+        $repository->shouldReceive('findById')->once()->andReturn($app);
+
+        $handler = new GetApplicationManagerHandler($repository);
+        $query = new GetApplicationManagerQuery($uuid);
+
+        $result = $handler->handle($query);
+
+        $this->assertNull($result->ipWhitelist);
+    }
+
     private function createApplicationManager(Uuid $id, bool $isActive, ?IpWhitelist $ipWhitelist = null): ApplicationManager
     {
         $app = ApplicationManager::create(
