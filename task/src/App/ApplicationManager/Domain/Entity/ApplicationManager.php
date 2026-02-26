@@ -16,7 +16,7 @@ final class ApplicationManager
 
     public function __construct(
         private ApplicationName $name,
-        private ApiKey $apiKey,
+        private ApiKey $apiKeyHash,
         private ?RequestUrl $requestUrl = null,
         private bool $isActive = true,
         private ?IpWhitelist $ipWhitelist = null,
@@ -29,24 +29,24 @@ final class ApplicationManager
 
     public static function create(
         ApplicationName $name,
-        ApiKey $apiKey,
+        ApiKey $apiKeyHash,
         ?RequestUrl $requestUrl = null,
         bool $isActive = true,
         ?IpWhitelist $ipWhitelist = null
     ): self {
-        return new self($name, $apiKey, $requestUrl, $isActive, $ipWhitelist);
+        return new self($name, $apiKeyHash, $requestUrl, $isActive, $ipWhitelist);
     }
 
     public static function fromDatabase(
         ApplicationName $name,
-        ApiKey $apiKey,
+        ApiKey $apiKeyHash,
         ?RequestUrl $requestUrl = null,
         bool $isActive = true,
         ?IpWhitelist $ipWhitelist = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null
     ): self {
-        return new self($name, $apiKey, $requestUrl, $isActive, $ipWhitelist, $createdAt, $updatedAt);
+        return new self($name, $apiKeyHash, $requestUrl, $isActive, $ipWhitelist, $createdAt, $updatedAt);
     }
 
     public function getId(): ?Uuid
@@ -72,12 +72,12 @@ final class ApplicationManager
 
     public function getApiKey(): ApiKey
     {
-        return $this->apiKey;
+        return $this->apiKeyHash;
     }
 
     public function setApiKey(ApiKey $apiKey): void
     {
-        $this->apiKey = $apiKey;
+        $this->apiKeyHash = $apiKey;
         $this->touch();
     }
 

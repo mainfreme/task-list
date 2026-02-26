@@ -15,7 +15,7 @@ final class ApplicationManagerDTO
     public function __construct(
         public readonly Uuid $id,
         public readonly ApplicationName $name,
-        public readonly ?ApiKey $apiKey = null, // Only returned when creating/regenerating
+        public readonly ?ApiKey $apiKeyHash = null,
         public readonly ?RequestUrl $requestUrl = null,
         public readonly bool $isActive = true,
         public readonly ?IpWhitelist $ipWhitelist = null,
@@ -32,8 +32,8 @@ final class ApplicationManagerDTO
             'ip_whitelist' => $this->ipWhitelist?->toArray(),
         ];
 
-        if ($this->apiKey !== null) {
-            $data['api_key'] = $this->apiKey->value();
+        if ($this->apiKeyHash !== null) {
+            $data['api_key'] = $this->apiKeyHash->value();
         }
 
         return $data;
