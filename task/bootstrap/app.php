@@ -1,5 +1,6 @@
 <?php
 
+use App\Shared\Infrastructure\Providers\ConsoleServiceProvider;
 use App\Shared\Infrastructure\Providers\MigrationServiceProvider;
 use App\Shared\Infrastructure\Providers\RepositoryServiceProvider;
 use Illuminate\Foundation\Application;
@@ -13,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         RepositoryServiceProvider::class,
         MigrationServiceProvider::class,
+        ConsoleServiceProvider::class,
     ])
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',

@@ -257,6 +257,66 @@ Repository Implementation (Infrastructure)
 Database
 ```
 
+## Asynchroniczne przetwarzanie (RabbitMQ)
+
+Komendy mogą być wysyłane na kolejkę RabbitMQ i przetwarzane przez osobne workery – bez blokowania odpowiedzi HTTP.
+
+### Wysyłanie komend na kolejkę
+
+Użyj `MessageProducerInterface` – domyślnie wiadomości trafiają do kolejki `commands`:
+
+```php
+use App\Shared\Infrastructure\MessageBroker\MessageProducerInterface;
+use App\Shared\Infrastructure\MessageBroker\Queue;
+
+final class SomeHandler
+{
+    public function __construct(
+        private readonly MessageProducerInterface $producer
+    ) {}
+
+    public function handle(SomeCommand $command): void
+    {
+        // Publikuj na domyślną kolejkę (commands)
+        $this->producer->publish([
+            'type' => 'do_something',
+            'payload' => ['id' => $command->id->getValue()],
+        ]);
+
+        // Lub jawnie wskaż kolejkę
+        $this->producer->publish(
+            ['key' => 'value'],
+            Queue::COMMANDS
+        );
+    }
+}
+```
+
+### Kolejki (Queue enum)
+
+Kolejki są zdefiniowane w `App\Shared\Infrastructure\MessageBroker\Queue`:
+
+- `Queue::COMMANDS` – domyślna kolejka dla komend (używaj tej)
+- Inne kolejki są wewnętrzne – nie publikuj do nich bezpośrednio; mają dedykowane producenty w warstwie Domain/Infrastructure.
+
+### Konsumowanie wiadomości
+
+Worker odczytuje wiadomości z kolejki i przetwarza je (np. zapis do bazy). Każda kolejka ma własną komendę artisan – szczegóły w dokumentacji modułu, który jej używa.
+
+### Konfiguracja RabbitMQ
+
+Zmienne w `.env`:
+
+```
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_PORT=5672
+RABBITMQ_USER=guest
+RABBITMQ_PASSWORD=guest
+RABBITMQ_VHOST=/
+```
+
+Serwis RabbitMQ jest zdefiniowany w `docker-compose.yml`. Management UI: `http://localhost:15672`.
+
 ## Konfiguracja
 
 ### Service Providers

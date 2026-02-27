@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Auth\UI\Http\Controllers\Api\V1\ActivityController;
 use App\Auth\UI\Http\Controllers\Api\V1\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,5 +15,6 @@ Route::prefix('v1/auth')->group(function () {
     Route::middleware(['user.jwt'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/activity', [ActivityController::class, 'log']);
     });
 });
