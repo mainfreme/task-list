@@ -24,6 +24,7 @@ final class CreateTaskRequest extends FormRequest
             'phone' => 'required_without_all:email|string|max:50',
             'email' => 'required_without_all:phone|email|max:255',
             'address' => 'required|string',
+            'application_manager_id' => 'nullable|string|uuid',
             'due_date' => 'nullable|date',
             'delivery_address' => 'nullable|string',
         ];

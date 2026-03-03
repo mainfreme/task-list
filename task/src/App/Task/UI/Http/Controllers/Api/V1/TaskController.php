@@ -18,6 +18,7 @@ use App\Task\Application\Query\GetTask\GetTaskHandler;
 use App\Task\Application\Query\GetTask\GetTaskQuery;
 use App\Task\Application\Query\ListTasks\ListTasksHandler;
 use App\Task\Domain\Exception\TaskNotFoundException;
+use App\Task\UI\Http\Mappers\CreateTaskCommandMapper;
 use App\Task\UI\Http\Mappers\ListTasksQueryMapper;
 use App\Task\UI\Http\Mappers\UpdateTaskCommandMapper;
 use App\Task\UI\Http\Mappers\UpdateTaskStatusCommandMapper;
@@ -71,8 +72,9 @@ final class TaskController extends ApiController
     )]
     public function store(CreateTaskRequest $request): JsonResponse
     {
-        /** @var CreateTaskCommand $command */
-        $command = $this->mapper->map($request, CreateTaskCommand::class);
+        /** @var CreateTaskCommandMapper $commandMapper */
+        $commandMapper = $this->mapper->map($request, CreateTaskCommandMapper::class);
+        $command = $commandMapper->toCommand();
 
         $taskDTO = $this->createTaskHandler->handle($command);
 
