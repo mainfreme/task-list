@@ -15,9 +15,10 @@ auth.json
 nginx/.htpasswd
 npm-debug.log
 yarn-error.log
-/.fleet
+.fleet
+.idea
 /.idea
-/.vscode
+.vscode
 
 # Laravel specific
 /storage/app/*
