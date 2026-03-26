@@ -6,6 +6,7 @@ namespace Tests\Unit\Application\Task;
 
 use App\Shared\Domain\ValueObject\Address;
 use App\Shared\Domain\ValueObject\Phone;
+use App\Shared\Domain\ValueObject\Uuid;
 use App\Task\Application\Command\CreateTask\CreateTaskCommand;
 use App\Task\Application\Command\CreateTask\CreateTaskHandler;
 use App\Task\Application\DTO\TaskDTO;
@@ -18,7 +19,6 @@ use App\Task\Domain\ValueObject\DueDate;
 use App\Task\Domain\ValueObject\Email;
 use App\Task\Domain\ValueObject\Title;
 use App\Task\Domain\ValueObject\WebsiteUrl;
-use App\Shared\Domain\ValueObject\Uuid;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -39,6 +39,7 @@ final class CreateTaskHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(function (Task $task) use ($uuid) {
                 $task->setId($uuid);
+
                 return $task->getStatus()->value === 'pending';
             }));
 
@@ -74,6 +75,7 @@ final class CreateTaskHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(function (Task $task) use ($uuid) {
                 $task->setId($uuid);
+
                 return true;
             }));
 

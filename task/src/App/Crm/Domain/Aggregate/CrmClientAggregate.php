@@ -25,13 +25,12 @@ use App\Shared\Domain\ValueObject\Uuid;
 use Illuminate\Support\Collection;
 
 /**
- * CrmClientAggregate - Read-only aggregate representing Client with all related entities
+ * CrmClientAggregate - Aggregate root representing Client with all related entities
  *
  * This aggregate follows DDD principles:
- * - Immutable (read-only, no setters)
- * - Contains collections of related entities
+ * - Contains collections of related entities (addresses, contacts, tags, accounts)
  * - Uses Value Objects for all properties
- * - Methods addNote/removeNote return new aggregate instance (immutability)
+ * - Mutations via setters for update operations
  */
 final class CrmClientAggregate
 {
@@ -55,12 +54,15 @@ final class CrmClientAggregate
         private ?ClientNotes $notes,
         private ?\DateTimeImmutable $lastContactedAt,
         private ?\DateTimeImmutable $nextContactAt,
+        private ?Uuid $addressUuid,
         private Collection $addresses,
         private Collection $contacts,
         private Collection $tags,
         private ?ClientNoteDto $clientNoteDto,
         private Collection $accounts,
-        private IsDeleted $isDeleted = new IsDeleted(false),
+        private IsDeleted $isDeleted,
+        private \DateTimeImmutable $createdAt,
+        private \DateTimeImmutable $updatedAt,
     ) {
     }
 
@@ -70,6 +72,8 @@ final class CrmClientAggregate
      */
     public static function create(ClientDto $dto): self
     {
+        $now = new \DateTimeImmutable();
+
         return new self(
             id: Uuid::generate(),
             name: $dto->name,
@@ -84,12 +88,15 @@ final class CrmClientAggregate
             notes: $dto->notes,
             lastContactedAt: null,
             nextContactAt: null,
+            addressUuid: $dto->addressUuid,
             addresses: new Collection(),
             contacts: new Collection(),
             tags: new Collection(),
             clientNoteDto: null,
             accounts: new Collection(),
-            isDeleted: new IsDeleted(false)
+            isDeleted: new IsDeleted(false),
+            createdAt: $now,
+            updatedAt: $now,
         );
     }
 
@@ -116,12 +123,15 @@ final class CrmClientAggregate
         ?ClientNotes $notes,
         ?\DateTimeImmutable $lastContactedAt,
         ?\DateTimeImmutable $nextContactAt,
+        ?Uuid $addressUuid,
         Collection $addresses,
         Collection $contacts,
         Collection $tags,
         Collection $accounts,
-        ?ClientNoteDto $clientNoteDto = null,
-        IsDeleted $isDeleted = new IsDeleted(false)
+        ?ClientNoteDto $clientNoteDto,
+        IsDeleted $isDeleted,
+        \DateTimeImmutable $createdAt,
+        \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
             id: $id,
@@ -137,12 +147,15 @@ final class CrmClientAggregate
             notes: $notes,
             lastContactedAt: $lastContactedAt,
             nextContactAt: $nextContactAt,
+            addressUuid: $addressUuid,
             addresses: $addresses,
             contacts: $contacts,
             tags: $tags,
             clientNoteDto: $clientNoteDto,
             accounts: $accounts,
-            isDeleted: $isDeleted
+            isDeleted: $isDeleted,
+            createdAt: $createdAt,
+            updatedAt: $updatedAt,
         );
     }
 
@@ -212,6 +225,97 @@ final class CrmClientAggregate
         return $this->nextContactAt;
     }
 
+    public function getAddressUuid(): ?Uuid
+    {
+        return $this->addressUuid;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function isDelete(): IsDeleted
+    {
+        return $this->isDeleted;
+    }
+
+    public function setName(ClientName $name): void
+    {
+        $this->name = $name;
+        $this->touch();
+    }
+
+    public function setNip(Nip $nip): void
+    {
+        $this->nip = $nip;
+        $this->touch();
+    }
+
+    public function setCountry(Country $country): void
+    {
+        $this->country = $country;
+        $this->touch();
+    }
+
+    public function setStatus(ClientStatus $status): void
+    {
+        $this->status = $status;
+        $this->touch();
+    }
+
+    public function setIsCompany(IsCompany $isCompany): void
+    {
+        $this->isCompany = $isCompany;
+        $this->touch();
+    }
+
+    public function setRegon(?Regon $regon): void
+    {
+        $this->regon = $regon;
+        $this->touch();
+    }
+
+    public function setPesel(?Pesel $pesel): void
+    {
+        $this->pesel = $pesel;
+        $this->touch();
+    }
+
+    public function setSource(?ClientSource $source): void
+    {
+        $this->source = $source;
+        $this->touch();
+    }
+
+    public function setRating(?ClientRating $rating): void
+    {
+        $this->rating = $rating;
+        $this->touch();
+    }
+
+    public function setNotes(?ClientNotes $notes): void
+    {
+        $this->notes = $notes;
+        $this->touch();
+    }
+
+    public function setAddressUuid(?Uuid $addressUuid): void
+    {
+        $this->addressUuid = $addressUuid;
+        $this->touch();
+    }
+
+    private function touch(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     public function softDelete(): self
     {
         $this->isDeleted = IsDeleted::fromBool(true);
@@ -261,6 +365,10 @@ final class CrmClientAggregate
 
     public function removeNote(): self
     {
+        if ($this->clientNoteDto === null) {
+            return $this;
+        }
+
         $this->clientNoteDto->softDelete();
 
         return $this;

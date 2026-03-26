@@ -18,14 +18,15 @@ final class UpdateClientRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:255',
             'nip' => 'sometimes|string|max:20',
-            'country' => 'sometimes|string|max:2',
+            'country' => 'sometimes|string|max:100',
             'is_company' => 'sometimes|boolean',
             'regon' => 'nullable|string|max:20',
             'pesel' => 'nullable|string|max:11',
             'source' => 'nullable|string|max:255',
             'rating' => 'nullable|integer|min:1|max:5',
             'notes' => 'nullable|string',
-            'status' => 'nullable|string|in:lead,prospect,customer,inactive',
+            'status' => 'nullable|string|in:lead,prospect,active,inactive,archived',
+            'address_uuid' => 'nullable|string|uuid',
         ];
     }
 }

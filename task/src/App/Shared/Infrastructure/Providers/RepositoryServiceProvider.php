@@ -14,13 +14,25 @@ use App\Auth\Infrastructure\Repository\EloquentActivityLogRepository;
 use App\Auth\Infrastructure\Repository\EloquentUserRepository;
 use App\Auth\Infrastructure\Service\ActivityLogProducer;
 use App\Auth\Infrastructure\Service\JwtTokenService;
+use App\Crm\Domain\Repository\AddressRepositoryInterface;
+use App\Crm\Domain\Repository\ClientRepositoryInterface;
+use App\Crm\Infrastructure\Repository\EloquentAddressRepository;
+use App\Crm\Infrastructure\Repository\EloquentClientRepository;
 use App\Profile\Domain\Repository\UserProfileRepository;
 use App\Profile\Infrastructure\Repository\EloquentUserProfileRepository;
 use App\Shared\Infrastructure\MessageBroker\MessageProducerInterface;
 use App\Shared\Infrastructure\MessageBroker\RabbitMQConnection;
 use App\Shared\Infrastructure\MessageBroker\RabbitMQProducer;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
+use App\Settings\Domain\Repository\ChartDefinitionRepositoryInterface;
+use App\Settings\Domain\Repository\IntegrationAccountRepositoryInterface;
+use App\Settings\Domain\Repository\SettingEntryRepositoryInterface;
+use App\Settings\Infrastructure\Repository\EloquentChartDefinitionRepository;
+use App\Settings\Infrastructure\Repository\EloquentIntegrationAccountRepository;
+use App\Settings\Infrastructure\Repository\EloquentSettingEntryRepository;
+use App\Task\Domain\Repository\TaskTimeSessionRepositoryInterface;
 use App\Task\Infrastructure\Repository\EloquentTaskRepository;
+use App\Task\Infrastructure\Repository\EloquentTaskTimeSessionRepository;
 use Illuminate\Support\ServiceProvider;
 
 final class RepositoryServiceProvider extends ServiceProvider
@@ -38,6 +50,21 @@ final class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             TaskRepositoryInterface::class,
             EloquentTaskRepository::class
+        );
+
+        $this->app->bind(
+            TaskTimeSessionRepositoryInterface::class,
+            EloquentTaskTimeSessionRepository::class
+        );
+
+        $this->app->bind(
+            ClientRepositoryInterface::class,
+            EloquentClientRepository::class
+        );
+
+        $this->app->bind(
+            AddressRepositoryInterface::class,
+            EloquentAddressRepository::class
         );
 
         $this->app->bind(
@@ -78,6 +105,21 @@ final class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             ActivityLogProducerInterface::class,
             ActivityLogProducer::class
+        );
+
+        $this->app->bind(
+            ChartDefinitionRepositoryInterface::class,
+            EloquentChartDefinitionRepository::class
+        );
+
+        $this->app->bind(
+            IntegrationAccountRepositoryInterface::class,
+            EloquentIntegrationAccountRepository::class
+        );
+
+        $this->app->bind(
+            SettingEntryRepositoryInterface::class,
+            EloquentSettingEntryRepository::class
         );
     }
 

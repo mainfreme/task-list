@@ -123,6 +123,7 @@ final class GetApplicationManagerHandlerTest extends TestCase
             $ipWhitelist
         );
         $app->setId($id);
+
         return $app;
     }
 }

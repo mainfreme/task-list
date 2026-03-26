@@ -80,6 +80,7 @@ final class ApiKeyMiddlewareTest extends TestCase
         $nextCalled = false;
         $next = function () use (&$nextCalled) {
             $nextCalled = true;
+
             return response()->json(['ok' => true], 200);
         };
 
@@ -171,6 +172,7 @@ final class ApiKeyMiddlewareTest extends TestCase
         $nextCalled = false;
         $next = function () use (&$nextCalled) {
             $nextCalled = true;
+
             return response()->json(['ok' => true], 200);
         };
 
@@ -254,6 +256,7 @@ final class ApiKeyMiddlewareTest extends TestCase
         $middleware = new ApiKeyMiddleware($repository);
         $next = function (Request $req) use ($uuid) {
             $this->assertSame($uuid->getValue(), $req->attributes->get('application_manager_id'));
+
             return response()->json(['ok' => true], 200);
         };
 

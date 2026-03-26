@@ -145,6 +145,7 @@ final class UserJwtMiddlewareTest extends TestCase
         $nextCalled = false;
         $next = function () use (&$nextCalled) {
             $nextCalled = true;
+
             return response()->json(['ok' => true], 200);
         };
 
@@ -174,6 +175,7 @@ final class UserJwtMiddlewareTest extends TestCase
             $nextCalled = true;
             $capturedUserId = $req->attributes->get('user_id');
             $capturedUser = $req->attributes->get('user');
+
             return response()->json(['ok' => true], 200);
         };
 

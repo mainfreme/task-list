@@ -81,6 +81,7 @@ final class CreateApplicationManagerHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(function (ApplicationManager $am) use ($uuid) {
                 $am->setId($uuid);
+
                 return !$am->isActive();
             }));
 
@@ -107,6 +108,7 @@ final class CreateApplicationManagerHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(function (ApplicationManager $am) use ($uuid) {
                 $am->setId($uuid);
+
                 return $am->getRequestUrl() !== null && $am->getIpWhitelist() !== null;
             }));
 
