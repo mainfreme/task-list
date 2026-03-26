@@ -79,6 +79,7 @@ final class ActivityLogConsumerCommand extends Command
             }
         } catch (\Throwable $e) {
             $this->error('Consumer error: ' . $e->getMessage());
+
             return Command::FAILURE;
         } finally {
             $connection->disconnect();

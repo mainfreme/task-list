@@ -1,0 +1,9 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Settings\Application\Query\ListIntegrationAccounts;
+
+final class ListIntegrationAccountsQuery
+{
+}

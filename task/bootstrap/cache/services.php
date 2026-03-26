@@ -45,9 +45,10 @@ return  [
     39 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
     40 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
     41 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
-    42 => 'App\\Providers\\TelescopeServiceProvider',
-    43 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
-    44 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
+    42 => 'App\\Shared\\Infrastructure\\Providers\\ConsoleServiceProvider',
+    43 => 'App\\Providers\\TelescopeServiceProvider',
+    44 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
+    45 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
   ],
   'eager' =>
    [
@@ -77,9 +78,10 @@ return  [
     23 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
     24 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
     25 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
-    26 => 'App\\Providers\\TelescopeServiceProvider',
-    27 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
-    28 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
+    26 => 'App\\Shared\\Infrastructure\\Providers\\ConsoleServiceProvider',
+    27 => 'App\\Providers\\TelescopeServiceProvider',
+    28 => 'App\\Shared\\Infrastructure\\Providers\\MigrationServiceProvider',
+    29 => 'App\\Shared\\Infrastructure\\Providers\\RepositoryServiceProvider',
   ],
   'deferred' =>
    [

@@ -7,7 +7,6 @@ namespace App\Task\UI\Http\Controllers\Api\V1;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Shared\Infrastructure\Mapper\GenericRequestMapper;
 use App\Shared\UI\Http\Controllers\Api\ApiController;
-use App\Task\Application\Command\CreateTask\CreateTaskCommand;
 use App\Task\Application\Command\CreateTask\CreateTaskHandler;
 use App\Task\Application\Command\DeleteTask\DeleteTaskCommand;
 use App\Task\Application\Command\DeleteTask\DeleteTaskHandler;

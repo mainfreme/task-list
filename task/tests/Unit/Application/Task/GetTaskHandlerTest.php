@@ -6,6 +6,7 @@ namespace Tests\Unit\Application\Task;
 
 use App\Shared\Domain\ValueObject\Address;
 use App\Shared\Domain\ValueObject\Phone;
+use App\Shared\Domain\ValueObject\Uuid;
 use App\Task\Application\DTO\TaskDTO;
 use App\Task\Application\Query\GetTask\GetTaskHandler;
 use App\Task\Application\Query\GetTask\GetTaskQuery;
@@ -20,7 +21,6 @@ use App\Task\Domain\ValueObject\Email;
 use App\Task\Domain\ValueObject\TaskStatus;
 use App\Task\Domain\ValueObject\Title;
 use App\Task\Domain\ValueObject\WebsiteUrl;
-use App\Shared\Domain\ValueObject\Uuid;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -106,6 +106,7 @@ final class GetTaskHandlerTest extends TestCase
             TaskStatus::COMPLETED
         );
         $task->setId($id);
+
         return $task;
     }
 
@@ -124,6 +125,7 @@ final class GetTaskHandlerTest extends TestCase
             DeliveryAddress::fromString('ul. Dostawy 5')
         );
         $task->setId($id);
+
         return $task;
     }
 }

@@ -197,6 +197,7 @@ final class JwtMiddlewareTest extends TestCase
         $nextCalled = false;
         $next = function () use (&$nextCalled) {
             $nextCalled = true;
+
             return response()->json(['ok' => true], 200);
         };
 
@@ -272,6 +273,7 @@ final class JwtMiddlewareTest extends TestCase
             $nextCalled = true;
             $capturedAppId = $req->attributes->get('application_manager_id');
             $capturedApp = $req->attributes->get('application_manager');
+
             return response()->json(['ok' => true], 200);
         };
 
