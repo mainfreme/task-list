@@ -34,7 +34,7 @@ final class CreateClientCommandMapper
     public Country $country;
 
     #[MapField('is_company', transformer: BoolToIsCompanyTransformer::class)]
-    public IsCompany $isCompany = new IsCompany(false);
+    public ?IsCompany $isCompany = null;
 
     #[MapField]
     public ?Regon $regon = null;
@@ -63,7 +63,7 @@ final class CreateClientCommandMapper
             name: $this->name,
             nip: $this->nip,
             country: $this->country,
-            isCompany: $this->isCompany,
+            isCompany: $this->isCompany ?? IsCompany::fromBool(false),
             regon: $this->regon,
             pesel: $this->pesel,
             source: $this->source,
