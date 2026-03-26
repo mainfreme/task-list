@@ -19,6 +19,7 @@ use App\Settings\UI\Http\Requests\V1\UpsertSettingEntryRequest;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Shared\UI\Http\Controllers\Api\ApiController;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 final class SettingEntryController extends ApiController
 {
@@ -31,6 +32,17 @@ final class SettingEntryController extends ApiController
     ) {
     }
 
+    #[OA\Get(
+        path: '/v1/settings/entries/grouped',
+        summary: 'Get all setting entries grouped by group_key',
+        description: 'Returns an object keyed by group_key; each value is an array of entries (group_key, field_key, field_type, value, …).',
+        tags: ['Settings'],
+        security: [['jwt' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'OK'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function grouped(): JsonResponse
     {
         $data = $this->getAllGroupedHandler->handle(new GetAllSettingsGroupedQuery());
@@ -38,6 +50,25 @@ final class SettingEntryController extends ApiController
         return $this->success($data);
     }
 
+    #[OA\Get(
+        path: '/v1/settings/groups/{groupKey}',
+        summary: 'List setting entries for one group',
+        tags: ['Settings'],
+        security: [['jwt' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'groupKey',
+                in: 'path',
+                required: true,
+                description: 'Group key (e.g. dashboard, notifications)',
+                schema: new OA\Schema(type: 'string', example: 'dashboard')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'OK'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function indexByGroup(string $groupKey): JsonResponse
     {
         $items = $this->listByGroupHandler->handle(new ListSettingsByGroupQuery(groupKey: $groupKey));
@@ -48,6 +79,20 @@ final class SettingEntryController extends ApiController
         ));
     }
 
+    #[OA\Get(
+        path: '/v1/settings/entries/{id}',
+        summary: 'Get setting entry by ID',
+        tags: ['Settings'],
+        security: [['jwt' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Setting entry UUID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'OK'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
     public function show(Uuid $id): JsonResponse
     {
         try {
@@ -59,6 +104,30 @@ final class SettingEntryController extends ApiController
         }
     }
 
+    #[OA\Put(
+        path: '/v1/settings/entries',
+        summary: 'Upsert setting entry',
+        description: 'Creates or updates a row by unique (group_key, field_key).',
+        tags: ['Settings'],
+        security: [['jwt' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['group_key', 'field_key', 'field_type'],
+                properties: [
+                    new OA\Property(property: 'group_key', type: 'string', example: 'dashboard'),
+                    new OA\Property(property: 'field_key', type: 'string', example: 'theme'),
+                    new OA\Property(property: 'field_type', type: 'string', enum: ['string', 'int', 'bool', 'json']),
+                    new OA\Property(property: 'value', type: 'string', nullable: true),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'OK'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
     public function upsert(UpsertSettingEntryRequest $request): JsonResponse
     {
         $dto = $this->upsertHandler->handle(new UpsertSettingEntryCommand(
@@ -71,6 +140,20 @@ final class SettingEntryController extends ApiController
         return $this->success($dto->toArray());
     }
 
+    #[OA\Delete(
+        path: '/v1/settings/entries/{id}',
+        summary: 'Delete setting entry',
+        tags: ['Settings'],
+        security: [['jwt' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Setting entry UUID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'No content'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
     public function destroy(Uuid $id): JsonResponse
     {
         try {
