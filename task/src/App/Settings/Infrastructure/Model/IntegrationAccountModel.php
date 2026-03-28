@@ -30,7 +30,7 @@ final class IntegrationAccountModel extends Model
 
     protected $casts = [
         'enabled' => 'boolean',
-        'credentials' => 'encrypted:array',
+        'credentials' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',

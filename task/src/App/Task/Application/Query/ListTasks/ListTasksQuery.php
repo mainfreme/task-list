@@ -13,6 +13,8 @@ final class ListTasksQuery
         public readonly int $perPage = 20,
         public readonly ?string $status = null,
         public readonly ?ApplicationManagerId $applicationManagerId = null,
+        public readonly string $sortBy = 'created_at',
+        public readonly string $sortDir = 'desc',
     ) {
     }
 }

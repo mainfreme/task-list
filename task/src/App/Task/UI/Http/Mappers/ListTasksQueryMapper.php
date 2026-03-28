@@ -25,13 +25,24 @@ final class ListTasksQueryMapper
     #[MapField('application_manager_id')]
     public ?ApplicationManagerId $applicationManagerId = null;
 
+    #[MapField('sort_by')]
+    public string $sortBy = 'created_at';
+
+    #[MapField('sort_dir')]
+    public string $sortDir = 'desc';
+
     public function toQuery(): ListTasksQuery
     {
+        $sortBy = in_array($this->sortBy, ['title', 'created_at', 'status'], true) ? $this->sortBy : 'created_at';
+        $sortDir = strtolower($this->sortDir) === 'asc' ? 'asc' : 'desc';
+
         return new ListTasksQuery(
             page: $this->page,
             perPage: $this->perPage,
             status: $this->status,
             applicationManagerId: $this->applicationManagerId,
+            sortBy: $sortBy,
+            sortDir: $sortDir,
         );
     }
 }

@@ -61,6 +61,47 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
             ->toArray();
     }
 
+    public function findForList(
+        ?TaskStatus $status,
+        ?ApplicationManagerId $applicationManagerId,
+        int $limit,
+        int $offset,
+        string $sortBy,
+        string $sortDir,
+    ): array {
+        $column = match ($sortBy) {
+            'title' => 'title',
+            'status' => 'status',
+            default => 'created_at',
+        };
+        $dir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
+
+        $query = TaskModel::query()
+            ->when($status !== null, fn ($q) => $q->where('status', $status->value))
+            ->when(
+                $applicationManagerId !== null,
+                fn ($q) => $q->where('application_manager_id', $applicationManagerId->getValue()),
+            )
+            ->orderBy($column, $dir)
+            ->limit($limit)
+            ->offset($offset);
+
+        return $query->get()
+            ->map(fn (TaskModel $model) => $this->toEntity($model))
+            ->toArray();
+    }
+
+    public function countForList(?TaskStatus $status, ?ApplicationManagerId $applicationManagerId): int
+    {
+        return TaskModel::query()
+            ->when($status !== null, fn ($q) => $q->where('status', $status->value))
+            ->when(
+                $applicationManagerId !== null,
+                fn ($q) => $q->where('application_manager_id', $applicationManagerId->getValue()),
+            )
+            ->count();
+    }
+
     public function count(): int
     {
         return TaskModel::count();

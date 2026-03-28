@@ -21,17 +21,19 @@ final class ListTasksHandler
     {
         $offset = ($query->page - 1) * $query->perPage;
 
-        if ($query->status !== null) {
-            $status = TaskStatus::fromString($query->status);
-            $tasks = $this->repository->findByStatus($status);
-        } elseif ($query->applicationManagerId !== null) {
-            $tasks = $this->repository->findByApplicationId($query->applicationManagerId);
-        } else {
-            $tasks = $this->repository->findAll($query->perPage, $offset);
-        }
+        $status = $query->status !== null ? TaskStatus::fromString($query->status) : null;
 
-        $total = $this->repository->count();
-        $totalPages = (int) ceil($total / $query->perPage);
+        $tasks = $this->repository->findForList(
+            $status,
+            $query->applicationManagerId,
+            $query->perPage,
+            $offset,
+            $query->sortBy,
+            $query->sortDir,
+        );
+
+        $total = $this->repository->countForList($status, $query->applicationManagerId);
+        $totalPages = $query->perPage > 0 ? (int) ceil($total / $query->perPage) : 0;
 
         $taskDTOs = array_map(
             fn (Task $task) => new TaskDTO(
