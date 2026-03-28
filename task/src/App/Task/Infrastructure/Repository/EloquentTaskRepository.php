@@ -63,7 +63,8 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
 
     public function findForList(
         ?TaskStatus $status,
-        ?ApplicationManagerId $applicationManagerId,
+        array $applicationManagerIds,
+        array $userIds,
         int $limit,
         int $offset,
         string $sortBy,
@@ -76,11 +77,18 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
         };
         $dir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
 
+        $appIds = array_map(static fn (ApplicationManagerId $id) => $id->getValue(), $applicationManagerIds);
+        $userIdValues = array_map(static fn (Uuid $id) => $id->getValue(), $userIds);
+
         $query = TaskModel::query()
             ->when($status !== null, fn ($q) => $q->where('status', $status->value))
             ->when(
-                $applicationManagerId !== null,
-                fn ($q) => $q->where('application_manager_id', $applicationManagerId->getValue()),
+                $appIds !== [],
+                fn ($q) => $q->whereIn('application_manager_id', $appIds),
+            )
+            ->when(
+                $userIdValues !== [],
+                fn ($q) => $q->whereIn('user_id', $userIdValues),
             )
             ->orderBy($column, $dir)
             ->limit($limit)
@@ -91,13 +99,20 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
             ->toArray();
     }
 
-    public function countForList(?TaskStatus $status, ?ApplicationManagerId $applicationManagerId): int
+    public function countForList(?TaskStatus $status, array $applicationManagerIds, array $userIds): int
     {
+        $appIds = array_map(static fn (ApplicationManagerId $id) => $id->getValue(), $applicationManagerIds);
+        $userIdValues = array_map(static fn (Uuid $id) => $id->getValue(), $userIds);
+
         return TaskModel::query()
             ->when($status !== null, fn ($q) => $q->where('status', $status->value))
             ->when(
-                $applicationManagerId !== null,
-                fn ($q) => $q->where('application_manager_id', $applicationManagerId->getValue()),
+                $appIds !== [],
+                fn ($q) => $q->whereIn('application_manager_id', $appIds),
+            )
+            ->when(
+                $userIdValues !== [],
+                fn ($q) => $q->whereIn('user_id', $userIdValues),
             )
             ->count();
     }
@@ -118,6 +133,7 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
             'address' => $task->getAddress()->getValue(),
             'status' => $task->getStatus()->value,
             'application_manager_id' => $task->getApplicationManagerId()?->getValue(),
+            'user_id' => $task->getUserId()?->getValue(),
             'due_date' => $task->getDueDate()?->format('Y-m-d H:i:s'),
             'delivery_address' => $task->getDeliveryAddress()?->getValue(),
         ];
@@ -150,6 +166,8 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
 
     private function toEntity(TaskModel $model): Task
     {
+        $userId = $model->user_id !== null ? Uuid::fromString($model->user_id) : null;
+
         $entity = Task::fromDatabase(
             Title::fromString($model->title),
             WebsiteUrl::fromString($model->website_url),
@@ -159,6 +177,7 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
             Address::fromString($model->address),
             TaskStatus::fromString($model->status),
             ApplicationManagerId::fromNullable($model->application_manager_id),
+            $userId,
             DueDate::fromNullable($model->due_date ? $model->due_date->format('Y-m-d H:i:s') : null),
             DeliveryAddress::fromNullable($model->delivery_address),
             $model->created_at ? \DateTimeImmutable::createFromMutable($model->created_at) : null,

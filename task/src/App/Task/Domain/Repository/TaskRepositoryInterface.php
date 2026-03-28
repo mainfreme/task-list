@@ -34,18 +34,26 @@ interface TaskRepositoryInterface
     public function findAll(int $limit = 50, int $offset = 0): array;
 
     /**
+     * @param list<ApplicationManagerId>              $applicationManagerIds
+     * @param list<\App\Shared\Domain\ValueObject\Uuid> $userIds
+     *
      * @return Task[]
      */
     public function findForList(
         ?TaskStatus $status,
-        ?ApplicationManagerId $applicationManagerId,
+        array $applicationManagerIds,
+        array $userIds,
         int $limit,
         int $offset,
         string $sortBy,
         string $sortDir,
     ): array;
 
-    public function countForList(?TaskStatus $status, ?ApplicationManagerId $applicationManagerId): int;
+    /**
+     * @param list<ApplicationManagerId>              $applicationManagerIds
+     * @param list<\App\Shared\Domain\ValueObject\Uuid> $userIds
+     */
+    public function countForList(?TaskStatus $status, array $applicationManagerIds, array $userIds): int;
 
     public function count(): int;
 

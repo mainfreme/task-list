@@ -29,6 +29,7 @@ final class Task
         private Address $address,
         private TaskStatus $status = TaskStatus::PENDING,
         private ?ApplicationManagerId $applicationManagerId = null,
+        private ?Uuid $userId = null,
         private ?DueDate $dueDate = null,
         private ?DeliveryAddress $deliveryAddress = null,
         private ?\DateTimeImmutable $createdAt = null,
@@ -58,6 +59,7 @@ final class Task
             $address,
             TaskStatus::PENDING,
             $applicationManagerId,
+            null,
             $dueDate,
             $deliveryAddress
         );
@@ -72,6 +74,7 @@ final class Task
         Address $address,
         TaskStatus $status,
         ?ApplicationManagerId $applicationManagerId = null,
+        ?Uuid $userId = null,
         ?DueDate $dueDate = null,
         ?DeliveryAddress $deliveryAddress = null,
         ?\DateTimeImmutable $createdAt = null,
@@ -86,6 +89,7 @@ final class Task
             $address,
             $status,
             $applicationManagerId,
+            $userId,
             $dueDate,
             $deliveryAddress,
             $createdAt,
@@ -188,6 +192,17 @@ final class Task
     public function setApplicationManagerId(?ApplicationManagerId $applicationManagerId): void
     {
         $this->applicationManagerId = $applicationManagerId;
+        $this->touch();
+    }
+
+    public function getUserId(): ?Uuid
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(?Uuid $userId): void
+    {
+        $this->userId = $userId;
         $this->touch();
     }
 

@@ -28,6 +28,7 @@ final class TaskDTO
         public readonly Address $address,
         public readonly TaskStatus $status,
         public readonly ?ApplicationManagerId $applicationManagerId = null,
+        public readonly ?Uuid $userId = null,
         public readonly ?DueDate $dueDate = null,
         public readonly ?DeliveryAddress $deliveryAddress = null,
     ) {
@@ -45,6 +46,7 @@ final class TaskDTO
             'address' => $this->address->getValue(),
             'status' => $this->status->value,
             'application_manager_id' => $this->applicationManagerId?->getValue(),
+            'user_id' => $this->userId?->getValue(),
             'due_date' => $this->dueDate?->format('Y-m-d H:i:s'),
             'delivery_address' => $this->deliveryAddress?->getValue(),
         ];

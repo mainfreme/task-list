@@ -121,6 +121,7 @@ final class GetTaskHandlerTest extends TestCase
             Address::fromString('ul. Test 1'),
             TaskStatus::PENDING,
             $appManagerId,
+            null,
             DueDate::fromString('2025-12-31'),
             DeliveryAddress::fromString('ul. Dostawy 5')
         );

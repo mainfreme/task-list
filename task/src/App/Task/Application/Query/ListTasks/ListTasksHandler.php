@@ -25,14 +25,15 @@ final class ListTasksHandler
 
         $tasks = $this->repository->findForList(
             $status,
-            $query->applicationManagerId,
+            $query->applicationManagerIds,
+            $query->userIds,
             $query->perPage,
             $offset,
             $query->sortBy,
             $query->sortDir,
         );
 
-        $total = $this->repository->countForList($status, $query->applicationManagerId);
+        $total = $this->repository->countForList($status, $query->applicationManagerIds, $query->userIds);
         $totalPages = $query->perPage > 0 ? (int) ceil($total / $query->perPage) : 0;
 
         $taskDTOs = array_map(
@@ -46,6 +47,7 @@ final class ListTasksHandler
                 address: $task->getAddress(),
                 status: $task->getStatus(),
                 applicationManagerId: $task->getApplicationManagerId(),
+                userId: $task->getUserId(),
                 dueDate: $task->getDueDate(),
                 deliveryAddress: $task->getDeliveryAddress(),
             ),

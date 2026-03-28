@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Task\UI\Http\Controllers\Api\V1;
 
+use App\Auth\Domain\Entity\User;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Shared\Infrastructure\Mapper\GenericRequestMapper;
 use App\Shared\UI\Http\Controllers\Api\ApiController;
@@ -16,6 +17,7 @@ use App\Task\Application\Command\UpdateTaskStatus\UpdateTaskStatusHandler;
 use App\Task\Application\Query\GetTask\GetTaskHandler;
 use App\Task\Application\Query\GetTask\GetTaskQuery;
 use App\Task\Application\Query\ListTasks\ListTasksHandler;
+use App\Task\Application\Query\ListTasks\ListTasksQuery;
 use App\Task\Domain\Exception\TaskNotFoundException;
 use App\Task\UI\Http\Mappers\CreateTaskCommandMapper;
 use App\Task\UI\Http\Mappers\ListTasksQueryMapper;
@@ -90,6 +92,8 @@ final class TaskController extends ApiController
             new OA\Parameter(name: 'per_page', in: 'query', description: 'Items per page', schema: new OA\Schema(type: 'integer', default: 20)),
             new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status', schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'application_manager_id', in: 'query', description: 'Filter by Application Manager ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'application_manager_ids', in: 'query', description: 'CSV Application Manager IDs (admin)', schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'user_ids', in: 'query', description: 'CSV user UUIDs (admin)', schema: new OA\Schema(type: 'string')),
         ],
         responses: [
             new OA\Response(response: 200, description: 'List of tasks'),
@@ -100,6 +104,20 @@ final class TaskController extends ApiController
         /** @var ListTasksQueryMapper $queryMapper */
         $queryMapper = $this->mapper->map($request, ListTasksQueryMapper::class);
         $query = $queryMapper->toQuery();
+
+        /** @var User|null $authUser */
+        $authUser = $request->attributes->get('user');
+        if ($authUser !== null && !$authUser->canManageUsers()) {
+            $query = new ListTasksQuery(
+                page: $query->page,
+                perPage: $query->perPage,
+                status: $query->status,
+                applicationManagerIds: [],
+                userIds: [],
+                sortBy: $query->sortBy,
+                sortDir: $query->sortDir,
+            );
+        }
 
         $result = $this->listTasksHandler->handle($query);
 

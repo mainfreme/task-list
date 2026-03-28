@@ -32,6 +32,7 @@ final class UpdateTaskStatusHandler
             address: $task->getAddress(),
             status: $task->getStatus(),
             applicationManagerId: $task->getApplicationManagerId(),
+            userId: $task->getUserId(),
             dueDate: $task->getDueDate(),
             deliveryAddress: $task->getDeliveryAddress()
         );

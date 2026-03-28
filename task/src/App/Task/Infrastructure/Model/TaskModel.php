@@ -26,6 +26,7 @@ final class TaskModel extends Model
         'address',
         'status',
         'application_manager_id',
+        'user_id',
         'due_date',
         'delivery_address',
     ];
