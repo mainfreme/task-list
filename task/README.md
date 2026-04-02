@@ -102,6 +102,24 @@ Ustaw katalog główny serwera na folder `public/`:
 - **Document Root:** `.../task/public`
 - **URL:** np. `http://localhost/task/public` lub skonfigurowany virtual host
 
+## Docker: sieć `proxy-network`
+
+Przy stacku z **nginx-proxy** i `docker-compose` w tym repozytorium sieć jest zwykle zadeklarowana jako **zewnętrzna** (`external: true`). Musi istnieć w Dockerze zanim podniesiesz kontenery.
+
+**Utwórz sieć jednorazowo (na hoście z Dockerem):**
+
+```bash
+docker network create proxy-network
+```
+
+**Sprawdzenie:**
+
+```bash
+docker network ls | grep proxy-network
+```
+
+Jeśli przy `docker-compose up` pojawia się błąd o nieistniejącej sieci, wykonaj powyższą komendę i uruchom compose ponownie.
+
 ## **ProfileName**Endpointy API
 
 
