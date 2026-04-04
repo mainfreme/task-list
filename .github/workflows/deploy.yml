@@ -28,30 +28,22 @@ jobs:
     # needs: test
     runs-on: ubuntu-latest
 
-    env:
-      SERVER_APP_PATH: ${{ secrets.SERVER_APP_PATH }}
-      DEPLOY_BRANCH: main # zmień na docelową gałąź, jeśli potrzeba (np. main)
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Rekomendowane: użycie klucza SSH zamiast hasła.
-      # Jeśli przejdziesz na klucz, dodaj SSH_PRIVATE_KEY do sekretów i odkomentuj poniższą sekcję,
-      # a sekcję z hasłem usuń.
-      #
-      # - name: Add SSH key
-      #   uses: webfactory/ssh-agent@v0.8.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Deploy via SSH using password
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v0.1.10
+        env:
+          SERVER_APP_PATH: ${{ secrets.SERVER_APP_PATH }}
+          DEPLOY_BRANCH: main
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
           port: 22
+          envs: SERVER_APP_PATH,DEPLOY_BRANCH
           script: |
             set -e
 
@@ -90,4 +82,3 @@ jobs:
             docker image prune -f || true
 
             echo "Deploy zakończony pomyślnie!"
-
