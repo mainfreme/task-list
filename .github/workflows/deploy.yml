@@ -73,6 +73,9 @@ jobs:
             echo "Czekam na uruchomienie kontenerów..."
             sleep 10
 
+            echo "Migracje bazy danych (kontener app)"
+            docker compose exec -T app php artisan migrate --force
+
             echo "Czyszczę cache i generuję dokumentację Swagger"
             docker compose exec -T app php artisan config:clear || true
             docker compose exec -T app php artisan cache:clear || true
