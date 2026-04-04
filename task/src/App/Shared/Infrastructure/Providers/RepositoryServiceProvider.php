@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Providers;
 
+use App\Ops\Domain\Repository\DeployFailureRepositoryInterface;
+use App\Ops\Infrastructure\Repository\EloquentDeployFailureRepository;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
 use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
 use App\Auth\Domain\Repository\ActivityLogRepositoryInterface;
@@ -120,6 +122,11 @@ final class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             SettingEntryRepositoryInterface::class,
             EloquentSettingEntryRepository::class
+        );
+
+        $this->app->bind(
+            DeployFailureRepositoryInterface::class,
+            EloquentDeployFailureRepository::class
         );
     }
 
