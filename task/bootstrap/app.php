@@ -30,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.key' => App\ApplicationManager\Infrastructure\Middleware\ApiKeyMiddleware::class,
             'jwt' => App\ApplicationManager\Infrastructure\Middleware\JwtMiddleware::class,
             'user.jwt' => App\Auth\Infrastructure\Middleware\UserJwtMiddleware::class,
+            'deploy.webhook' => App\Ops\Infrastructure\Middleware\DeployWebhookMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
