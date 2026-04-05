@@ -6,6 +6,7 @@ networks:
 
 volumes:
     db_data:
+    redis_data:
 
 services:
     app:
@@ -20,8 +21,15 @@ services:
         environment:
             - APP_ENV=dev
             - DATABASE_URL=pgsql://user:passwd@db:5432/db
+            # Redis (kontener `redis`) — nadpisuje .env; obraz PHP używa Predis (brak ext-redis)
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_CLIENT=predis
         depends_on:
-            - db
+            db:
+                condition: service_started
+            redis:
+                condition: service_healthy
         networks:
             - network
             - proxy-network   # dodajemy sieć proxy
@@ -47,9 +55,27 @@ services:
             POSTGRES_USER: user
             POSTGRES_PASSWORD: passwd
         ports:
-            - "5432:5432"
+            # Host 5432 często zajęty (lokalny PostgreSQL / MAMP) — z hosta: localhost:5433
+            - "5433:5432"
         volumes:
             - db_data:/var/lib/postgresql
+        networks:
+            - network
+
+    redis:
+        image: redis:7-alpine
+        container_name: redis
+        restart: unless-stopped
+        command: redis-server --appendonly yes
+        ports:
+            - "6380:6379"
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
         networks:
             - network
 
@@ -58,8 +84,8 @@ services:
         container_name: rabbitmq
         restart: unless-stopped
         ports:
-            - "5672:5672"
-            - "15672:15672"
+            - "5673:5672"
+            - "15673:15672"
         environment:
             RABBITMQ_DEFAULT_USER: guest
             RABBITMQ_DEFAULT_PASS: guest

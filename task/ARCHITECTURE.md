@@ -315,7 +315,7 @@ RABBITMQ_PASSWORD=guest
 RABBITMQ_VHOST=/
 ```
 
-Serwis RabbitMQ jest zdefiniowany w `docker-compose.yml`. Management UI: `http://localhost:15672`.
+Serwis RabbitMQ jest zdefiniowany w `docker-compose.yml`. Management UI z hosta: `http://localhost:15673` (mapowanie portu w Compose; wewnątrz sieci Docker nadal `rabbitmq:5672`).
 
 ## Konfiguracja
 
