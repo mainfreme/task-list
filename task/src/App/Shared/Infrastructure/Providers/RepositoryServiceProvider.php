@@ -6,7 +6,11 @@ namespace App\Shared\Infrastructure\Providers;
 
 use App\Ops\Domain\Repository\DeployFailureRepositoryInterface;
 use App\Ops\Infrastructure\Repository\EloquentDeployFailureRepository;
+use App\ApplicationManager\Domain\Event\ApplicationManagerPersistedEvent;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
+use App\ApplicationManager\Infrastructure\Cache\ApplicationManagerCacheStore;
+use App\ApplicationManager\Infrastructure\Listener\ApplicationManagerPersistedListener;
+use App\ApplicationManager\Infrastructure\Repository\CachingApplicationManagerRepository;
 use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
 use App\Auth\Domain\Repository\ActivityLogRepositoryInterface;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
@@ -35,6 +39,7 @@ use App\Settings\Infrastructure\Repository\EloquentSettingEntryRepository;
 use App\Task\Domain\Repository\TaskTimeSessionRepositoryInterface;
 use App\Task\Infrastructure\Repository\EloquentTaskRepository;
 use App\Task\Infrastructure\Repository\EloquentTaskTimeSessionRepository;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 final class RepositoryServiceProvider extends ServiceProvider
@@ -44,9 +49,11 @@ final class RepositoryServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(EloquentApplicationManagerRepository::class);
+        $this->app->singleton(ApplicationManagerCacheStore::class);
         $this->app->bind(
             ApplicationManagerRepositoryInterface::class,
-            EloquentApplicationManagerRepository::class
+            CachingApplicationManagerRepository::class
         );
 
         $this->app->bind(
@@ -135,6 +142,9 @@ final class RepositoryServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(
+            ApplicationManagerPersistedEvent::class,
+            ApplicationManagerPersistedListener::class
+        );
     }
 }

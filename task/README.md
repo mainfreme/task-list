@@ -7,7 +7,7 @@ Laravel API do zbierania danych z różnych serwisów. Aplikacja wykorzystuje ar
 - **PHP** ^8.2 (rozszerzenia: json, pdo, mbstring, openssl, sodium)
 - **Composer** ^2.0
 - **MySQL** 8.0+ lub **PostgreSQL** lub **SQLite**
-- **Redis** (opcjonalnie, do cache – projekt używa Predis)
+- **Redis** (opcjonalnie, do cache/kolejek – w repozytorium jest [Predis](https://github.com/predis/predis); przy uruchomieniu przez Docker Compose serwis Redis jest w `backend/docker-compose.yml`, host w kontenerze aplikacji: `redis`)
 
 ## Instalacja
 

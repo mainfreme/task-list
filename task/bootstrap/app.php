@@ -2,6 +2,7 @@
 
 use App\Shared\Infrastructure\Providers\ConsoleServiceProvider;
 use App\Shared\Infrastructure\Providers\MigrationServiceProvider;
+use App\Shared\Infrastructure\Providers\RedisServiceProvider;
 use App\Shared\Infrastructure\Providers\RepositoryServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -12,6 +13,7 @@ use Sentry\Laravel\Integration;
 return Application::configure(basePath: dirname(__DIR__))
     ->registered(fn ($app) => $app->useAppPath($app->basePath('src/App')))
     ->withProviders([
+        RedisServiceProvider::class,
         RepositoryServiceProvider::class,
         MigrationServiceProvider::class,
         ConsoleServiceProvider::class,

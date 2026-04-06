@@ -13,6 +13,12 @@ API aplikacji do zarządzania zadaniami zbudowane w architekturze DDD/CQRS z wyk
 
 ### Opcja 1: Uruchomienie z Docker (Zalecane)
 
+**Serwisy w `docker-compose.yml`:** `app` (PHP-FPM), `nginx`, `db` (PostgreSQL), `redis`, `rabbitmq`.
+
+- **Redis** — cache/kolejki/sesje po przełączeniu w `.env` na `CACHE_STORE=redis`, `QUEUE_CONNECTION=redis`, `SESSION_DRIVER=redis`. W kontenerze `app` zmienne `REDIS_*` są ustawiane przez Compose (`REDIS_HOST=redis`, `REDIS_CLIENT=predis`), więc nie trzeba ich ręcznie zmieniać w `.env` przy pracy w Dockerze. Dane Redis są trwałe (wolumen `redis_data`, AOF). Na hoście Redis jest pod **6380** (`6380:6379`) — np. `redis-cli -p 6380 ping`.
+- **PostgreSQL** — z hosta: **localhost:5433** (`5433:5432`), żeby nie kolidować z lokalnym Postgres na 5432.
+- **RabbitMQ** — AMQP z hosta: **5673**, panel: **http://localhost:15673** (`5673:5672`, `15673:15672`).
+
 1. **Sklonuj repozytorium i przejdź do katalogu projektu:**
    ```bash
    cd /path/to/task-list

@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\ApplicationManager\Infrastructure\Repository;
 
 use App\ApplicationManager\Domain\Entity\ApplicationManager;
+use App\ApplicationManager\Domain\Event\ApplicationManagerPersistedEvent;
 use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
-use App\ApplicationManager\Domain\ValueObject\ApplicationName;
-use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
-use App\ApplicationManager\Domain\ValueObject\RequestUrl;
 use App\ApplicationManager\Infrastructure\Eloquent\ApplicationManagerModel;
+use App\ApplicationManager\Infrastructure\Mapper\ApplicationManagerEntityMapper;
 use App\Shared\Domain\ValueObject\Uuid;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,7 +24,7 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
             throw ApplicationManagerNotFoundException::byId($id->getValue());
         }
 
-        return $this->toEntity($model);
+        return ApplicationManagerEntityMapper::fromModel($model);
     }
 
     public function findByApiKey(ApiKey $apiKey): ApplicationManager
@@ -34,7 +33,7 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
 
         foreach ($models as $model) {
             if (Hash::check($apiKey->value(), $model->api_key_hash)) {
-                return $this->toEntity($model);
+                return ApplicationManagerEntityMapper::fromModel($model);
             }
         }
 
@@ -43,6 +42,8 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
 
     public function save(ApplicationManager $applicationManager): void
     {
+        $wasNew = $applicationManager->getId() === null;
+
         $requestUrl = $applicationManager->getRequestUrl();
         $ipWhitelist = $applicationManager->getIpWhitelist();
 
@@ -54,47 +55,35 @@ final class EloquentApplicationManagerRepository implements ApplicationManagerRe
             'ip_whitelist' => $ipWhitelist?->toArray(),
         ];
 
-        if ($applicationManager->getId() === null) {
+        if ($wasNew) {
             $model = ApplicationManagerModel::create($data);
             $applicationManager->setId(Uuid::fromString($model->id));
         } else {
             ApplicationManagerModel::where('id', $applicationManager->getId()->getValue())->update($data);
+        }
+
+        $id = $applicationManager->getId();
+        if ($id !== null) {
+            event(new ApplicationManagerPersistedEvent(
+                $id->getValue(),
+                $wasNew ? ApplicationManagerPersistedEvent::OPERATION_CREATED : ApplicationManagerPersistedEvent::OPERATION_UPDATED
+            ));
         }
     }
 
     public function delete(ApplicationManager $applicationManager): void
     {
         if ($applicationManager->getId() !== null) {
-            ApplicationManagerModel::destroy($applicationManager->getId()->getValue());
+            $id = $applicationManager->getId()->getValue();
+            ApplicationManagerModel::destroy($id);
+            event(new ApplicationManagerPersistedEvent($id, ApplicationManagerPersistedEvent::OPERATION_DELETED));
         }
     }
 
     public function findAll(): array
     {
         return ApplicationManagerModel::all()
-            ->map(fn (ApplicationManagerModel $model) => $this->toEntity($model))
+            ->map(fn (ApplicationManagerModel $model) => ApplicationManagerEntityMapper::fromModel($model))
             ->toArray();
-    }
-
-    private function toEntity(ApplicationManagerModel $model): ApplicationManager
-    {
-        // Note: We cannot reconstruct the original ApiKey from hash, so we create a placeholder
-        // In real scenario, we might need to store the plain API key in a secure way or use a different approach
-        // For now, we'll use a workaround - the API key will be regenerated when needed
-        $apiKey = ApiKey::generate(); // This is a limitation - we can't get original key from hash
-
-        $entity = ApplicationManager::fromDatabase(
-            ApplicationName::fromString($model->name),
-            $apiKey,
-            RequestUrl::fromNullable($model->request_url),
-            $model->is_active,
-            IpWhitelist::fromNullable($model->ip_whitelist),
-            $model->created_at ? \DateTimeImmutable::createFromMutable($model->created_at) : null,
-            $model->updated_at ? \DateTimeImmutable::createFromMutable($model->updated_at) : null
-        );
-
-        $entity->setId(Uuid::fromString($model->id));
-
-        return $entity;
     }
 }
