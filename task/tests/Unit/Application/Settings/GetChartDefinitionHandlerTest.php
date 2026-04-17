@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Settings;
 
 use App\Settings\Application\Mapper\SettingsEntityMapper;
+use App\Settings\Application\Cache\SettingsQueryCacheInterface;
 use App\Settings\Application\Query\GetChartDefinition\GetChartDefinitionHandler;
 use App\Settings\Application\Query\GetChartDefinition\GetChartDefinitionQuery;
 use App\Settings\Application\Service\IntegrationCredentialsMasker;
@@ -29,13 +30,17 @@ final class GetChartDefinitionHandlerTest extends TestCase
         $id = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
 
         $repository = Mockery::mock(ChartDefinitionRepositoryInterface::class);
+        $cache = Mockery::mock(SettingsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldNotReceive('save');
         $repository->shouldReceive('findById')
             ->once()
             ->andThrow(ChartDefinitionNotFoundException::byId($id->getValue()));
 
         $handler = new GetChartDefinitionHandler(
             $repository,
-            new SettingsEntityMapper(new IntegrationCredentialsMasker())
+            new SettingsEntityMapper(new IntegrationCredentialsMasker()),
+            $cache
         );
 
         $this->expectException(ChartDefinitionNotFoundException::class);
@@ -43,7 +48,39 @@ final class GetChartDefinitionHandlerTest extends TestCase
         $handler->handle(new GetChartDefinitionQuery(id: $id));
     }
 
-    public function test_handle_returns_dto_for_existing_definition(): void
+    public function test_handle_uses_cache_when_payload_contains_empty_sql_query(): void
+    {
+        $id = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
+        $repository = Mockery::mock(ChartDefinitionRepositoryInterface::class);
+        $cache = Mockery::mock(SettingsQueryCacheInterface::class);
+        $cache->shouldReceive('find')
+            ->once()
+            ->andReturn([
+                'id' => $id->getValue(),
+                'chart_type' => 'bar',
+                'display_fields' => ['a' => 1],
+                'sql_query' => '',
+                'created_at' => '2025-02-01T00:00:00+00:00',
+                'updated_at' => '2025-02-02T00:00:00+00:00',
+            ]);
+        $cache->shouldNotReceive('save');
+        $repository->shouldNotReceive('findById');
+
+        $handler = new GetChartDefinitionHandler(
+            $repository,
+            new SettingsEntityMapper(new IntegrationCredentialsMasker()),
+            $cache
+        );
+
+        $dto = $handler->handle(new GetChartDefinitionQuery(id: $id));
+
+        $this->assertSame($id->getValue(), $dto->id);
+        $this->assertSame('bar', $dto->chartType);
+        $this->assertSame(['a' => 1], $dto->displayFields);
+        $this->assertSame('', $dto->sqlQuery);
+    }
+
+    public function test_handle_rebuilds_and_saves_cache_when_miss_occurs(): void
     {
         $id = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
         $entity = ChartDefinition::reconstitute(
@@ -56,18 +93,24 @@ final class GetChartDefinitionHandlerTest extends TestCase
         );
 
         $repository = Mockery::mock(ChartDefinitionRepositoryInterface::class);
+        $cache = Mockery::mock(SettingsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldReceive('save')
+            ->once()
+            ->with(
+                Mockery::type('string'),
+                Mockery::on(fn (array $payload) => ($payload['sql_query'] ?? null) === 'SELECT id FROM t')
+            );
         $repository->shouldReceive('findById')->once()->with(Mockery::on(fn ($u) => $u->getValue() === $id->getValue()))->andReturn($entity);
 
         $handler = new GetChartDefinitionHandler(
             $repository,
-            new SettingsEntityMapper(new IntegrationCredentialsMasker())
+            new SettingsEntityMapper(new IntegrationCredentialsMasker()),
+            $cache
         );
 
         $dto = $handler->handle(new GetChartDefinitionQuery(id: $id));
 
-        $this->assertSame($id->getValue(), $dto->id);
-        $this->assertSame('bar', $dto->chartType);
-        $this->assertSame(['a' => 1], $dto->displayFields);
         $this->assertSame('SELECT id FROM t', $dto->sqlQuery);
     }
 }

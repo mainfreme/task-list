@@ -33,6 +33,12 @@ use App\Profile\Infrastructure\Repository\EloquentUserProfileRepository;
 use App\Settings\Domain\Repository\ChartDefinitionRepositoryInterface;
 use App\Settings\Domain\Repository\IntegrationAccountRepositoryInterface;
 use App\Settings\Domain\Repository\SettingEntryRepositoryInterface;
+use App\Settings\Application\Cache\SettingsQueryCacheInterface;
+use App\Settings\Application\Event\SettingsEventDispatcherInterface;
+use App\Settings\Domain\Event\SettingsChangedEvent;
+use App\Settings\Infrastructure\Cache\RedisSettingsQueryCache;
+use App\Settings\Infrastructure\Event\LaravelSettingsEventDispatcher;
+use App\Settings\Infrastructure\Listener\SettingsChangedListener;
 use App\Settings\Infrastructure\Repository\EloquentChartDefinitionRepository;
 use App\Settings\Infrastructure\Repository\EloquentIntegrationAccountRepository;
 use App\Settings\Infrastructure\Repository\EloquentSettingEntryRepository;
@@ -142,6 +148,9 @@ final class RepositoryServiceProvider extends ServiceProvider
             EloquentSettingEntryRepository::class
         );
 
+        $this->app->singleton(SettingsQueryCacheInterface::class, RedisSettingsQueryCache::class);
+        $this->app->singleton(SettingsEventDispatcherInterface::class, LaravelSettingsEventDispatcher::class);
+
         $this->app->bind(
             DeployFailureRepositoryInterface::class,
             EloquentDeployFailureRepository::class
@@ -156,6 +165,10 @@ final class RepositoryServiceProvider extends ServiceProvider
         Event::listen(
             ApplicationManagerPersistedEvent::class,
             ApplicationManagerPersistedListener::class
+        );
+        Event::listen(
+            SettingsChangedEvent::class,
+            SettingsChangedListener::class
         );
     }
 }

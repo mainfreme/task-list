@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Settings;
 
+use App\Settings\Application\Event\SettingsEventDispatcherInterface;
+use App\Settings\Application\Mapper\SettingsEntityMapper;
+use App\Settings\Application\Service\IntegrationCredentialsMasker;
 use App\Settings\Application\Command\DeleteChartDefinition\DeleteChartDefinitionCommand;
 use App\Settings\Application\Command\DeleteChartDefinition\DeleteChartDefinitionHandler;
 use App\Settings\Domain\Entity\ChartDefinition;
+use App\Settings\Domain\Event\SettingsChangedEvent;
 use App\Settings\Domain\Exception\ChartDefinitionNotFoundException;
 use App\Settings\Domain\Repository\ChartDefinitionRepositoryInterface;
 use App\Shared\Domain\ValueObject\Uuid;
@@ -27,37 +31,55 @@ final class DeleteChartDefinitionHandlerTest extends TestCase
         $id = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
 
         $repository = Mockery::mock(ChartDefinitionRepositoryInterface::class);
+        $events = Mockery::mock(SettingsEventDispatcherInterface::class);
         $repository->shouldReceive('findById')
             ->once()
             ->andThrow(ChartDefinitionNotFoundException::byId($id->getValue()));
         $repository->shouldNotReceive('delete');
+        $events->shouldNotReceive('dispatch');
 
-        $handler = new DeleteChartDefinitionHandler($repository);
+        $handler = new DeleteChartDefinitionHandler(
+            $repository,
+            new SettingsEntityMapper(new IntegrationCredentialsMasker()),
+            $events
+        );
 
         $this->expectException(ChartDefinitionNotFoundException::class);
 
         $handler->handle(new DeleteChartDefinitionCommand(id: $id));
     }
 
-    public function test_handle_deletes_when_found(): void
+    public function test_handle_dispatches_deleted_event_for_complex_display_fields(): void
     {
-        $this->expectNotToPerformAssertions();
-
         $id = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
         $entity = ChartDefinition::reconstitute(
             id: $id,
             chartType: 'line',
-            displayFields: [],
+            displayFields: ['series' => ['x' => 'day', 'y' => 'count']],
             sqlQuery: 'SELECT 1',
             createdAt: new DateTimeImmutable(),
             updatedAt: new DateTimeImmutable(),
         );
 
         $repository = Mockery::mock(ChartDefinitionRepositoryInterface::class);
+        $events = Mockery::mock(SettingsEventDispatcherInterface::class);
         $repository->shouldReceive('findById')->once()->andReturn($entity);
         $repository->shouldReceive('delete')->once()->with(Mockery::on(fn (ChartDefinition $e) => $e->getId()->getValue() === $id->getValue()));
+        $events->shouldReceive('dispatch')
+            ->once()
+            ->with(Mockery::on(function (SettingsChangedEvent $event) use ($id) {
+                return $event->operation === SettingsChangedEvent::OPERATION_DELETED
+                    && $event->resourceId === $id->getValue()
+                    && ($event->before['display_fields']['series']['x'] ?? null) === 'day';
+            }));
 
-        $handler = new DeleteChartDefinitionHandler($repository);
+        $handler = new DeleteChartDefinitionHandler(
+            $repository,
+            new SettingsEntityMapper(new IntegrationCredentialsMasker()),
+            $events
+        );
         $handler->handle(new DeleteChartDefinitionCommand(id: $id));
+
+        $this->assertTrue(true);
     }
 }

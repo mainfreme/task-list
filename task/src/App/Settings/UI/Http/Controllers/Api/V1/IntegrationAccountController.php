@@ -8,6 +8,7 @@ use App\Settings\Application\Command\CreateIntegrationAccount\CreateIntegrationA
 use App\Settings\Application\Command\CreateIntegrationAccount\CreateIntegrationAccountHandler;
 use App\Settings\Application\Command\DeleteIntegrationAccount\DeleteIntegrationAccountCommand;
 use App\Settings\Application\Command\DeleteIntegrationAccount\DeleteIntegrationAccountHandler;
+use App\Settings\Application\Command\SettingsCommandContext;
 use App\Settings\Application\Command\SetIntegrationAccountEnabled\SetIntegrationAccountEnabledCommand;
 use App\Settings\Application\Command\SetIntegrationAccountEnabled\SetIntegrationAccountEnabledHandler;
 use App\Settings\Application\Command\UpdateIntegrationAccount\UpdateIntegrationAccountCommand;
@@ -23,6 +24,7 @@ use App\Settings\UI\Http\Requests\V1\UpdateIntegrationAccountRequest;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Shared\UI\Http\Controllers\Api\ApiController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 final class IntegrationAccountController extends ApiController
@@ -98,6 +100,7 @@ final class IntegrationAccountController extends ApiController
             externalAccountId: $request->validated('external_account_id'),
             provider: $request->validated('provider'),
             credentials: $credentials,
+            context: $this->buildContext($request),
         ));
 
         return $this->created($dto->toArray());
@@ -170,6 +173,7 @@ final class IntegrationAccountController extends ApiController
                 externalAccountId: $request->validated('external_account_id'),
                 provider: $request->validated('provider'),
                 credentials: $credentials,
+                context: $this->buildContext($request),
             ));
 
             return $this->success($dto->toArray());
@@ -195,7 +199,13 @@ final class IntegrationAccountController extends ApiController
     public function destroy(Uuid $id): JsonResponse
     {
         try {
-            $this->deleteHandler->handle(new DeleteIntegrationAccountCommand(id: $id));
+            /** @var Request $request */
+            $request = request();
+
+            $this->deleteHandler->handle(new DeleteIntegrationAccountCommand(
+                id: $id,
+                context: $this->buildContext($request),
+            ));
 
             return $this->noContent();
         } catch (IntegrationAccountNotFoundException $e) {
@@ -233,11 +243,24 @@ final class IntegrationAccountController extends ApiController
             $dto = $this->setEnabledHandler->handle(new SetIntegrationAccountEnabledCommand(
                 id: $id,
                 enabled: (bool) $request->validated('enabled'),
+                context: $this->buildContext($request),
             ));
 
             return $this->success($dto->toArray());
         } catch (IntegrationAccountNotFoundException $e) {
             return $this->notFound($e->getMessage());
         }
+    }
+
+    private function buildContext(Request $request): SettingsCommandContext
+    {
+        $actorId = $request->attributes->get('user_id');
+
+        return new SettingsCommandContext(
+            actorId: $actorId !== null ? $actorId->getValue() : null,
+            requestUrl: $request->fullUrl(),
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent(),
+        );
     }
 }

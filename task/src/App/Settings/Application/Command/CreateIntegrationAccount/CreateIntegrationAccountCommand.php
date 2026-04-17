@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Settings\Application\Command\CreateIntegrationAccount;
 
+use App\Settings\Application\Command\SettingsCommandContext;
+
 final class CreateIntegrationAccountCommand
 {
     /**
@@ -15,6 +17,7 @@ final class CreateIntegrationAccountCommand
         public readonly ?string $externalAccountId,
         public readonly ?string $provider,
         public readonly array $credentials,
+        public readonly ?SettingsCommandContext $context = null,
     ) {
     }
 }

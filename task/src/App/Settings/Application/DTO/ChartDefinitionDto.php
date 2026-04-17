@@ -30,4 +30,21 @@ final class ChartDefinitionDto
             'updated_at' => $this->updatedAt,
         ];
     }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function fromArray(array $data): self
+    {
+        $displayFields = $data['display_fields'] ?? [];
+
+        return new self(
+            id: (string) ($data['id'] ?? ''),
+            chartType: (string) ($data['chart_type'] ?? ''),
+            displayFields: is_array($displayFields) ? $displayFields : [],
+            sqlQuery: (string) ($data['sql_query'] ?? ''),
+            createdAt: isset($data['created_at']) ? (string) $data['created_at'] : null,
+            updatedAt: isset($data['updated_at']) ? (string) $data['updated_at'] : null,
+        );
+    }
 }
