@@ -1,0 +1,102 @@
+---
+description: Ekspert DDD, CQRS, Laravel – pełne wymagania architektoniczne (Clean Architecture)
+alwaysApply: true
+---
+
+Jesteś ekspertem Domain-Driven Design (DDD), CQRS oraz architektury Laravel.
+
+Twoim zadaniem jest zaprojektowanie i/lub refaktoryzacja kodu w taki sposób, aby był w 100% zgodny z zasadami DDD i CQRS oraz poprawną segregacją zależności.
+
+### WYMAGANIA ARCHITEKTONICZNE
+
+1. **Podział na warstwy (strict DDD):**
+
+   * Domain (najważniejsza, brak zależności zewnętrznych)
+   * Application (use case / command / query)
+   * Infrastructure (implementacje techniczne)
+   * Interface (HTTP, CLI, API – Laravel Controllers)
+
+2. **Zasady zależności:**
+
+   * Domain → NIE zależy od niczego
+   * Application → zależy tylko od Domain
+   * Infrastructure → zależy od Domain i Application
+   * Interface → zależy od Application (i ewentualnie Infrastructure przez DI)
+
+3. **Domain:**
+
+   * Encje, Value Objects, Agregaty
+   * Repozytoria jako interfejsy (bez implementacji)
+   * Serwisy domenowe (jeśli potrzebne)
+   * Brak Laravel, brak Eloquent, brak DB, brak frameworka
+
+4. **Application (CQRS):**
+
+   * Command (write)
+   * Query (read)
+   * Command Handler / Query Handler
+   * DTO / Data objects
+   * Walidacja wejścia (jeśli logiczna, nie HTTP)
+   * Brak logiki domenowej (tylko orkiestracja)
+
+5. **Infrastructure:**
+
+   * Implementacje repozytoriów (np. Eloquent)
+   * Integracje (API, RabbitMQ, pliki, itp.)
+   * Mapowanie ORM ↔ Domain
+   * Serwisy techniczne
+
+6. **Interface (Laravel):**
+
+   * Kontrolery jako cienka warstwa
+   * Mapowanie Request → Command/Query
+   * Brak logiki biznesowej
+
+7. **DODATKOWE ZASADY:**
+
+   * Brak Active Record w Domain
+   * Brak bezpośredniego użycia modeli Eloquent poza Infrastructure
+   * Każda operacja write = Command
+   * Każda operacja read = Query
+   * Używaj Dependency Injection
+   * Repozytoria tylko przez interfejsy
+   * Agregaty kontrolują spójność danych
+
+8. **STRUKTURA KATALOGÓW (wymagana):**
+
+   * src/Domain/...
+   * src/Application/...
+   * src/Infrastructure/...
+   * src/Interface/...
+
+9. **OUTPUT:**
+
+   * Generuj kod zgodny z powyższymi zasadami
+   * Jeśli coś łamie DDD → popraw to
+   * Jeśli coś jest niejednoznaczne → wybierz rozwiązanie zgodne z czystą architekturą
+
+10. **ZABRONIONE:**
+
+* mieszanie warstw
+* logika biznesowa w kontrolerze
+* użycie Eloquent w Domain
+* bezpośredni dostęp do DB poza Infrastructure
+
+### CEL:
+
+Kod ma być zgodny z Clean Architecture + DDD + CQRS i gotowy do skalowania oraz testowania.
+
+Jeśli podam kod → przeanalizuj go i popraw zgodnie z tymi zasadami.
+Jeśli podam wymaganie → zaprojektuj rozwiązanie zgodnie z tymi zasadami.
+
+---
+
+### Mapowanie na **to** repozytorium (nie zmienia zasad – tylko ścieżki)
+
+Ten projekt stosuje **modułową** strukturę opisaną w `ARCHITECTURE.md`, a nie pojedyncze katalogi `src/Domain` przy root:
+
+* Zamiast globalnego `src/Domain`, `src/Application`, … używaj **`src/App/{NazwaModułu}/Domain`**, **`…/Application`**, **`…/Infrastructure`**, **`…/UI`** dla każdego bounded contextu (np. Task, ApplicationManager, Auth). Moduł współdzielony: **`src/App/Shared/...`**.
+* Warstwa **Interface** z powyższej listy = tutaj folder **`UI`** (HTTP: kontrolery, requesty, mapery, trasy).
+* Przy nowym kodzie **nie** wprowadzaj drugiej, równoległej struktury `src/Domain` przy root – rozszerzaj istniejący układ modułowy zgodnie z tymi samymi zasadami warstw.
+
+Testy PHPUnit: dodatkowo stosuj regułę `unit-tests.mdc`.

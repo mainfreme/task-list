@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Auth\Infrastructure\Repository;
 
-use App\Auth\Application\DTO\UserDTO;
 use App\Auth\Domain\Entity\User;
 use App\Auth\Domain\Enum\UserRoleEnum;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
@@ -36,15 +35,15 @@ final class EloquentUserRepository implements UserRepositoryInterface
         return $this->toEntity($model);
     }
 
-    public function save(UserDTO $dto): void
+    public function save(User $user): void
     {
-        $model = UserModel::find($dto->id->getValue()) ?? new UserModel();
+        $model = UserModel::find($user->getId()->getValue()) ?? new UserModel();
 
-        $model->id = $dto->id->getValue();
-        $model->name = $dto->name;
-        $model->email = $dto->email->getValue();
-        $model->password = $dto->password;
-        $model->roles = $dto->role->value;
+        $model->id = $user->getId()->getValue();
+        $model->name = $user->getName();
+        $model->email = $user->getEmail()->getValue();
+        $model->password = $user->getPassword();
+        $model->roles = $user->getRole()->value;
 
         $model->save();
     }

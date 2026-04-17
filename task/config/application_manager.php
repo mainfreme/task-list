@@ -3,6 +3,12 @@
 declare(strict_types=1);
 
 return [
+    'jwt' => [
+        'secret' => env('JWT_SECRET'),
+        'algorithm' => env('JWT_ALGORITHM', 'HS256'),
+        'default_expiration_minutes' => (int) env('JWT_EXPIRATION_MINUTES', 60 * 24),
+    ],
+
     'redis_cache' => [
         /*
         | Prefiks klucza Redis: {prefix}{uuid}

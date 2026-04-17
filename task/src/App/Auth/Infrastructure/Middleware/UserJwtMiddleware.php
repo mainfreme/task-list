@@ -99,10 +99,10 @@ final class UserJwtMiddleware
 
     private function getJwtSecret(): string
     {
-        $secret = env('JWT_SECRET');
+        $secret = config('auth_jwt.secret');
 
-        if (!$secret) {
-            throw new \RuntimeException('JWT_SECRET is not configured in .env file');
+        if (!is_string($secret) || $secret === '') {
+            throw new \RuntimeException('JWT secret is not configured (auth_jwt.secret / JWT_SECRET).');
         }
 
         return $secret;
@@ -110,6 +110,6 @@ final class UserJwtMiddleware
 
     private function getJwtAlgorithm(): string
     {
-        return env('JWT_ALGORITHM', 'HS256');
+        return (string) config('auth_jwt.algorithm', 'HS256');
     }
 }

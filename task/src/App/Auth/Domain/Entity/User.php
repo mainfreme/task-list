@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Auth\Domain\Entity;
 
-use App\Auth\Application\DTO\UserDTO;
 use App\Auth\Domain\Enum\UserRoleEnum;
 use App\Shared\Domain\ValueObject\Email;
 use App\Shared\Domain\ValueObject\Uuid;
@@ -104,26 +103,4 @@ final class User
         return password_verify($password, $this->password);
     }
 
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id->getValue(),
-            'name' => $this->name,
-            'email' => $this->email->getValue(),
-            'role' => $this->role->value,
-            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
-        ];
-    }
-
-    public function toDTO(): UserDTO
-    {
-        return new UserDTO(
-            id: $this->id,
-            name: $this->name,
-            email: $this->email,
-            password: $this->password,
-            role: $this->role,
-        );
-    }
 }

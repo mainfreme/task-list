@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Command\UpdateClient;
 
-use App\Crm\Domain\Dto\ClientDto;
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
+use App\Crm\Application\DTO\ClientDto;
 use App\Crm\Domain\Repository\ClientRepositoryInterface;
 
 final class UpdateClientHandler
 {
     public function __construct(
-        private readonly ClientRepositoryInterface $repository
+        private readonly ClientRepositoryInterface $repository,
+        private readonly ListClientsQueryCacheInterface $listClientsCache,
     ) {
     }
 
@@ -70,23 +72,8 @@ final class UpdateClientHandler
 
         $this->repository->save($client);
 
-        return new ClientDto(
-            name: $client->getName(),
-            nip: $client->getNip(),
-            country: $client->getCountry(),
-            isCompany: $client->getIsCompany(),
-            id: $client->getId(),
-            regon: $client->getRegon(),
-            pesel: $client->getPesel(),
-            source: $client->getSource(),
-            rating: $client->getRating(),
-            notes: $client->getNotes(),
-            status: $client->getStatus(),
-            addressUuid: $client->getAddressUuid(),
-            lastContactedAt: $client->getLastContactedAt(),
-            nextContactAt: $client->getNextContactAt(),
-            createdAt: $client->getCreatedAt(),
-            updatedAt: $client->getUpdatedAt(),
-        );
+        $this->listClientsCache->invalidate();
+
+        return ClientDto::fromAggregate($client);
     }
 }

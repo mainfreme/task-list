@@ -20,7 +20,6 @@ use App\Crm\Domain\ValueObject\Pesel;
 use App\Crm\Domain\ValueObject\Regon;
 use App\Crm\Infrastructure\Model\ClientModel;
 use App\Shared\Domain\ValueObject\Uuid;
-use Illuminate\Support\Collection;
 
 final class EloquentClientRepository implements ClientRepositoryInterface
 {
@@ -127,11 +126,11 @@ final class EloquentClientRepository implements ClientRepositoryInterface
             lastContactedAt: $model->last_contacted_at ? \DateTimeImmutable::createFromMutable($model->last_contacted_at) : null,
             nextContactAt: $model->next_contact_at ? \DateTimeImmutable::createFromMutable($model->next_contact_at) : null,
             addressUuid: $model->address_uuid ? Uuid::fromString($model->address_uuid) : null,
-            addresses: new Collection(),
-            contacts: new Collection(),
-            tags: new Collection(),
-            accounts: new Collection(),
-            clientNoteDto: null,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
             isDeleted: IsDeleted::fromBool($model->is_delete),
             createdAt: \DateTimeImmutable::createFromMutable($model->created_at),
             updatedAt: \DateTimeImmutable::createFromMutable($model->updated_at),

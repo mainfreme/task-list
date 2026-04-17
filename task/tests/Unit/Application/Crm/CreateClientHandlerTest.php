@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Crm;
 
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
 use App\Crm\Application\Command\CreateClient\CreateClientCommand;
 use App\Crm\Application\Command\CreateClient\CreateClientHandler;
-use App\Crm\Domain\Dto\ClientDto;
+use App\Crm\Application\DTO\ClientDto;
 use App\Crm\Domain\Aggregate\CrmClientAggregate;
 use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\Repository\ClientRepositoryInterface;
@@ -40,12 +41,15 @@ final class CreateClientHandlerTest extends TestCase
                 return $client->getStatus() === ClientStatus::LEAD;
             }));
 
-        $handler = new CreateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new CreateClientHandler($repository, $cache);
         $command = new CreateClientCommand(
-            ClientName::fromString('Test Client'),
-            Nip::fromString('5252674798'),
-            Country::fromString('Polska'),
-            IsCompany::fromBool(true)
+            name: ClientName::fromString('Test Client'),
+            nip: Nip::fromString('5252674798'),
+            country: Country::fromString('Polska'),
+            isCompany: IsCompany::fromBool(true),
         );
 
         $result = $handler->handle($command);
@@ -70,19 +74,22 @@ final class CreateClientHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(fn (CrmClientAggregate $client) => true));
 
-        $handler = new CreateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new CreateClientHandler($repository, $cache);
         $command = new CreateClientCommand(
-            ClientName::fromString('Full Client'),
-            Nip::fromString('5252674798'),
-            Country::fromString('Polska'),
-            IsCompany::fromBool(true),
-            Regon::fromString('142345678'),
-            Pesel::fromString('82031412346'),
-            ClientSource::fromString('referral'),
-            ClientRating::fromInt(5),
-            ClientNotes::fromString('Notatka'),
-            ClientStatus::PROSPECT,
-            $addressUuid
+            name: ClientName::fromString('Full Client'),
+            nip: Nip::fromString('5252674798'),
+            country: Country::fromString('Polska'),
+            isCompany: IsCompany::fromBool(true),
+            regon: Regon::fromString('142345678'),
+            pesel: Pesel::fromString('82031412346'),
+            source: ClientSource::fromString('referral'),
+            rating: ClientRating::fromInt(5),
+            notes: ClientNotes::fromString('Notatka'),
+            status: ClientStatus::PROSPECT,
+            addressUuid: $addressUuid,
         );
 
         $result = $handler->handle($command);

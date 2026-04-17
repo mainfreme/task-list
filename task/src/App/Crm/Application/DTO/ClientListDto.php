@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\DTO;
 
-use App\Crm\Domain\Dto\ClientDto;
-
 final class ClientListDto
 {
     /**
@@ -31,5 +29,26 @@ final class ClientListDto
                 'total_pages' => $this->totalPages,
             ],
         ];
+    }
+
+    /**
+     * Odtwarza DTO z tablicy w kształcie {@see self::toArray()} (np. z cache Redis).
+     *
+     * @param array{data: list<array<string, mixed>>, meta: array{total: int, page: int, per_page: int, total_pages: int}} $array
+     */
+    public static function fromArray(array $array): self
+    {
+        $clients = array_map(
+            static fn (array $row) => ClientDto::fromArray($row),
+            $array['data']
+        );
+
+        return new self(
+            clients: $clients,
+            total: $array['meta']['total'],
+            page: $array['meta']['page'],
+            perPage: $array['meta']['per_page'],
+            totalPages: $array['meta']['total_pages'],
+        );
     }
 }

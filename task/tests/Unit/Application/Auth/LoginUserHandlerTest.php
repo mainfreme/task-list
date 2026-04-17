@@ -12,6 +12,7 @@ use App\Auth\Domain\Enum\UserRoleEnum;
 use App\Auth\Domain\Exception\InvalidCredentialsException;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
 use App\Auth\Domain\Service\JwtTokenServiceInterface;
+use App\Auth\Domain\ValueObject\UserIdentity;
 use App\Shared\Domain\ValueObject\Email;
 use App\Shared\Domain\ValueObject\Uuid;
 use Mockery;
@@ -83,7 +84,7 @@ final class LoginUserHandlerTest extends TestCase
         $jwtService = Mockery::mock(JwtTokenServiceInterface::class);
         $jwtService->shouldReceive('generateToken')
             ->once()
-            ->with(Mockery::type(\App\Auth\Application\DTO\UserDTO::class))
+            ->with(Mockery::type(UserIdentity::class))
             ->andReturn('jwt-token-123');
         $jwtService->shouldReceive('getExpirationMinutes')
             ->once()

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Crm;
 
-use App\Crm\Domain\Dto\ClientDto;
+use App\Crm\Application\DTO\ClientDto;
 use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\ValueObject\ClientName;
 use App\Crm\Domain\ValueObject\ClientNotes;

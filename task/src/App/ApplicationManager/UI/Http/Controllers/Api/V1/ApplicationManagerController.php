@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace App\ApplicationManager\UI\Http\Controllers\Api\V1;
 
-use App\ApplicationManager\Application\Command\CreateApplicationManager\CreateApplicationManagerCommand;
 use App\ApplicationManager\Application\Command\CreateApplicationManager\CreateApplicationManagerHandler;
 use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyCommand;
 use App\ApplicationManager\Application\Command\GenerateApiKey\GenerateApiKeyHandler;
-use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenCommand;
 use App\ApplicationManager\Application\Command\GenerateJwtToken\GenerateJwtTokenHandler;
-use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerCommand;
+use App\ApplicationManager\Application\Command\UpdateApplicationManager\ChangeStatusCommand;
+use App\ApplicationManager\Application\Command\UpdateApplicationManager\ChangeStatusHandler;
 use App\ApplicationManager\Application\Command\UpdateApplicationManager\UpdateApplicationManagerHandler;
 use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicationManagerHandler;
 use App\ApplicationManager\Application\Query\GetApplicationManager\GetApplicationManagerQuery;
 use App\ApplicationManager\Application\Query\ListApplicationManagers\ListApplicationManagersHandler;
-use App\ApplicationManager\Application\Query\ListApplicationManagers\ListApplicationManagersQuery;
-use App\ApplicationManager\Domain\ValueObject\ApplicationName;
-use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
-use App\ApplicationManager\Domain\ValueObject\RequestUrl;
+use App\ApplicationManager\UI\Http\Mappers\CreateApplicationManagerCommandMapper;
+use App\ApplicationManager\UI\Http\Mappers\GenerateJwtTokenCommandMapper;
+use App\ApplicationManager\UI\Http\Mappers\ListApplicationManagersQueryMapper;
+use App\ApplicationManager\UI\Http\Mappers\UpdateApplicationManagerCommandMapper;
+use App\ApplicationManager\UI\Http\Requests\V1\ChangeStatusRequest;
 use App\ApplicationManager\UI\Http\Requests\V1\CreateApplicationManagerRequest;
 use App\ApplicationManager\UI\Http\Requests\V1\GenerateJwtTokenRequest;
 use App\ApplicationManager\UI\Http\Requests\V1\UpdateApplicationManagerRequest;
 use App\Shared\Domain\ValueObject\Uuid;
+use App\Shared\Infrastructure\Mapper\GenericRequestMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -32,10 +33,12 @@ final class ApplicationManagerController
     public function __construct(
         private readonly CreateApplicationManagerHandler $createHandler,
         private readonly UpdateApplicationManagerHandler $updateHandler,
+        private readonly ChangeStatusHandler $changeStatusHandler,
         private readonly GenerateApiKeyHandler $generateApiKeyHandler,
         private readonly GenerateJwtTokenHandler $generateJwtTokenHandler,
         private readonly GetApplicationManagerHandler $getHandler,
         private readonly ListApplicationManagersHandler $listHandler,
+        private readonly GenericRequestMapper $requestMapper,
     ) {
     }
 
@@ -63,16 +66,9 @@ final class ApplicationManagerController
     )]
     public function store(CreateApplicationManagerRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        $command = new CreateApplicationManagerCommand(
-            name: ApplicationName::fromString($validated['name']),
-            requestUrl: RequestUrl::fromNullable($validated['request_url'] ?? null),
-            isActive: $validated['is_active'] ?? true,
-            ipWhitelist: IpWhitelist::fromNullable($validated['ip_whitelist'] ?? null),
-        );
-
-        $dto = $this->createHandler->handle($command);
+        /** @var CreateApplicationManagerCommandMapper $mapped */
+        $mapped = $this->requestMapper->map($request, CreateApplicationManagerCommandMapper::class);
+        $dto = $this->createHandler->handle($mapped->toCommand());
 
         return response()->json($dto->toArray(), 201);
     }
@@ -91,9 +87,7 @@ final class ApplicationManagerController
     )]
     public function index(Request $request): JsonResponse
     {
-        $query = new ListApplicationManagersQuery(
-            isActive: $request->has('is_active') ? (bool) $request->input('is_active') : null,
-        );
+        $query = ListApplicationManagersQueryMapper::fromRequest($request);
 
         $result = $this->listHandler->handle($query);
 
@@ -149,25 +143,48 @@ final class ApplicationManagerController
     )]
     public function update(UpdateApplicationManagerRequest $request, string $id): JsonResponse
     {
-        $validated = $request->validated();
-
-        $command = new UpdateApplicationManagerCommand(
-            id: Uuid::fromString($id),
-            name: array_key_exists('name', $validated)
-                ? ApplicationName::fromString($validated['name'])
-                : null,
-            requestUrl: array_key_exists('request_url', $validated)
-                ? RequestUrl::fromNullable($validated['request_url'])
-                : null,
-            isActive: $validated['is_active'] ?? null,
-            ipWhitelist: array_key_exists('ip_whitelist', $validated)
-                ? IpWhitelist::fromNullable($validated['ip_whitelist'])
-                : null,
-        );
-
-        $dto = $this->updateHandler->handle($command);
+        /** @var UpdateApplicationManagerCommandMapper $mapped */
+        $mapped = $this->requestMapper->map($request, UpdateApplicationManagerCommandMapper::class);
+        $dto = $this->updateHandler->handle($mapped->toCommand());
 
         return response()->json($dto->toArray());
+    }
+
+    #[OA\Patch(
+        path: '/v1/applications/{id}/status',
+        summary: 'Activate or deactivate Application Manager',
+        tags: ['Application Managers'],
+        security: [['jwt' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Application Manager ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['is_active'],
+                properties: [
+                    new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Status updated'),
+            new OA\Response(response: 404, description: 'Not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function changeStatus(ChangeStatusRequest $request, string $id): JsonResponse
+    {
+        $command = new ChangeStatusCommand(
+            uuid: Uuid::fromString($id),
+            isActive: $request->boolean('is_active'),
+        );
+
+        $this->changeStatusHandler->handle($command);
+
+        return response()->json([
+            'is_active' => $command->isActive,
+        ]);
     }
 
     #[OA\Post(
@@ -214,20 +231,9 @@ final class ApplicationManagerController
     )]
     public function generateJwtToken(GenerateJwtTokenRequest $request, string $id): JsonResponse
     {
-        $validated = $request->validated();
+        $command = GenerateJwtTokenCommandMapper::toCommand($request, $id);
+        $dto = $this->generateJwtTokenHandler->handle($command);
 
-        $command = new GenerateJwtTokenCommand(
-            uuid: Uuid::fromString($id),
-            expirationMinutes: $validated['expiration_minutes'] ?? null,
-        );
-
-        $token = $this->generateJwtTokenHandler->handle($command);
-        $expirationMinutes = $validated['expiration_minutes'] ?? (int) env('JWT_EXPIRATION_MINUTES', 60 * 24);
-
-        return response()->json([
-            'token' => $token,
-            'token_type' => 'Bearer',
-            'expires_in' => $expirationMinutes,
-        ]);
+        return response()->json($dto->toArray());
     }
 }

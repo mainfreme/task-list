@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\ApplicationManager\Infrastructure\Cache;
 
 use App\ApplicationManager\Domain\Entity\ApplicationManager;
-use App\ApplicationManager\Infrastructure\Eloquent\ApplicationManagerModel;
+use App\ApplicationManager\Domain\Exception\ApplicationManagerNotFoundException;
 use App\ApplicationManager\Infrastructure\Mapper\ApplicationManagerEntityMapper;
+use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
 use App\Shared\Domain\Redis\RedisServiceInterface;
+use App\Shared\Domain\ValueObject\Uuid;
 use JsonException;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -16,7 +18,8 @@ final class ApplicationManagerCacheStore
 {
     public function __construct(
         private readonly RedisServiceInterface $redis,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly EloquentApplicationManagerRepository $repository
     ) {
     }
 
@@ -121,14 +124,11 @@ final class ApplicationManagerCacheStore
             return;
         }
 
-        $model = ApplicationManagerModel::find($applicationId);
-        if ($model === null) {
+        try {
+            $entity = $this->repository->findById(Uuid::fromString($applicationId));
+            $this->put($entity);
+        } catch (ApplicationManagerNotFoundException) {
             $this->forget($applicationId);
-
-            return;
         }
-
-        $entity = ApplicationManagerEntityMapper::fromModel($model);
-        $this->put($entity);
     }
 }

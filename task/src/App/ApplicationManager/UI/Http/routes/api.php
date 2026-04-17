@@ -13,8 +13,7 @@ Route::middleware(['user.jwt'])->group(function () {
     Route::get('/v1/applications', [ApplicationManagerController::class, 'index']);
     Route::get('/v1/applications/{id}', [ApplicationManagerController::class, 'show']);
     Route::put('/v1/applications/{id}', [ApplicationManagerController::class, 'update']);
-
-
+    Route::patch('/v1/applications/{id}/status', [ApplicationManagerController::class, 'changeStatus']);
 });
 
 Route::post('/v1/applications/{id}/generate-api-key', [ApplicationManagerController::class, 'generateApiKey']);

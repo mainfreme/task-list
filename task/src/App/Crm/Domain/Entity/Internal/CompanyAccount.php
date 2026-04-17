@@ -21,6 +21,10 @@ final class CompanyAccount
 {
     private ?Uuid $id = null;
 
+    private IsActive $isActive;
+
+    private IsPrimary $isPrimary;
+
     public function __construct(
         private Uuid $clientUuid,
         private AccountName $name,
@@ -30,11 +34,13 @@ final class CompanyAccount
         private Bic $bic,
         private CompanyAccountName $accountName,
         private ?Uuid $addressUuid = null,
-        private IsActive $isActive = new IsActive(true),
-        private IsPrimary $isPrimary = new IsPrimary(false),
+        ?IsActive $isActive = null,
+        ?IsPrimary $isPrimary = null,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
+        $this->isActive = $isActive ?? IsActive::fromBool(true);
+        $this->isPrimary = $isPrimary ?? IsPrimary::fromBool(false);
         $this->createdAt = $this->createdAt ?? new \DateTimeImmutable();
         $this->updatedAt = $this->updatedAt ?? new \DateTimeImmutable();
     }
@@ -48,7 +54,7 @@ final class CompanyAccount
         Bic $bic,
         CompanyAccountName $accountName,
         ?Uuid $addressUuid = null,
-        IsPrimary $isPrimary = new IsPrimary(false)
+        ?IsPrimary $isPrimary = null
     ): self {
         return new self(
             $clientUuid,
@@ -59,8 +65,8 @@ final class CompanyAccount
             $bic,
             $accountName,
             $addressUuid,
-            new IsActive(true),
-            $isPrimary
+            null,
+            $isPrimary,
         );
     }
 

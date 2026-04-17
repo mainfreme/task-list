@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Providers;
 
-use App\Ops\Domain\Repository\DeployFailureRepositoryInterface;
-use App\Ops\Infrastructure\Repository\EloquentDeployFailureRepository;
 use App\ApplicationManager\Domain\Event\ApplicationManagerPersistedEvent;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
+use App\ApplicationManager\Domain\Service\ApplicationJwtTokenGeneratorInterface;
 use App\ApplicationManager\Infrastructure\Cache\ApplicationManagerCacheStore;
 use App\ApplicationManager\Infrastructure\Listener\ApplicationManagerPersistedListener;
 use App\ApplicationManager\Infrastructure\Repository\CachingApplicationManagerRepository;
 use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
+use App\ApplicationManager\Infrastructure\Service\FirebaseApplicationJwtTokenGenerator;
 use App\Auth\Domain\Repository\ActivityLogRepositoryInterface;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
 use App\Auth\Domain\Service\ActivityLogProducerInterface;
@@ -20,22 +20,26 @@ use App\Auth\Infrastructure\Repository\EloquentActivityLogRepository;
 use App\Auth\Infrastructure\Repository\EloquentUserRepository;
 use App\Auth\Infrastructure\Service\ActivityLogProducer;
 use App\Auth\Infrastructure\Service\JwtTokenService;
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
 use App\Crm\Domain\Repository\AddressRepositoryInterface;
 use App\Crm\Domain\Repository\ClientRepositoryInterface;
+use App\Crm\Infrastructure\Cache\RedisListClientsQueryCache;
 use App\Crm\Infrastructure\Repository\EloquentAddressRepository;
 use App\Crm\Infrastructure\Repository\EloquentClientRepository;
+use App\Ops\Domain\Repository\DeployFailureRepositoryInterface;
+use App\Ops\Infrastructure\Repository\EloquentDeployFailureRepository;
 use App\Profile\Domain\Repository\UserProfileRepository;
 use App\Profile\Infrastructure\Repository\EloquentUserProfileRepository;
-use App\Shared\Infrastructure\MessageBroker\MessageProducerInterface;
-use App\Shared\Infrastructure\MessageBroker\RabbitMQConnection;
-use App\Shared\Infrastructure\MessageBroker\RabbitMQProducer;
-use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Settings\Domain\Repository\ChartDefinitionRepositoryInterface;
 use App\Settings\Domain\Repository\IntegrationAccountRepositoryInterface;
 use App\Settings\Domain\Repository\SettingEntryRepositoryInterface;
 use App\Settings\Infrastructure\Repository\EloquentChartDefinitionRepository;
 use App\Settings\Infrastructure\Repository\EloquentIntegrationAccountRepository;
 use App\Settings\Infrastructure\Repository\EloquentSettingEntryRepository;
+use App\Shared\Infrastructure\MessageBroker\MessageProducerInterface;
+use App\Shared\Infrastructure\MessageBroker\RabbitMQConnection;
+use App\Shared\Infrastructure\MessageBroker\RabbitMQProducer;
+use App\Task\Domain\Repository\TaskRepositoryInterface;
 use App\Task\Domain\Repository\TaskTimeSessionRepositoryInterface;
 use App\Task\Infrastructure\Repository\EloquentTaskRepository;
 use App\Task\Infrastructure\Repository\EloquentTaskTimeSessionRepository;
@@ -57,6 +61,11 @@ final class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
+            ApplicationJwtTokenGeneratorInterface::class,
+            FirebaseApplicationJwtTokenGenerator::class
+        );
+
+        $this->app->bind(
             TaskRepositoryInterface::class,
             EloquentTaskRepository::class
         );
@@ -70,6 +79,8 @@ final class RepositoryServiceProvider extends ServiceProvider
             ClientRepositoryInterface::class,
             EloquentClientRepository::class
         );
+
+        $this->app->singleton(ListClientsQueryCacheInterface::class, RedisListClientsQueryCache::class);
 
         $this->app->bind(
             AddressRepositoryInterface::class,

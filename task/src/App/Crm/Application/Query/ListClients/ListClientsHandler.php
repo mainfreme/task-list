@@ -4,21 +4,27 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Query\ListClients;
 
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
+use App\Crm\Application\DTO\ClientDto;
 use App\Crm\Application\DTO\ClientListDto;
 use App\Crm\Domain\Aggregate\CrmClientAggregate;
-use App\Crm\Domain\Dto\ClientDto;
-use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\Repository\ClientRepositoryInterface;
 
 final class ListClientsHandler
 {
     public function __construct(
-        private readonly ClientRepositoryInterface $repository
+        private readonly ClientRepositoryInterface $repository,
+        private readonly ListClientsQueryCacheInterface $listClientsCache,
     ) {
     }
 
     public function handle(ListClientsQuery $query): ClientListDto
     {
+        $cached = $this->listClientsCache->find($query);
+        if ($cached !== null) {
+            return $cached;
+        }
+
         $offset = ($query->page - 1) * $query->perPage;
 
         if ($query->status !== null) {
@@ -31,33 +37,20 @@ final class ListClientsHandler
         $totalPages = (int) ceil($total / $query->perPage);
 
         $clientDTOs = array_map(
-            fn (CrmClientAggregate $client) => new ClientDto(
-                name: $client->getName(),
-                nip: $client->getNip(),
-                country: $client->getCountry(),
-                isCompany: $client->getIsCompany(),
-                id: $client->getId(),
-                regon: $client->getRegon(),
-                pesel: $client->getPesel(),
-                source: $client->getSource(),
-                rating: $client->getRating(),
-                notes: $client->getNotes(),
-                status: $client->getStatus(),
-                addressUuid: $client->getAddressUuid(),
-                lastContactedAt: $client->getLastContactedAt(),
-                nextContactAt: $client->getNextContactAt(),
-                createdAt: $client->getCreatedAt(),
-                updatedAt: $client->getUpdatedAt(),
-            ),
+            static fn (CrmClientAggregate $client) => ClientDto::fromAggregate($client),
             $clients
         );
 
-        return new ClientListDto(
+        $result = new ClientListDto(
             clients: $clientDTOs,
             total: $total,
             page: $query->page,
             perPage: $query->perPage,
             totalPages: $totalPages,
         );
+
+        $this->listClientsCache->save($query, $result);
+
+        return $result;
     }
 }

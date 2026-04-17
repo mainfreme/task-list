@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Crm\UI\Http\Controllers\Api\V1;
 
-use App\Crm\UI\Http\Mappers\CreateClientCommandMapper;
 use App\Crm\Application\Command\CreateClient\CreateClientHandler;
 use App\Crm\Application\Command\DeleteClient\DeleteClientCommand;
 use App\Crm\Application\Command\DeleteClient\DeleteClientHandler;
@@ -13,6 +12,7 @@ use App\Crm\Application\Query\GetClient\GetClientHandler;
 use App\Crm\Application\Query\GetClient\GetClientQuery;
 use App\Crm\Application\Query\ListClients\ListClientsHandler;
 use App\Crm\Domain\Exception\ClientNotFoundException;
+use App\Crm\UI\Http\Mappers\CreateClientCommandMapper;
 use App\Crm\UI\Http\Mappers\ListClientsQueryMapper;
 use App\Crm\UI\Http\Mappers\UpdateClientCommandMapper;
 use App\Crm\UI\Http\Requests\V1\CreateClientRequest;

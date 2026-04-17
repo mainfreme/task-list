@@ -38,6 +38,11 @@ final class LaravelRedisService implements RedisServiceInterface
         $this->connection()->del($key);
     }
 
+    public function increment(string $key): int
+    {
+        return (int) $this->connection()->incr($key);
+    }
+
     private function connection(): Connection
     {
         if ($this->connectionName !== null && $this->connectionName !== '') {
