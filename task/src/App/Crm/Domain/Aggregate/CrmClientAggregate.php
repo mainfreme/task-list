@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Aggregate;
 
-use App\Crm\Domain\Dto\ClientDto;
-use App\Crm\Domain\Dto\ClientNoteDto;
 use App\Crm\Domain\Entity\Internal\Address;
 use App\Crm\Domain\Entity\Internal\ClientContact;
+use App\Crm\Domain\Entity\Internal\ClientNoteEntry;
 use App\Crm\Domain\Entity\Internal\ClientTag;
 use App\Crm\Domain\Entity\Internal\CompanyAccount;
 use App\Crm\Domain\Enums\ClientStatus;
@@ -22,23 +21,17 @@ use App\Crm\Domain\ValueObject\Nip;
 use App\Crm\Domain\ValueObject\Pesel;
 use App\Crm\Domain\ValueObject\Regon;
 use App\Shared\Domain\ValueObject\Uuid;
-use Illuminate\Support\Collection;
 
 /**
- * CrmClientAggregate - Aggregate root representing Client with all related entities
- *
- * This aggregate follows DDD principles:
- * - Contains collections of related entities (addresses, contacts, tags, accounts)
- * - Uses Value Objects for all properties
- * - Mutations via setters for update operations
+ * Agregat klienta CRM z powiązanymi encjami (adresy, kontakty, tagi, konta).
  */
 final class CrmClientAggregate
 {
     /**
-     * @param Collection<Address> $addresses
-     * @param Collection<ClientContact> $contacts
-     * @param Collection<ClientTag> $tags
-     * @param Collection<CompanyAccount> $accounts
+     * @param list<Address>           $addresses
+     * @param list<ClientContact>     $contacts
+     * @param list<ClientTag>         $tags
+     * @param list<CompanyAccount>      $accounts
      */
     private function __construct(
         private readonly Uuid $id,
@@ -55,59 +48,63 @@ final class CrmClientAggregate
         private ?\DateTimeImmutable $lastContactedAt,
         private ?\DateTimeImmutable $nextContactAt,
         private ?Uuid $addressUuid,
-        private Collection $addresses,
-        private Collection $contacts,
-        private Collection $tags,
-        private ?ClientNoteDto $clientNoteDto,
-        private Collection $accounts,
+        private array $addresses,
+        private array $contacts,
+        private array $tags,
+        private ?ClientNoteEntry $clientNote,
+        private array $accounts,
         private IsDeleted $isDeleted,
         private \DateTimeImmutable $createdAt,
         private \DateTimeImmutable $updatedAt,
     ) {
     }
 
-    /**
-     * Create a new client aggregate
-     * Generates Uuid with UUID v7
-     */
-    public static function create(ClientDto $dto): self
-    {
+    public static function create(
+        ClientName $name,
+        Nip $nip,
+        Country $country,
+        ClientStatus $status,
+        IsCompany $isCompany,
+        ?Regon $regon = null,
+        ?Pesel $pesel = null,
+        ?ClientSource $source = null,
+        ?ClientRating $rating = null,
+        ?ClientNotes $notes = null,
+        ?Uuid $addressUuid = null,
+    ): self {
         $now = new \DateTimeImmutable();
 
         return new self(
             id: Uuid::generate(),
-            name: $dto->name,
-            nip: $dto->nip,
-            country: $dto->country,
-            status: $dto->status,
-            isCompany: $dto->isCompany,
-            regon: $dto->regon,
-            pesel: $dto->pesel,
-            source: $dto->source,
-            rating: $dto->rating,
-            notes: $dto->notes,
+            name: $name,
+            nip: $nip,
+            country: $country,
+            status: $status,
+            isCompany: $isCompany,
+            regon: $regon,
+            pesel: $pesel,
+            source: $source,
+            rating: $rating,
+            notes: $notes,
             lastContactedAt: null,
             nextContactAt: null,
-            addressUuid: $dto->addressUuid,
-            addresses: new Collection(),
-            contacts: new Collection(),
-            tags: new Collection(),
-            clientNoteDto: null,
-            accounts: new Collection(),
-            isDeleted: new IsDeleted(false),
+            addressUuid: $addressUuid,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
+            isDeleted: IsDeleted::fromBool(false),
             createdAt: $now,
             updatedAt: $now,
         );
     }
 
     /**
-     * Reconstitute aggregate from persistence
-     * Used to rebuild aggregate from database/repository with all data
-     *
-     * @param Collection<Address> $addresses
-     * @param Collection<ClientContact> $contacts
-     * @param Collection<ClientTag> $tags
-     * @param Collection<CompanyAccount> $accounts
+     * @param list<Address>       $addresses
+     * @param list<ClientContact> $contacts
+     * @param list<ClientTag>     $tags
+     * @param list<CompanyAccount>  $accounts
      */
     public static function reconstitute(
         Uuid $id,
@@ -124,11 +121,11 @@ final class CrmClientAggregate
         ?\DateTimeImmutable $lastContactedAt,
         ?\DateTimeImmutable $nextContactAt,
         ?Uuid $addressUuid,
-        Collection $addresses,
-        Collection $contacts,
-        Collection $tags,
-        Collection $accounts,
-        ?ClientNoteDto $clientNoteDto,
+        array $addresses,
+        array $contacts,
+        array $tags,
+        ?ClientNoteEntry $clientNote,
+        array $accounts,
         IsDeleted $isDeleted,
         \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
@@ -151,7 +148,7 @@ final class CrmClientAggregate
             addresses: $addresses,
             contacts: $contacts,
             tags: $tags,
-            clientNoteDto: $clientNoteDto,
+            clientNote: $clientNote,
             accounts: $accounts,
             isDeleted: $isDeleted,
             createdAt: $createdAt,
@@ -159,7 +156,6 @@ final class CrmClientAggregate
         );
     }
 
-    // Getters for main properties
     public function getId(): Uuid
     {
         return $this->id;
@@ -324,108 +320,116 @@ final class CrmClientAggregate
     }
 
     /**
-     * @return Collection<ClientContact>
+     * @return list<ClientContact>
      */
-    public function getContacts(): Collection
+    public function getContacts(): array
     {
-        return $this->contacts;
+        return array_values($this->contacts);
     }
 
     /**
-     * @return Collection<ClientTag>
+     * @return list<ClientTag>
      */
-    public function getTags(): Collection
+    public function getTags(): array
     {
-        return $this->tags;
+        return array_values($this->tags);
     }
 
-    public function getNote(): ?ClientNoteDto
+    public function getNote(): ?ClientNoteEntry
     {
-        return $this->clientNoteDto;
-    }
-
-    /**
-     * @return Collection<CompanyAccount>
-     */
-    public function getAccounts(): Collection
-    {
-        return $this->accounts;
+        return $this->clientNote;
     }
 
     /**
-     * Add a note to the client aggregate
-     * Returns new aggregate instance with the note (immutability)
+     * @return list<CompanyAccount>
      */
-    public function addNote(ClientNoteDto $clientNoteDto): self
+    public function getAccounts(): array
     {
-        $this->clientNoteDto = $clientNoteDto;
+        return array_values($this->accounts);
+    }
+
+    public function addNote(ClientNoteEntry $clientNote): self
+    {
+        $this->clientNote = $clientNote;
 
         return $this;
     }
 
     public function removeNote(): self
     {
-        if ($this->clientNoteDto === null) {
+        if ($this->clientNote === null) {
             return $this;
         }
 
-        $this->clientNoteDto->softDelete();
+        $this->clientNote->softDelete();
 
         return $this;
     }
 
     public function addAddress(Address $address): self
     {
-        $this->addresses->add($address);
+        $this->addresses[] = $address;
 
         return $this;
     }
 
     public function removeAddress(Address $address): self
     {
-        $this->addresses->remove($address);
+        $this->addresses = array_values(array_filter(
+            $this->addresses,
+            static fn (Address $a) => $a !== $address
+        ));
 
         return $this;
     }
 
     public function addContact(ClientContact $contact): self
     {
-        $this->contacts->add($contact);
+        $this->contacts[] = $contact;
 
         return $this;
     }
 
     public function removeContact(ClientContact $contact): self
     {
-        $this->contacts->remove($contact);
+        $this->contacts = array_values(array_filter(
+            $this->contacts,
+            static fn (ClientContact $c) => $c !== $contact
+        ));
 
         return $this;
     }
 
     public function addTag(ClientTag $tag): self
     {
-        $this->tags->add($tag);
+        $this->tags[] = $tag;
 
         return $this;
     }
 
     public function removeTag(ClientTag $tag): self
     {
-        $this->tags->remove($tag);
+        $this->tags = array_values(array_filter(
+            $this->tags,
+            static fn (ClientTag $t) => $t !== $tag
+        ));
 
         return $this;
     }
 
     public function addAccount(CompanyAccount $account): self
     {
-        $this->accounts->add($account);
+        $this->accounts[] = $account;
 
         return $this;
     }
 
     public function removeAccount(CompanyAccount $account): self
     {
-        $this->accounts->remove($account);
+        $this->accounts = array_values(array_filter(
+            $this->accounts,
+            static fn (CompanyAccount $a) => $a !== $account
+        ));
 
         return $this;
     }

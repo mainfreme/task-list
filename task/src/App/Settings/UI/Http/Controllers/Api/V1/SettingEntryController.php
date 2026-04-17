@@ -6,6 +6,7 @@ namespace App\Settings\UI\Http\Controllers\Api\V1;
 
 use App\Settings\Application\Command\DeleteSettingEntry\DeleteSettingEntryCommand;
 use App\Settings\Application\Command\DeleteSettingEntry\DeleteSettingEntryHandler;
+use App\Settings\Application\Command\SettingsCommandContext;
 use App\Settings\Application\Command\UpsertSettingEntry\UpsertSettingEntryCommand;
 use App\Settings\Application\Command\UpsertSettingEntry\UpsertSettingEntryHandler;
 use App\Settings\Application\Query\GetAllSettingsGrouped\GetAllSettingsGroupedHandler;
@@ -19,6 +20,7 @@ use App\Settings\UI\Http\Requests\V1\UpsertSettingEntryRequest;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Shared\UI\Http\Controllers\Api\ApiController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 final class SettingEntryController extends ApiController
@@ -135,6 +137,7 @@ final class SettingEntryController extends ApiController
             fieldKey: $request->validated('field_key'),
             fieldType: $request->validated('field_type'),
             value: $request->validated('value'),
+            context: $this->buildContext($request),
         ));
 
         return $this->success($dto->toArray());
@@ -157,11 +160,29 @@ final class SettingEntryController extends ApiController
     public function destroy(Uuid $id): JsonResponse
     {
         try {
-            $this->deleteHandler->handle(new DeleteSettingEntryCommand(id: $id));
+            /** @var Request $request */
+            $request = request();
+
+            $this->deleteHandler->handle(new DeleteSettingEntryCommand(
+                id: $id,
+                context: $this->buildContext($request),
+            ));
 
             return $this->noContent();
         } catch (SettingEntryNotFoundException $e) {
             return $this->notFound($e->getMessage());
         }
+    }
+
+    private function buildContext(Request $request): SettingsCommandContext
+    {
+        $actorId = $request->attributes->get('user_id');
+
+        return new SettingsCommandContext(
+            actorId: $actorId !== null ? $actorId->getValue() : null,
+            requestUrl: $request->fullUrl(),
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent(),
+        );
     }
 }

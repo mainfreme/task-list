@@ -26,6 +26,10 @@ final class Address
 {
     private ?Uuid $id = null;
 
+    private IsPrimary $isPrimary;
+
+    private IsActive $isActive;
+
     public function __construct(
         private Uuid $clientUuid,
         private Street $street,
@@ -37,14 +41,16 @@ final class Address
         private HouseNumber $houseNumber,
         private ApartmentNumber $apartmentNumber,
         private AddressType $type = AddressType::OTHER,
-        private IsPrimary $isPrimary = new IsPrimary(false),
-        private IsActive $isActive = new IsActive(true),
+        ?IsPrimary $isPrimary = null,
+        ?IsActive $isActive = null,
         private ?Latitude $latitude = null,
         private ?Longitude $longitude = null,
         private ?\DateTimeImmutable $addedAt = null,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
+        $this->isPrimary = $isPrimary ?? IsPrimary::fromBool(false);
+        $this->isActive = $isActive ?? IsActive::fromBool(true);
         $this->addedAt = $this->addedAt ?? new \DateTimeImmutable();
         $this->createdAt = $this->createdAt ?? new \DateTimeImmutable();
         $this->updatedAt = $this->updatedAt ?? new \DateTimeImmutable();
@@ -61,7 +67,7 @@ final class Address
         HouseNumber $houseNumber,
         ApartmentNumber $apartmentNumber,
         AddressType $type = AddressType::OTHER,
-        IsPrimary $isPrimary = new IsPrimary(false)
+        ?IsPrimary $isPrimary = null
     ): self {
         return new self(
             $clientUuid,
@@ -74,7 +80,7 @@ final class Address
             $houseNumber,
             $apartmentNumber,
             $type,
-            $isPrimary
+            $isPrimary,
         );
     }
 

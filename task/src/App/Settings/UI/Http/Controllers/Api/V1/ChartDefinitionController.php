@@ -8,6 +8,7 @@ use App\Settings\Application\Command\CreateChartDefinition\CreateChartDefinition
 use App\Settings\Application\Command\CreateChartDefinition\CreateChartDefinitionHandler;
 use App\Settings\Application\Command\DeleteChartDefinition\DeleteChartDefinitionCommand;
 use App\Settings\Application\Command\DeleteChartDefinition\DeleteChartDefinitionHandler;
+use App\Settings\Application\Command\SettingsCommandContext;
 use App\Settings\Application\Command\UpdateChartDefinition\UpdateChartDefinitionCommand;
 use App\Settings\Application\Command\UpdateChartDefinition\UpdateChartDefinitionHandler;
 use App\Settings\Application\Query\GetChartDefinition\GetChartDefinitionHandler;
@@ -20,6 +21,7 @@ use App\Settings\UI\Http\Requests\V1\UpdateChartDefinitionRequest;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Shared\UI\Http\Controllers\Api\ApiController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 final class ChartDefinitionController extends ApiController
@@ -109,6 +111,7 @@ final class ChartDefinitionController extends ApiController
             chartType: $request->validated('chart_type'),
             displayFields: $displayFields,
             sqlQuery: $request->validated('sql_query'),
+            context: $this->buildContext($request),
         ));
 
         return $this->created($dto->toArray());
@@ -176,6 +179,7 @@ final class ChartDefinitionController extends ApiController
                 chartType: $request->validated('chart_type'),
                 displayFields: $displayFields,
                 sqlQuery: $request->validated('sql_query'),
+                context: $this->buildContext($request),
             ));
 
             return $this->success($dto->toArray());
@@ -201,11 +205,29 @@ final class ChartDefinitionController extends ApiController
     public function destroy(Uuid $id): JsonResponse
     {
         try {
-            $this->deleteHandler->handle(new DeleteChartDefinitionCommand(id: $id));
+            /** @var Request $request */
+            $request = request();
+
+            $this->deleteHandler->handle(new DeleteChartDefinitionCommand(
+                id: $id,
+                context: $this->buildContext($request),
+            ));
 
             return $this->noContent();
         } catch (ChartDefinitionNotFoundException $e) {
             return $this->notFound($e->getMessage());
         }
+    }
+
+    private function buildContext(Request $request): SettingsCommandContext
+    {
+        $actorId = $request->attributes->get('user_id');
+
+        return new SettingsCommandContext(
+            actorId: $actorId !== null ? $actorId->getValue() : null,
+            requestUrl: $request->fullUrl(),
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent(),
+        );
     }
 }

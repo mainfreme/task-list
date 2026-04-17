@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Crm;
 
-use App\Crm\Domain\Dto\ClientDto;
+use App\Crm\Application\DTO\ClientDto;
 use App\Crm\Application\Query\GetClient\GetClientHandler;
 use App\Crm\Application\Query\GetClient\GetClientQuery;
 use App\Crm\Domain\Aggregate\CrmClientAggregate;
@@ -113,11 +113,11 @@ final class GetClientHandlerTest extends TestCase
             lastContactedAt: null,
             nextContactAt: null,
             addressUuid: null,
-            addresses: new \Illuminate\Support\Collection(),
-            contacts: new \Illuminate\Support\Collection(),
-            tags: new \Illuminate\Support\Collection(),
-            accounts: new \Illuminate\Support\Collection(),
-            clientNoteDto: null,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
             isDeleted: IsDeleted::fromBool(false),
             createdAt: new \DateTimeImmutable(),
             updatedAt: new \DateTimeImmutable(),
@@ -141,11 +141,11 @@ final class GetClientHandlerTest extends TestCase
             lastContactedAt: null,
             nextContactAt: null,
             addressUuid: $addressUuid,
-            addresses: new \Illuminate\Support\Collection(),
-            contacts: new \Illuminate\Support\Collection(),
-            tags: new \Illuminate\Support\Collection(),
-            accounts: new \Illuminate\Support\Collection(),
-            clientNoteDto: null,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
             isDeleted: IsDeleted::fromBool(false),
             createdAt: new \DateTimeImmutable(),
             updatedAt: new \DateTimeImmutable(),
