@@ -14,6 +14,9 @@ docker compose build --no-cache
 echo "==> Uruchamianie środowiska..."
 docker compose up -d
 
+echo "==> Composer install w kontenerze app..."
+docker compose exec -T app composer install --no-interaction
+
 echo "==> Oczekiwanie na gotowość PostgreSQL..."
 for i in $(seq 1 60); do
   if docker compose exec -T db pg_isready -U user -d db >/dev/null 2>&1; then
