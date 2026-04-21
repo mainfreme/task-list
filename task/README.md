@@ -87,6 +87,45 @@ php artisan l5-swagger:generate
 
 ## Uruchomienie
 
+### Docker (docker-compose w folderze `backend/`)
+
+Środowisko kontenerowe jest zdefiniowane w [../docker-compose.yml](../docker-compose.yml) (względem tego repozytorium: katalog **`backend`**, nie `task`). Przed pierwszym `docker compose up` musi istnieć zewnętrzna sieć Docker **`proxy-network`** (używana m.in. przez nginx-proxy); jeśli jej nie masz: `docker network create proxy-network`.
+
+**Zatrzymanie wszystkich kontenerów tego projektu** (obowiązuje katalog z `docker-compose.yml`, czyli `backend/`):
+
+```bash
+cd ..    # jeśli jesteś w katalogu task/
+docker compose down
+```
+
+**Wznowienie (bez przebudowy obrazów):**
+
+```bash
+cd ..    # jeśli jesteś w katalogu task/
+docker compose up -d
+```
+
+**Pełny cykl: stop → przebudowa obrazów → start → migracje → Swagger** — skrypt [`docker-rebuild.sh`](../docker-rebuild.sh) w katalogu `backend/`:
+
+```bash
+cd ..    # jeśli jesteś w katalogu task/
+chmod +x docker-rebuild.sh   # jednorazowo
+./docker-rebuild.sh
+```
+
+Polecenia Artisan w działającym kontenerze aplikacji (równoważne wejściu do kontenera i uruchomieniu ich ręcznie):
+
+```bash
+docker compose exec app php artisan migrate
+docker compose exec app php artisan l5-swagger:generate
+```
+
+Interaktywna powłoka w kontenerze `app`:
+
+```bash
+docker compose exec app bash
+```
+
 ### Serwer deweloperski
 
 ```bash
