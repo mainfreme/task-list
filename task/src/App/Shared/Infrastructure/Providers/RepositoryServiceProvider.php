@@ -18,6 +18,8 @@ use App\Crm\Domain\Repository\AddressRepositoryInterface;
 use App\Crm\Domain\Repository\ClientRepositoryInterface;
 use App\Crm\Infrastructure\Repository\EloquentAddressRepository;
 use App\Crm\Infrastructure\Repository\EloquentClientRepository;
+use App\Event\Domain\Repository\SystemEventRepositoryInterface;
+use App\Event\Infrastructure\Repository\EloquentSystemEventRepository;
 use App\Profile\Domain\Repository\UserProfileRepository;
 use App\Profile\Infrastructure\Repository\EloquentUserProfileRepository;
 use App\Shared\Infrastructure\MessageBroker\MessageProducerInterface;
@@ -120,6 +122,11 @@ final class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             SettingEntryRepositoryInterface::class,
             EloquentSettingEntryRepository::class
+        );
+
+        $this->app->bind(
+            SystemEventRepositoryInterface::class,
+            EloquentSystemEventRepository::class
         );
     }
 
