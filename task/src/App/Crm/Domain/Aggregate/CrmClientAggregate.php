@@ -36,7 +36,7 @@ final class CrmClientAggregate
     private function __construct(
         private readonly Uuid $id,
         private ClientName $name,
-        private Nip $nip,
+        private ?Nip $nip,
         private Country $country,
         private ClientStatus $status,
         private IsCompany $isCompany,
@@ -109,7 +109,7 @@ final class CrmClientAggregate
     public static function reconstitute(
         Uuid $id,
         ClientName $name,
-        Nip $nip,
+        ?Nip $nip,
         Country $country,
         ClientStatus $status,
         IsCompany $isCompany,
@@ -166,7 +166,7 @@ final class CrmClientAggregate
         return $this->name;
     }
 
-    public function getNip(): Nip
+    public function getNip(): ?Nip
     {
         return $this->nip;
     }
@@ -247,7 +247,7 @@ final class CrmClientAggregate
         $this->touch();
     }
 
-    public function setNip(Nip $nip): void
+    public function setNip(?Nip $nip): void
     {
         $this->nip = $nip;
         $this->touch();

@@ -6,49 +6,49 @@ namespace App\Crm\Domain\ValueObject;
 
 use App\Shared\Domain\ValueObject\AbstractValueObject;
 use App\Shared\Domain\ValueObject\ValueObjectInterface;
-use InvalidArgumentException;
 
 final class Nip extends AbstractValueObject implements ValueObjectInterface
 {
+    /** Treść błędu HTTP — używaj w FormRequest / controllerze, nie w VO. */
+    public const INVALID_MESSAGE = 'Invalid NIP format. NIP must contain 10 valid digits and a correct checksum.';
+
     private function __construct(
         string $value
     ) {
         parent::__construct($value);
-        $this->validate();
     }
 
-    public static function fromString(string $nip): self
+    public static function tryFrom(string $nip): ?self
     {
+        if (!self::isValid($nip)) {
+            return null;
+        }
+
         return new self($nip);
     }
 
-    public function validate(): void
+    public static function isValid(string $value): bool
     {
-        if (empty(trim($this->value))) {
-            throw new InvalidArgumentException('NIP cannot be empty');
+        if (trim($value) === '') {
+            return false;
         }
 
-        // Remove spaces and dashes for validation
-        $cleaned = preg_replace('/[\s-]/', '', $this->value);
+        $cleaned = preg_replace('/[\s-]/', '', $value);
 
-        // Polish NIP validation: 10 digits
         if (!preg_match('/^\d{10}$/', $cleaned)) {
-            throw new InvalidArgumentException('Invalid NIP format. NIP must contain 10 digits');
+            return false;
         }
 
-        // NIP checksum validation
-        if (!$this->validateChecksum($cleaned)) {
-            throw new InvalidArgumentException('Invalid NIP checksum');
-        }
+        return self::validateChecksum($cleaned);
     }
 
-    private function validateChecksum(string $nip): bool
+    private static function validateChecksum(string $nip): bool
     {
         $weights = [6, 5, 7, 2, 3, 4, 5, 6, 7];
         $sum = 0;
 
         for ($i = 0; $i < 9; $i++) {
-            $sum += (int)$nip[$i] * $weights[$i];
+            $sum += (int) $nip[$i] * $weights[$i];
         }
 
         $checksum = $sum % 11;
@@ -56,7 +56,11 @@ final class Nip extends AbstractValueObject implements ValueObjectInterface
             return false;
         }
 
-        return $checksum === (int)$nip[9];
+        return $checksum === (int) $nip[9];
+    }
+
+    public function validate(): void
+    {
     }
 
     public function getValue(): string

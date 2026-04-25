@@ -46,17 +46,17 @@ final class CreateClientHandlerTest extends TestCase
 
         $handler = new CreateClientHandler($repository, $cache);
         $command = new CreateClientCommand(
-            name: ClientName::fromString('Test Client'),
-            nip: Nip::fromString('5252674798'),
-            country: Country::fromString('Polska'),
-            isCompany: IsCompany::fromBool(true),
+            ClientName::fromString('Test Client'),
+            Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
+            Country::fromString('Polska'),
+            IsCompany::fromBool(true)
         );
 
         $result = $handler->handle($command);
 
         $this->assertInstanceOf(ClientDto::class, $result);
         $this->assertSame('Test Client', $result->name->getValue());
-        $this->assertSame('5252674798', $result->nip->getValue());
+        $this->assertSame('5252674798', $result->nip?->getValue());
         $this->assertSame('Polska', $result->country->getValue());
         $this->assertSame(ClientStatus::LEAD, $result->status);
         $this->assertTrue($result->isCompany->toBool());
@@ -79,17 +79,17 @@ final class CreateClientHandlerTest extends TestCase
 
         $handler = new CreateClientHandler($repository, $cache);
         $command = new CreateClientCommand(
-            name: ClientName::fromString('Full Client'),
-            nip: Nip::fromString('5252674798'),
-            country: Country::fromString('Polska'),
-            isCompany: IsCompany::fromBool(true),
-            regon: Regon::fromString('142345678'),
-            pesel: Pesel::fromString('82031412346'),
-            source: ClientSource::fromString('referral'),
-            rating: ClientRating::fromInt(5),
-            notes: ClientNotes::fromString('Notatka'),
-            status: ClientStatus::PROSPECT,
-            addressUuid: $addressUuid,
+            ClientName::fromString('Full Client'),
+            Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
+            Country::fromString('Polska'),
+            IsCompany::fromBool(true),
+            Regon::fromString('142345678'),
+            Pesel::fromString('82031412346'),
+            ClientSource::fromString('referral'),
+            ClientRating::fromInt(5),
+            ClientNotes::fromString('Notatka'),
+            ClientStatus::PROSPECT,
+            $addressUuid
         );
 
         $result = $handler->handle($command);
@@ -101,6 +101,28 @@ final class CreateClientHandlerTest extends TestCase
         $this->assertSame('Notatka', $result->notes?->toString());
         $this->assertSame(ClientStatus::PROSPECT, $result->status);
         $this->assertSame($addressUuid->getValue(), $result->addressUuid?->getValue());
+    }
+
+    public function test_handle_creates_private_client_without_nip(): void
+    {
+        $repository = Mockery::mock(ClientRepositoryInterface::class);
+        $repository->shouldReceive('save')->once();
+
+        $handler = new CreateClientHandler($repository);
+        $command = new CreateClientCommand(
+            ClientName::fromString('Jan Kowalski'),
+            null,
+            Country::fromString('PL'),
+            IsCompany::fromBool(false),
+            null,
+            Pesel::fromString('82031412346'),
+        );
+
+        $result = $handler->handle($command);
+
+        $this->assertNull($result->nip);
+        $this->assertSame('82031412346', $result->pesel?->toString());
+        $this->assertFalse($result->isCompany->toBool());
     }
 
 }

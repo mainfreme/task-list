@@ -20,7 +20,7 @@ final class CreateClientCommand
 {
     public function __construct(
         public readonly ClientName $name,
-        public readonly Nip $nip,
+        public readonly ?Nip $nip,
         public readonly Country $country,
         public readonly IsCompany $isCompany,
         public readonly ?Regon $regon = null,

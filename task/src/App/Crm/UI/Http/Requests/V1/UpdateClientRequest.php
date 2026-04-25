@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Crm\UI\Http\Requests\V1;
 
+use App\Crm\Domain\ValueObject\Nip;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 final class UpdateClientRequest extends FormRequest
 {
@@ -17,7 +20,20 @@ final class UpdateClientRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|string|max:255',
-            'nip' => 'sometimes|string|max:20',
+            'nip' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:20',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if ($value === null || $value === '') {
+                        return;
+                    }
+                    if (!Nip::isValid((string) $value)) {
+                        $fail(Nip::INVALID_MESSAGE);
+                    }
+                },
+            ],
             'country' => 'sometimes|string|max:100',
             'is_company' => 'sometimes|boolean',
             'regon' => 'nullable|string|max:20',
@@ -28,5 +44,16 @@ final class UpdateClientRequest extends FormRequest
             'status' => 'nullable|string|in:lead,prospect,active,inactive,archived',
             'address_uuid' => 'nullable|string|uuid',
         ];
+    }
+
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

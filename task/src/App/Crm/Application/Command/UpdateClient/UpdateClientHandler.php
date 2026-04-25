@@ -30,7 +30,9 @@ final class UpdateClientHandler
             $client->setName($command->name);
         }
 
-        if ($command->nip !== null) {
+        if ($command->nipCleared) {
+            $client->setNip(null);
+        } elseif ($command->nip !== null) {
             $client->setNip($command->nip);
         }
 

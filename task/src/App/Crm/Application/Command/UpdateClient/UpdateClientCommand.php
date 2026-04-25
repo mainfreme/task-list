@@ -22,6 +22,7 @@ final class UpdateClientCommand
         public readonly Uuid $id,
         public readonly ?ClientName $name = null,
         public readonly ?Nip $nip = null,
+        public readonly bool $nipCleared = false,
         public readonly ?Country $country = null,
         public readonly ?ClientStatus $status = null,
         public readonly ?IsCompany $isCompany = null,

@@ -16,6 +16,7 @@ use App\Crm\Domain\ValueObject\Nip;
 use App\Crm\Domain\ValueObject\Pesel;
 use App\Crm\Domain\ValueObject\Regon;
 use App\Crm\UI\Http\Mappers\Transformer\BoolToIsCompanyTransformer;
+use App\Crm\UI\Http\Mappers\Transformer\NullableStringToNipTransformer;
 use App\Crm\UI\Http\Mappers\Transformer\NullableIntToClientRatingTransformer;
 use App\Crm\UI\Http\Requests\V1\CreateClientRequest;
 use App\Shared\Infrastructure\Mapper\Attribute\MapField;
@@ -27,8 +28,8 @@ final class CreateClientCommandMapper
     #[MapField]
     public ClientName $name;
 
-    #[MapField]
-    public Nip $nip;
+    #[MapField(transformer: NullableStringToNipTransformer::class)]
+    public ?Nip $nip = null;
 
     #[MapField]
     public Country $country;

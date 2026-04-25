@@ -44,7 +44,7 @@ final class CrmClientAggregateTest extends TestCase
     {
         $client = CrmClientAggregate::create(
             name: ClientName::fromString('Test Client'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             status: ClientStatus::LEAD,
             isCompany: IsCompany::fromBool(true),
@@ -53,6 +53,22 @@ final class CrmClientAggregateTest extends TestCase
         $this->assertSame(ClientStatus::LEAD, $client->getStatus());
         $this->assertFalse($client->isDelete()->toBool());
         $this->assertNotNull($client->getId());
+    }
+
+    public function test_create_allows_null_nip_for_private_client(): void
+    {
+        $dto = new ClientDto(
+            name: ClientName::fromString('Jan Kowalski'),
+            nip: null,
+            country: Country::fromString('PL'),
+            isCompany: IsCompany::fromBool(false),
+            pesel: Pesel::fromString('82031412346'),
+        );
+
+        $client = CrmClientAggregate::create($dto);
+
+        $this->assertNull($client->getNip());
+        $this->assertSame('82031412346', $client->getPesel()?->toString());
     }
 
     /** setStatus zmienia status – weryfikacja wszystkich przejść z LEAD */
@@ -72,7 +88,7 @@ final class CrmClientAggregateTest extends TestCase
         $client = CrmClientAggregate::reconstitute(
             id: Uuid::generate(),
             name: ClientName::fromString('Test'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             status: ClientStatus::ACTIVE,
             isCompany: IsCompany::fromBool(true),
@@ -115,7 +131,7 @@ final class CrmClientAggregateTest extends TestCase
         $client = CrmClientAggregate::reconstitute(
             id: Uuid::generate(),
             name: ClientName::fromString('Full Client'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             status: ClientStatus::PROSPECT,
             isCompany: IsCompany::fromBool(true),
@@ -487,7 +503,7 @@ final class CrmClientAggregateTest extends TestCase
     {
         return CrmClientAggregate::create(
             name: ClientName::fromString('Test'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             status: ClientStatus::LEAD,
             isCompany: IsCompany::fromBool(false),

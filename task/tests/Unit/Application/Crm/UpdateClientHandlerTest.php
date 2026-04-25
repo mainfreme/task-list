@@ -187,7 +187,7 @@ final class UpdateClientHandlerTest extends TestCase
         return CrmClientAggregate::reconstitute(
             id: $id,
             name: ClientName::fromString('Test Client'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             status: ClientStatus::ACTIVE,
             isCompany: IsCompany::fromBool(false),
@@ -215,7 +215,7 @@ final class UpdateClientHandlerTest extends TestCase
         return CrmClientAggregate::reconstitute(
             id: $id,
             name: ClientName::fromString('Test Client'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             status: ClientStatus::ACTIVE,
             isCompany: IsCompany::fromBool(false),

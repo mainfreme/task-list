@@ -31,7 +31,7 @@ final class ClientDTOTest extends TestCase
 
         $dto = new ClientDto(
             name: ClientName::fromString('Test Client'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             isCompany: IsCompany::fromBool(true),
             id: $id,
@@ -75,7 +75,7 @@ final class ClientDTOTest extends TestCase
 
         $dto = new ClientDto(
             name: ClientName::fromString('Minimal'),
-            nip: Nip::fromString('5252674798'),
+            nip: Nip::tryFrom('5252674798') ?? throw new \LogicException('test NIP'),
             country: Country::fromString('Polska'),
             isCompany: IsCompany::fromBool(false),
             id: $id,
@@ -104,5 +104,22 @@ final class ClientDTOTest extends TestCase
         $this->assertNull($array['next_contact_at']);
         $this->assertNull($array['created_at']);
         $this->assertNull($array['updated_at']);
+    }
+
+    public function test_to_array_maps_null_nip_for_private_client(): void
+    {
+        $dto = new ClientDto(
+            name: ClientName::fromString('Osoba'),
+            nip: null,
+            country: Country::fromString('PL'),
+            isCompany: IsCompany::fromBool(false),
+            id: Uuid::fromString('550e8400-e29b-41d4-a716-446655440000'),
+            pesel: Pesel::fromString('82031412346'),
+        );
+
+        $array = $dto->toArray();
+
+        $this->assertNull($array['nip']);
+        $this->assertSame('82031412346', $array['pesel']);
     }
 }

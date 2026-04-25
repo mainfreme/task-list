@@ -71,10 +71,10 @@ final class CrmController extends ApiController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['name', 'nip', 'country'],
+                required: ['name', 'country'],
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
-                    new OA\Property(property: 'nip', type: 'string', example: '5252674798'),
+                    new OA\Property(property: 'nip', type: 'string', nullable: true, example: '5252674798'),
                     new OA\Property(property: 'country', type: 'string', example: 'Polska'),
                     new OA\Property(property: 'is_company', type: 'boolean', example: true),
                     new OA\Property(property: 'regon', type: 'string', example: '142345678'),

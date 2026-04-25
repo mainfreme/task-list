@@ -71,7 +71,7 @@ final class EloquentClientRepository implements ClientRepositoryInterface
             'id' => $client->getId()->getValue(),
             'address_uuid' => $client->getAddressUuid()?->getValue(),
             'name' => $client->getName()->getValue(),
-            'nip' => $client->getNip()->getValue(),
+            'nip' => $client->getNip()?->getValue(),
             'regon' => $client->getRegon()?->toString(),
             'pesel' => $client->getPesel()?->toString(),
             'country' => $client->getCountry()->getValue(),
@@ -114,7 +114,7 @@ final class EloquentClientRepository implements ClientRepositoryInterface
         return CrmClientAggregate::reconstitute(
             id: Uuid::fromString($model->id),
             name: ClientName::fromString($model->name),
-            nip: Nip::fromString($model->nip),
+            nip: $model->nip !== null && $model->nip !== '' ? Nip::tryFrom($model->nip) : null,
             country: Country::fromString($model->country),
             status: ClientStatus::from($model->status),
             isCompany: IsCompany::fromBool($model->is_company),

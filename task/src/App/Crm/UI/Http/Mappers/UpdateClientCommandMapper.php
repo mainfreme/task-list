@@ -41,10 +41,22 @@ final class UpdateClientCommandMapper
                 : ClientRating::fromInt(null);
         }
 
+        $nip = null;
+        $nipCleared = false;
+        if (array_key_exists('nip', $validated)) {
+            $rawNip = $validated['nip'];
+            if ($rawNip === null || $rawNip === '') {
+                $nipCleared = true;
+            } else {
+                $nip = Nip::tryFrom((string) $rawNip);
+            }
+        }
+
         return new UpdateClientCommand(
             id: $id,
             name: isset($validated['name']) ? ClientName::fromString($validated['name']) : null,
-            nip: isset($validated['nip']) ? Nip::fromString($validated['nip']) : null,
+            nip: $nip,
+            nipCleared: $nipCleared,
             country: isset($validated['country']) ? Country::fromString($validated['country']) : null,
             status: isset($validated['status']) ? ClientStatus::from($validated['status']) : null,
             isCompany: isset($validated['is_company']) ? IsCompany::fromBool((bool) $validated['is_company']) : null,
