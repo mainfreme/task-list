@@ -23,6 +23,6 @@ final class GetCurrentUserHandler
             throw UserNotFoundException::byId($query->userId);
         }
 
-        return $user->toDTO();
+        return UserDTO::fromUser($user);
     }
 }

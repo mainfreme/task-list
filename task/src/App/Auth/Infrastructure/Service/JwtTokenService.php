@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Auth\Infrastructure\Service;
 
-use App\Auth\Application\DTO\UserDTO;
 use App\Auth\Domain\Service\JwtTokenServiceInterface;
+use App\Auth\Domain\ValueObject\UserIdentity;
 use Firebase\JWT\JWT;
 
 final class JwtTokenService implements JwtTokenServiceInterface
 {
-    public function generateToken(UserDTO $user): string
+    public function generateToken(UserIdentity $identity): string
     {
         $secret = $this->getJwtSecret();
         $algorithm = $this->getJwtAlgorithm();
         $expirationMinutes = $this->getExpirationMinutes();
 
         $payload = [
-            'user_id' => $user->id->getValue(),
-            'email' => $user->email->getValue(),
-            'name' => $user->name,
-            'role' => $user->role->value,
+            'user_id' => $identity->id->getValue(),
+            'email' => $identity->email->getValue(),
+            'name' => $identity->name,
+            'role' => $identity->role->value,
             'iat' => time(),
             'exp' => time() + ($expirationMinutes * 60),
         ];
@@ -30,15 +30,15 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     public function getExpirationMinutes(): int
     {
-        return (int) env('JWT_EXPIRATION_MINUTES', 60 * 24); // Default 24 hours
+        return (int) config('auth_jwt.expiration_minutes', 60 * 24);
     }
 
     private function getJwtSecret(): string
     {
-        $secret = env('JWT_SECRET');
+        $secret = config('auth_jwt.secret');
 
-        if (!$secret) {
-            throw new \RuntimeException('JWT_SECRET is not configured in .env file');
+        if (!is_string($secret) || $secret === '') {
+            throw new \RuntimeException('JWT secret is not configured (auth_jwt.secret / JWT_SECRET).');
         }
 
         return $secret;
@@ -46,6 +46,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     private function getJwtAlgorithm(): string
     {
-        return env('JWT_ALGORITHM', 'HS256');
+        return (string) config('auth_jwt.algorithm', 'HS256');
     }
 }

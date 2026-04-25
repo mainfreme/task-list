@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\ApplicationManager\Domain\Entity;
 
+use App\ApplicationManager\Domain\Exception\InactiveApplicationManagerForTokenException;
 use App\ApplicationManager\Domain\ValueObject\ApiKey;
 use App\ApplicationManager\Domain\ValueObject\ApplicationName;
 use App\ApplicationManager\Domain\ValueObject\IpWhitelist;
@@ -95,6 +96,18 @@ final class ApplicationManager
     public function isActive(): bool
     {
         return $this->isActive;
+    }
+
+    /**
+     * Reguła domenowa: token dostępowy tylko dla aktywnej aplikacji.
+     *
+     * @throws InactiveApplicationManagerForTokenException
+     */
+    public function assertMayGenerateAccessToken(): void
+    {
+        if (!$this->isActive) {
+            throw InactiveApplicationManagerForTokenException::create();
+        }
     }
 
     public function activate(): void

@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Settings;
 
+use App\Settings\Application\Command\SettingsCommandContext;
 use App\Settings\Application\Command\UpsertSettingEntry\UpsertSettingEntryCommand;
 use App\Settings\Application\Command\UpsertSettingEntry\UpsertSettingEntryHandler;
+use App\Settings\Application\Event\SettingsEventDispatcherInterface;
 use App\Settings\Application\Mapper\SettingsEntityMapper;
 use App\Settings\Application\Service\IntegrationCredentialsMasker;
 use App\Settings\Domain\Entity\SettingEntry;
+use App\Settings\Domain\Event\SettingsChangedEvent;
 use App\Settings\Domain\Repository\SettingEntryRepositoryInterface;
 use App\Settings\Domain\ValueObject\SettingFieldType;
 use App\Shared\Domain\ValueObject\Uuid;
@@ -24,9 +27,10 @@ final class UpsertSettingEntryHandlerTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_handle_creates_when_no_existing_entry(): void
+    public function test_handle_creates_entry_with_null_value_and_dispatches_created_event(): void
     {
         $mapper = new SettingsEntityMapper(new IntegrationCredentialsMasker());
+        $eventDispatcher = Mockery::mock(SettingsEventDispatcherInterface::class);
 
         $repository = Mockery::mock(SettingEntryRepositoryInterface::class);
         $repository->shouldReceive('findByGroupAndField')
@@ -37,7 +41,7 @@ final class UpsertSettingEntryHandlerTest extends TestCase
             return $e->getGroupKey() === 'g'
                 && $e->getFieldKey() === 'f'
                 && $e->getFieldType() === SettingFieldType::String
-                && $e->getValue() === 'v';
+                && $e->getValue() === null;
         }));
         $repository->shouldReceive('findById')
             ->once()
@@ -48,29 +52,37 @@ final class UpsertSettingEntryHandlerTest extends TestCase
                     groupKey: 'g',
                     fieldKey: 'f',
                     fieldType: SettingFieldType::String,
-                    value: 'v',
+                    value: null,
                     createdAt: new DateTimeImmutable('2025-01-01T00:00:00+00:00'),
                     updatedAt: new DateTimeImmutable('2025-01-01T00:00:00+00:00'),
                 );
             });
 
-        $handler = new UpsertSettingEntryHandler($repository, $mapper);
+        $eventDispatcher->shouldReceive('dispatch')
+            ->once()
+            ->with(Mockery::on(function (SettingsChangedEvent $event) {
+                return $event->operation === SettingsChangedEvent::OPERATION_CREATED
+                    && $event->resourceType === 'setting_entry'
+                    && $event->before === null
+                    && ($event->after['value'] ?? 'unexpected') === null
+                    && in_array('value', $event->changedFields, true);
+            }));
+
+        $handler = new UpsertSettingEntryHandler($repository, $mapper, $eventDispatcher);
         $dto = $handler->handle(new UpsertSettingEntryCommand(
             groupKey: 'g',
             fieldKey: 'f',
             fieldType: 'string',
-            value: 'v',
+            value: null,
         ));
 
-        $this->assertSame('g', $dto->groupKey);
-        $this->assertSame('f', $dto->fieldKey);
-        $this->assertSame('string', $dto->fieldType);
-        $this->assertSame('v', $dto->value);
+        $this->assertNull($dto->value);
     }
 
-    public function test_handle_updates_when_entry_exists(): void
+    public function test_handle_updates_without_real_change_dispatches_empty_changed_fields(): void
     {
         $mapper = new SettingsEntityMapper(new IntegrationCredentialsMasker());
+        $eventDispatcher = Mockery::mock(SettingsEventDispatcherInterface::class);
 
         $existingId = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
         $existing = SettingEntry::reconstitute(
@@ -78,7 +90,7 @@ final class UpsertSettingEntryHandlerTest extends TestCase
             groupKey: 'g',
             fieldKey: 'f',
             fieldType: SettingFieldType::String,
-            value: 'old',
+            value: 'same',
             createdAt: new DateTimeImmutable('2025-01-01T00:00:00+00:00'),
             updatedAt: new DateTimeImmutable('2025-01-01T00:00:00+00:00'),
         );
@@ -90,7 +102,7 @@ final class UpsertSettingEntryHandlerTest extends TestCase
             ->andReturn($existing);
         $repository->shouldReceive('save')->once()->with(Mockery::on(function (SettingEntry $e) use ($existingId) {
             return $e->getId()->getValue() === $existingId->getValue()
-                && $e->getValue() === 'new';
+                && $e->getValue() === 'same';
         }));
         $repository->shouldReceive('findById')
             ->once()
@@ -101,20 +113,38 @@ final class UpsertSettingEntryHandlerTest extends TestCase
                     groupKey: 'g',
                     fieldKey: 'f',
                     fieldType: SettingFieldType::String,
-                    value: 'new',
+                    value: 'same',
                     createdAt: new DateTimeImmutable('2025-01-01T00:00:00+00:00'),
-                    updatedAt: new DateTimeImmutable('2025-01-02T00:00:00+00:00'),
+                    updatedAt: new DateTimeImmutable('2025-01-01T00:00:00+00:00'),
                 );
             });
 
-        $handler = new UpsertSettingEntryHandler($repository, $mapper);
+        $context = new SettingsCommandContext(
+            actorId: '550e8400-e29b-41d4-a716-446655440001',
+            requestUrl: 'https://example.test/api/v1/settings/entries',
+            ipAddress: '127.0.0.1',
+            userAgent: 'phpunit',
+        );
+
+        $eventDispatcher->shouldReceive('dispatch')
+            ->once()
+            ->with(Mockery::on(function (SettingsChangedEvent $event) use ($context, $existingId) {
+                return $event->operation === SettingsChangedEvent::OPERATION_UPDATED
+                    && $event->resourceId === $existingId->getValue()
+                    && $event->changedFields === []
+                    && $event->actorId === $context->actorId
+                    && $event->requestUrl === $context->requestUrl;
+            }));
+
+        $handler = new UpsertSettingEntryHandler($repository, $mapper, $eventDispatcher);
         $dto = $handler->handle(new UpsertSettingEntryCommand(
             groupKey: 'g',
             fieldKey: 'f',
             fieldType: 'string',
-            value: 'new',
+            value: 'same',
+            context: $context,
         ));
 
-        $this->assertSame('new', $dto->value);
+        $this->assertSame('same', $dto->value);
     }
 }

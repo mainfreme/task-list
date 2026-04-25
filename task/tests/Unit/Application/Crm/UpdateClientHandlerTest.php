@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Crm;
 
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
 use App\Crm\Application\Command\UpdateClient\UpdateClientCommand;
 use App\Crm\Application\Command\UpdateClient\UpdateClientHandler;
-use App\Crm\Domain\Dto\ClientDto;
+use App\Crm\Application\DTO\ClientDto;
 use App\Crm\Domain\Aggregate\CrmClientAggregate;
 use App\Crm\Domain\Enums\ClientStatus;
 use App\Crm\Domain\Exception\ClientNotFoundException;
@@ -38,7 +39,10 @@ final class UpdateClientHandlerTest extends TestCase
             ->andThrow(ClientNotFoundException::byId($uuid->getValue()));
         $repository->shouldNotReceive('save');
 
-        $handler = new UpdateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldNotReceive('invalidate');
+
+        $handler = new UpdateClientHandler($repository, $cache);
         $command = new UpdateClientCommand(
             id: $uuid,
             name: ClientName::fromString('Updated')
@@ -60,7 +64,10 @@ final class UpdateClientHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(fn (CrmClientAggregate $c) => $c->getName()->getValue() === 'Nowa nazwa'));
 
-        $handler = new UpdateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new UpdateClientHandler($repository, $cache);
         $command = new UpdateClientCommand(
             id: $uuid,
             name: ClientName::fromString('Nowa nazwa')
@@ -83,7 +90,10 @@ final class UpdateClientHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(fn (CrmClientAggregate $c) => $c->getStatus() === ClientStatus::ARCHIVED));
 
-        $handler = new UpdateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new UpdateClientHandler($repository, $cache);
         $command = new UpdateClientCommand(
             id: $uuid,
             status: ClientStatus::ARCHIVED
@@ -108,10 +118,14 @@ final class UpdateClientHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(function (CrmClientAggregate $c) use (&$clientPassedToSave, $originalName) {
                 $clientPassedToSave = $c;
+
                 return $c->getName()->getValue() === $originalName;
             }));
 
-        $handler = new UpdateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new UpdateClientHandler($repository, $cache);
         $command = new UpdateClientCommand(id: $uuid, name: ClientName::fromString($originalName));
 
         $result = $handler->handle($command);
@@ -133,7 +147,10 @@ final class UpdateClientHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(fn (CrmClientAggregate $c) => $c->getAddressUuid() === null));
 
-        $handler = new UpdateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new UpdateClientHandler($repository, $cache);
         $command = new UpdateClientCommand(id: $uuid, clearFields: ['address_uuid']);
 
         $result = $handler->handle($command);
@@ -154,7 +171,10 @@ final class UpdateClientHandlerTest extends TestCase
             ->once()
             ->with(Mockery::on(fn (CrmClientAggregate $c) => $c->getName()->getValue() === $originalName));
 
-        $handler = new UpdateClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new UpdateClientHandler($repository, $cache);
         $command = new UpdateClientCommand(id: $uuid);
 
         $result = $handler->handle($command);
@@ -179,11 +199,11 @@ final class UpdateClientHandlerTest extends TestCase
             lastContactedAt: null,
             nextContactAt: null,
             addressUuid: $addressUuid,
-            addresses: new \Illuminate\Support\Collection(),
-            contacts: new \Illuminate\Support\Collection(),
-            tags: new \Illuminate\Support\Collection(),
-            accounts: new \Illuminate\Support\Collection(),
-            clientNoteDto: null,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
             isDeleted: IsDeleted::fromBool(false),
             createdAt: new \DateTimeImmutable(),
             updatedAt: new \DateTimeImmutable(),
@@ -207,11 +227,11 @@ final class UpdateClientHandlerTest extends TestCase
             lastContactedAt: null,
             nextContactAt: null,
             addressUuid: null,
-            addresses: new \Illuminate\Support\Collection(),
-            contacts: new \Illuminate\Support\Collection(),
-            tags: new \Illuminate\Support\Collection(),
-            accounts: new \Illuminate\Support\Collection(),
-            clientNoteDto: null,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
             isDeleted: IsDeleted::fromBool(false),
             createdAt: new \DateTimeImmutable(),
             updatedAt: new \DateTimeImmutable(),

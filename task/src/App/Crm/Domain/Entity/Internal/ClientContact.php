@@ -20,18 +20,27 @@ final class ClientContact
 {
     private ?Uuid $id = null;
 
+    private IsPrimary $isPrimary;
+
+    private IsActive $isActive;
+
+    private IsVerified $isVerified;
+
     public function __construct(
         private Uuid $clientUuid,
         private ContactType $type,
         private ContactValue $value,
         private ?CountryPrefix $countryPrefix = null,
         private ?ContactRole $contactRole = null,
-        private IsPrimary $isPrimary = new IsPrimary(false),
-        private IsActive $isActive = new IsActive(true),
-        private IsVerified $isVerified = new IsVerified(false),
+        ?IsPrimary $isPrimary = null,
+        ?IsActive $isActive = null,
+        ?IsVerified $isVerified = null,
         private ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null
     ) {
+        $this->isPrimary = $isPrimary ?? IsPrimary::fromBool(false);
+        $this->isActive = $isActive ?? IsActive::fromBool(true);
+        $this->isVerified = $isVerified ?? IsVerified::fromBool(false);
         $this->createdAt = $this->createdAt ?? new \DateTimeImmutable();
         $this->updatedAt = $this->updatedAt ?? new \DateTimeImmutable();
     }
@@ -42,7 +51,7 @@ final class ClientContact
         ContactValue $value,
         ?CountryPrefix $countryPrefix = null,
         ?ContactRole $contactRole = null,
-        IsPrimary $isPrimary = new IsPrimary(false)
+        ?IsPrimary $isPrimary = null
     ): self {
         return new self(
             $clientUuid,
@@ -50,7 +59,7 @@ final class ClientContact
             $value,
             $countryPrefix,
             $contactRole,
-            $isPrimary
+            $isPrimary,
         );
     }
 

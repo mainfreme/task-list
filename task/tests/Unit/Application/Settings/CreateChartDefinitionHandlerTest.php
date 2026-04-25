@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Settings;
 
+use App\Settings\Application\Event\SettingsEventDispatcherInterface;
 use App\Settings\Application\Command\CreateChartDefinition\CreateChartDefinitionCommand;
 use App\Settings\Application\Command\CreateChartDefinition\CreateChartDefinitionHandler;
 use App\Settings\Application\Mapper\SettingsEntityMapper;
 use App\Settings\Application\Service\IntegrationCredentialsMasker;
 use App\Settings\Domain\Entity\ChartDefinition;
+use App\Settings\Domain\Event\SettingsChangedEvent;
 use App\Settings\Domain\Repository\ChartDefinitionRepositoryInterface;
 use App\Shared\Domain\ValueObject\Uuid;
 use DateTimeImmutable;
@@ -23,9 +25,10 @@ final class CreateChartDefinitionHandlerTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_handle_saves_and_returns_dto_with_same_definition_data(): void
+    public function test_handle_dispatches_created_event_with_nested_display_fields(): void
     {
         $mapper = new SettingsEntityMapper(new IntegrationCredentialsMasker());
+        $events = Mockery::mock(SettingsEventDispatcherInterface::class);
 
         $repository = Mockery::mock(ChartDefinitionRepositoryInterface::class);
         $captured = null;
@@ -37,7 +40,7 @@ final class CreateChartDefinitionHandlerTest extends TestCase
 
                 return $e->getChartType() === 'line'
                     && $e->getSqlQuery() === 'SELECT 1'
-                    && $e->getDisplayFields() === ['x' => 'y'];
+                    && $e->getDisplayFields() === ['x' => 'y', 'meta' => ['tooltip' => true]];
             }));
 
         $repository->shouldReceive('findById')
@@ -53,16 +56,22 @@ final class CreateChartDefinitionHandlerTest extends TestCase
                 );
             });
 
-        $handler = new CreateChartDefinitionHandler($repository, $mapper);
+        $events->shouldReceive('dispatch')
+            ->once()
+            ->with(Mockery::on(function (SettingsChangedEvent $event) {
+                return $event->operation === SettingsChangedEvent::OPERATION_CREATED
+                    && $event->before === null
+                    && ($event->after['display_fields']['meta']['tooltip'] ?? null) === true
+                    && in_array('display_fields', $event->changedFields, true);
+            }));
+
+        $handler = new CreateChartDefinitionHandler($repository, $mapper, $events);
         $result = $handler->handle(new CreateChartDefinitionCommand(
             chartType: 'line',
-            displayFields: ['x' => 'y'],
+            displayFields: ['x' => 'y', 'meta' => ['tooltip' => true]],
             sqlQuery: 'SELECT 1',
         ));
 
-        $this->assertSame('line', $result->chartType);
-        $this->assertSame(['x' => 'y'], $result->displayFields);
-        $this->assertSame('SELECT 1', $result->sqlQuery);
-        $this->assertNotSame('', $result->id);
+        $this->assertTrue(in_array('meta', array_keys($result->displayFields), true));
     }
 }

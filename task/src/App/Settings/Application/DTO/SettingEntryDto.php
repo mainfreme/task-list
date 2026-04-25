@@ -29,4 +29,20 @@ final class SettingEntryDto
             'updated_at' => $this->updatedAt,
         ];
     }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            id: (string) ($data['id'] ?? ''),
+            groupKey: (string) ($data['group_key'] ?? ''),
+            fieldKey: (string) ($data['field_key'] ?? ''),
+            fieldType: (string) ($data['field_type'] ?? ''),
+            value: isset($data['value']) ? (string) $data['value'] : null,
+            createdAt: isset($data['created_at']) ? (string) $data['created_at'] : null,
+            updatedAt: isset($data['updated_at']) ? (string) $data['updated_at'] : null,
+        );
+    }
 }

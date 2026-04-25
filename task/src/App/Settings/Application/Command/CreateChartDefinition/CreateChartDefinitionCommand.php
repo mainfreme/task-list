@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Settings\Application\Command\CreateChartDefinition;
 
+use App\Settings\Application\Command\SettingsCommandContext;
+
 final class CreateChartDefinitionCommand
 {
     /**
@@ -13,6 +15,7 @@ final class CreateChartDefinitionCommand
         public readonly string $chartType,
         public readonly array $displayFields,
         public readonly string $sqlQuery,
+        public readonly ?SettingsCommandContext $context = null,
     ) {
     }
 }

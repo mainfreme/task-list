@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Crm;
 
-use App\Crm\Domain\Dto\ClientDto;
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
+use App\Crm\Application\DTO\ClientDto;
 use App\Crm\Application\DTO\ClientListDto;
 use App\Crm\Application\Query\ListClients\ListClientsHandler;
 use App\Crm\Application\Query\ListClients\ListClientsQuery;
@@ -42,7 +43,11 @@ final class ListClientsHandlerTest extends TestCase
             ->andReturn($clients);
         $repository->shouldReceive('count')->once()->andReturn(2);
 
-        $handler = new ListClientsHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldReceive('save')->once();
+
+        $handler = new ListClientsHandler($repository, $cache);
         $query = new ListClientsQuery(page: 1, perPage: 20, status: null);
 
         $result = $handler->handle($query);
@@ -68,7 +73,11 @@ final class ListClientsHandlerTest extends TestCase
             ->andReturn($clients);
         $repository->shouldReceive('countByStatus')->once()->with(ClientStatus::ACTIVE)->andReturn(1);
 
-        $handler = new ListClientsHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldReceive('save')->once();
+
+        $handler = new ListClientsHandler($repository, $cache);
         $query = new ListClientsQuery(page: 1, perPage: 20, status: ClientStatus::ACTIVE);
 
         $result = $handler->handle($query);
@@ -90,7 +99,11 @@ final class ListClientsHandlerTest extends TestCase
             ->andReturn($clients);
         $repository->shouldReceive('count')->once()->andReturn(25);
 
-        $handler = new ListClientsHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldReceive('save')->once();
+
+        $handler = new ListClientsHandler($repository, $cache);
         $query = new ListClientsQuery(page: 2, perPage: 10, status: null);
 
         $result = $handler->handle($query);
@@ -111,7 +124,11 @@ final class ListClientsHandlerTest extends TestCase
         $repository->shouldReceive('findAll')->once()->andReturn($clients);
         $repository->shouldReceive('count')->once()->andReturn(1);
 
-        $handler = new ListClientsHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldReceive('save')->once();
+
+        $handler = new ListClientsHandler($repository, $cache);
         $query = new ListClientsQuery(page: 1, perPage: 20, status: null);
 
         $result = $handler->handle($query);
@@ -134,7 +151,11 @@ final class ListClientsHandlerTest extends TestCase
         $repository->shouldReceive('findAll')->once()->with(20, 0)->andReturn([]);
         $repository->shouldReceive('count')->once()->andReturn(0);
 
-        $handler = new ListClientsHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldReceive('save')->once();
+
+        $handler = new ListClientsHandler($repository, $cache);
         $query = new ListClientsQuery(page: 1, perPage: 20, status: null);
 
         $result = $handler->handle($query);
@@ -143,6 +164,37 @@ final class ListClientsHandlerTest extends TestCase
         $this->assertEmpty($array['data']);
         $this->assertSame(0, $result->total);
         $this->assertSame(0, $result->totalPages);
+    }
+
+    /** Cache trafiony: repozytorium nie jest odpytywane, zapis cache nie jest wywoływany */
+    public function test_handle_returns_cached_dto_without_querying_repository(): void
+    {
+        $clientId = Uuid::fromString('550e8400-e29b-41d4-a716-446655440000');
+        $aggregate = $this->createClient($clientId);
+        $cached = new ClientListDto(
+            clients: [ClientDto::fromAggregate($aggregate)],
+            total: 1,
+            page: 1,
+            perPage: 20,
+            totalPages: 1,
+        );
+
+        $repository = Mockery::mock(ClientRepositoryInterface::class);
+        $repository->shouldNotReceive('findAll');
+        $repository->shouldNotReceive('findByStatus');
+        $repository->shouldNotReceive('count');
+        $repository->shouldNotReceive('countByStatus');
+
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn($cached);
+        $cache->shouldNotReceive('save');
+
+        $handler = new ListClientsHandler($repository, $cache);
+        $query = new ListClientsQuery(page: 1, perPage: 20, status: null);
+
+        $result = $handler->handle($query);
+
+        $this->assertSame($cached, $result);
     }
 
     private function createClient(Uuid $id): CrmClientAggregate
@@ -162,11 +214,11 @@ final class ListClientsHandlerTest extends TestCase
             lastContactedAt: null,
             nextContactAt: null,
             addressUuid: null,
-            addresses: new \Illuminate\Support\Collection(),
-            contacts: new \Illuminate\Support\Collection(),
-            tags: new \Illuminate\Support\Collection(),
-            accounts: new \Illuminate\Support\Collection(),
-            clientNoteDto: null,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
             isDeleted: IsDeleted::fromBool(false),
             createdAt: new \DateTimeImmutable(),
             updatedAt: new \DateTimeImmutable(),

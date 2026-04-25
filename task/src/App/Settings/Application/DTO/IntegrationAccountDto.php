@@ -34,4 +34,23 @@ final class IntegrationAccountDto
             'updated_at' => $this->updatedAt,
         ];
     }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function fromArray(array $data): self
+    {
+        $credentials = $data['credentials'] ?? [];
+
+        return new self(
+            id: (string) ($data['id'] ?? ''),
+            name: (string) ($data['name'] ?? ''),
+            enabled: (bool) ($data['enabled'] ?? false),
+            externalAccountId: isset($data['external_account_id']) ? (string) $data['external_account_id'] : null,
+            provider: isset($data['provider']) ? (string) $data['provider'] : null,
+            credentials: is_array($credentials) ? $credentials : [],
+            createdAt: isset($data['created_at']) ? (string) $data['created_at'] : null,
+            updatedAt: isset($data['updated_at']) ? (string) $data['updated_at'] : null,
+        );
+    }
 }

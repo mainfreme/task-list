@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Providers;
 
+use App\ApplicationManager\Domain\Event\ApplicationManagerPersistedEvent;
 use App\ApplicationManager\Domain\Repository\ApplicationManagerRepositoryInterface;
+use App\ApplicationManager\Domain\Service\ApplicationJwtTokenGeneratorInterface;
+use App\ApplicationManager\Infrastructure\Cache\ApplicationManagerCacheStore;
+use App\ApplicationManager\Infrastructure\Listener\ApplicationManagerPersistedListener;
+use App\ApplicationManager\Infrastructure\Repository\CachingApplicationManagerRepository;
 use App\ApplicationManager\Infrastructure\Repository\EloquentApplicationManagerRepository;
+use App\ApplicationManager\Infrastructure\Service\FirebaseApplicationJwtTokenGenerator;
 use App\Auth\Domain\Repository\ActivityLogRepositoryInterface;
 use App\Auth\Domain\Repository\UserRepositoryInterface;
 use App\Auth\Domain\Service\ActivityLogProducerInterface;
@@ -14,27 +20,36 @@ use App\Auth\Infrastructure\Repository\EloquentActivityLogRepository;
 use App\Auth\Infrastructure\Repository\EloquentUserRepository;
 use App\Auth\Infrastructure\Service\ActivityLogProducer;
 use App\Auth\Infrastructure\Service\JwtTokenService;
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
 use App\Crm\Domain\Repository\AddressRepositoryInterface;
 use App\Crm\Domain\Repository\ClientRepositoryInterface;
+use App\Crm\Infrastructure\Cache\RedisListClientsQueryCache;
 use App\Crm\Infrastructure\Repository\EloquentAddressRepository;
 use App\Crm\Infrastructure\Repository\EloquentClientRepository;
-use App\Event\Domain\Repository\SystemEventRepositoryInterface;
-use App\Event\Infrastructure\Repository\EloquentSystemEventRepository;
+use App\Ops\Domain\Repository\DeployFailureRepositoryInterface;
+use App\Ops\Infrastructure\Repository\EloquentDeployFailureRepository;
 use App\Profile\Domain\Repository\UserProfileRepository;
 use App\Profile\Infrastructure\Repository\EloquentUserProfileRepository;
+use App\Settings\Domain\Repository\ChartDefinitionRepositoryInterface;
+use App\Settings\Domain\Repository\IntegrationAccountRepositoryInterface;
+use App\Settings\Domain\Repository\SettingEntryRepositoryInterface;
+use App\Settings\Application\Cache\SettingsQueryCacheInterface;
+use App\Settings\Application\Event\SettingsEventDispatcherInterface;
+use App\Settings\Domain\Event\SettingsChangedEvent;
+use App\Settings\Infrastructure\Cache\RedisSettingsQueryCache;
+use App\Settings\Infrastructure\Event\LaravelSettingsEventDispatcher;
+use App\Settings\Infrastructure\Listener\SettingsChangedListener;
+use App\Settings\Infrastructure\Repository\EloquentChartDefinitionRepository;
+use App\Settings\Infrastructure\Repository\EloquentIntegrationAccountRepository;
+use App\Settings\Infrastructure\Repository\EloquentSettingEntryRepository;
 use App\Shared\Infrastructure\MessageBroker\MessageProducerInterface;
 use App\Shared\Infrastructure\MessageBroker\RabbitMQConnection;
 use App\Shared\Infrastructure\MessageBroker\RabbitMQProducer;
 use App\Task\Domain\Repository\TaskRepositoryInterface;
-use App\Settings\Domain\Repository\ChartDefinitionRepositoryInterface;
-use App\Settings\Domain\Repository\IntegrationAccountRepositoryInterface;
-use App\Settings\Domain\Repository\SettingEntryRepositoryInterface;
-use App\Settings\Infrastructure\Repository\EloquentChartDefinitionRepository;
-use App\Settings\Infrastructure\Repository\EloquentIntegrationAccountRepository;
-use App\Settings\Infrastructure\Repository\EloquentSettingEntryRepository;
 use App\Task\Domain\Repository\TaskTimeSessionRepositoryInterface;
 use App\Task\Infrastructure\Repository\EloquentTaskRepository;
 use App\Task\Infrastructure\Repository\EloquentTaskTimeSessionRepository;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 final class RepositoryServiceProvider extends ServiceProvider
@@ -44,9 +59,16 @@ final class RepositoryServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(EloquentApplicationManagerRepository::class);
+        $this->app->singleton(ApplicationManagerCacheStore::class);
         $this->app->bind(
             ApplicationManagerRepositoryInterface::class,
-            EloquentApplicationManagerRepository::class
+            CachingApplicationManagerRepository::class
+        );
+
+        $this->app->bind(
+            ApplicationJwtTokenGeneratorInterface::class,
+            FirebaseApplicationJwtTokenGenerator::class
         );
 
         $this->app->bind(
@@ -63,6 +85,8 @@ final class RepositoryServiceProvider extends ServiceProvider
             ClientRepositoryInterface::class,
             EloquentClientRepository::class
         );
+
+        $this->app->singleton(ListClientsQueryCacheInterface::class, RedisListClientsQueryCache::class);
 
         $this->app->bind(
             AddressRepositoryInterface::class,
@@ -124,9 +148,12 @@ final class RepositoryServiceProvider extends ServiceProvider
             EloquentSettingEntryRepository::class
         );
 
+        $this->app->singleton(SettingsQueryCacheInterface::class, RedisSettingsQueryCache::class);
+        $this->app->singleton(SettingsEventDispatcherInterface::class, LaravelSettingsEventDispatcher::class);
+
         $this->app->bind(
-            SystemEventRepositoryInterface::class,
-            EloquentSystemEventRepository::class
+            DeployFailureRepositoryInterface::class,
+            EloquentDeployFailureRepository::class
         );
     }
 
@@ -135,6 +162,13 @@ final class RepositoryServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(
+            ApplicationManagerPersistedEvent::class,
+            ApplicationManagerPersistedListener::class
+        );
+        Event::listen(
+            SettingsChangedEvent::class,
+            SettingsChangedListener::class
+        );
     }
 }

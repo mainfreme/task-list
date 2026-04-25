@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Settings\Application\Command\UpsertSettingEntry;
 
+use App\Settings\Application\Command\SettingsCommandContext;
+
 final class UpsertSettingEntryCommand
 {
     public function __construct(
@@ -11,6 +13,7 @@ final class UpsertSettingEntryCommand
         public readonly string $fieldKey,
         public readonly string $fieldType,
         public readonly ?string $value,
+        public readonly ?SettingsCommandContext $context = null,
     ) {
     }
 }

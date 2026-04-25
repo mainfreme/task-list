@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Settings;
 
+use App\Settings\Application\Cache\SettingsQueryCacheInterface;
 use App\Settings\Application\Mapper\SettingsEntityMapper;
 use App\Settings\Application\Query\ListIntegrationAccounts\ListIntegrationAccountsHandler;
 use App\Settings\Application\Query\ListIntegrationAccounts\ListIntegrationAccountsQuery;
@@ -41,11 +42,15 @@ final class ListIntegrationAccountsHandlerTest extends TestCase
         );
 
         $repository = Mockery::mock(IntegrationAccountRepositoryInterface::class);
+        $cache = Mockery::mock(SettingsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(null);
+        $cache->shouldReceive('save')->once();
         $repository->shouldReceive('findAll')->once()->andReturn([$account]);
 
         $handler = new ListIntegrationAccountsHandler(
             $repository,
-            new SettingsEntityMapper(new IntegrationCredentialsMasker())
+            new SettingsEntityMapper(new IntegrationCredentialsMasker()),
+            $cache
         );
 
         $items = $handler->handle(new ListIntegrationAccountsQuery());
@@ -55,5 +60,24 @@ final class ListIntegrationAccountsHandlerTest extends TestCase
         $this->assertSame('SECRET', $account->getCredentials()['accessToken']);
         $this->assertSame('••••••••', $row['credentials']['accessToken']);
         $this->assertSame('99', $row['credentials']['pageId']);
+    }
+
+    public function test_handle_returns_empty_array_when_cache_payload_items_is_not_array(): void
+    {
+        $repository = Mockery::mock(IntegrationAccountRepositoryInterface::class);
+        $cache = Mockery::mock(SettingsQueryCacheInterface::class);
+        $cache->shouldReceive('find')->once()->andReturn(['items' => 'invalid-shape']);
+        $repository->shouldNotReceive('findAll');
+        $cache->shouldNotReceive('save');
+
+        $handler = new ListIntegrationAccountsHandler(
+            $repository,
+            new SettingsEntityMapper(new IntegrationCredentialsMasker()),
+            $cache
+        );
+
+        $items = $handler->handle(new ListIntegrationAccountsQuery());
+
+        $this->assertSame([], $items);
     }
 }

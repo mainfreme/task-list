@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Auth\Application\DTO;
 
+use App\Auth\Domain\Entity\User;
 use App\Auth\Domain\Enum\UserRoleEnum;
 use App\Shared\Domain\ValueObject\Email;
 use App\Shared\Domain\ValueObject\Uuid;
@@ -19,6 +20,20 @@ final class UserDTO
     ) {
     }
 
+    public static function fromUser(User $user): self
+    {
+        return new self(
+            id: $user->getId(),
+            name: $user->getName(),
+            email: $user->getEmail(),
+            password: $user->getPassword(),
+            role: $user->getRole(),
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(

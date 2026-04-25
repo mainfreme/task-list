@@ -35,7 +35,7 @@ final class GenerateApiKeyHandler
         return new ApplicationManagerDTO(
             id: $applicationManager->getId(),
             name: $applicationManager->getName(),
-            apiKey: $newApiKey, // Return plain key only when regenerating
+            apiKeyHash: $newApiKey,
             requestUrl: $requestUrl,
             isActive: $applicationManager->isActive(),
             ipWhitelist: $ipWhitelist

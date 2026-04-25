@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Crm;
 
+use App\Crm\Application\Cache\ListClientsQueryCacheInterface;
 use App\Crm\Application\Command\DeleteClient\DeleteClientCommand;
 use App\Crm\Application\Command\DeleteClient\DeleteClientHandler;
 use App\Crm\Domain\Aggregate\CrmClientAggregate;
@@ -37,7 +38,10 @@ final class DeleteClientHandlerTest extends TestCase
             ->andThrow(ClientNotFoundException::byId($uuid->getValue()));
         $repository->shouldNotReceive('softDelete');
 
-        $handler = new DeleteClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldNotReceive('invalidate');
+
+        $handler = new DeleteClientHandler($repository, $cache);
         $command = new DeleteClientCommand($uuid);
 
         $this->expectException(ClientNotFoundException::class);
@@ -66,7 +70,10 @@ final class DeleteClientHandlerTest extends TestCase
                 return $c->getId() !== null && $c->getId()->getValue() === $uuid->getValue();
             }));
 
-        $handler = new DeleteClientHandler($repository);
+        $cache = Mockery::mock(ListClientsQueryCacheInterface::class);
+        $cache->shouldReceive('invalidate')->once();
+
+        $handler = new DeleteClientHandler($repository, $cache);
         $command = new DeleteClientCommand($uuid);
 
         $handler->handle($command);
@@ -91,11 +98,11 @@ final class DeleteClientHandlerTest extends TestCase
             lastContactedAt: null,
             nextContactAt: null,
             addressUuid: null,
-            addresses: new \Illuminate\Support\Collection(),
-            contacts: new \Illuminate\Support\Collection(),
-            tags: new \Illuminate\Support\Collection(),
-            accounts: new \Illuminate\Support\Collection(),
-            clientNoteDto: null,
+            addresses: [],
+            contacts: [],
+            tags: [],
+            clientNote: null,
+            accounts: [],
             isDeleted: IsDeleted::fromBool(false),
             createdAt: new \DateTimeImmutable(),
             updatedAt: new \DateTimeImmutable(),
