@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Crm\UI\Http\Requests\V1;
 
+use App\Crm\UI\Http\Rules\NipValue;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -19,7 +20,7 @@ final class CreateClientRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'nip' => 'required|string|max:20',
+            'nip' => ['required', 'string', 'max:20', new NipValue()],
             'country' => 'required|string|max:100',
             'is_company' => 'sometimes|boolean',
             'regon' => 'nullable|string|max:20',

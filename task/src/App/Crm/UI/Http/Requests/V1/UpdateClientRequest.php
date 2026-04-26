@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Crm\UI\Http\Requests\V1;
 
+use App\Crm\UI\Http\Rules\NipValue;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class UpdateClientRequest extends FormRequest
@@ -17,7 +18,7 @@ final class UpdateClientRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|string|max:255',
-            'nip' => 'sometimes|string|max:20',
+            'nip' => ['sometimes', 'string', 'max:20', new NipValue()],
             'country' => 'sometimes|string|max:100',
             'is_company' => 'sometimes|boolean',
             'regon' => 'nullable|string|max:20',
