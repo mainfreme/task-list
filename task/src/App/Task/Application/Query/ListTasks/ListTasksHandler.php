@@ -50,6 +50,7 @@ final class ListTasksHandler
                 userId: $task->getUserId(),
                 dueDate: $task->getDueDate(),
                 deliveryAddress: $task->getDeliveryAddress(),
+                createdAt: $task->getCreatedAt(),
             ),
             $tasks
         );

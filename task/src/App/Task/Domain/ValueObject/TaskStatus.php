@@ -10,6 +10,7 @@ enum TaskStatus: string
     case IN_PROGRESS = 'in_progress';
     case COMPLETED = 'completed';
     case CANCELLED = 'cancelled';
+    case ARCHIVED = 'archived';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum TaskStatus: string
             self::IN_PROGRESS => 'W trakcie realizacji',
             self::COMPLETED => 'Zakończono',
             self::CANCELLED => 'Anulowano',
+            self::ARCHIVED => 'Zarchiwizowano',
         };
     }
 

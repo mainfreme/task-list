@@ -195,7 +195,7 @@ final class TaskController extends ApiController
             content: new OA\JsonContent(
                 required: ['status'],
                 properties: [
-                    new OA\Property(property: 'status', type: 'string', enum: ['pending', 'in_progress', 'completed', 'cancelled'], example: 'in_progress'),
+                    new OA\Property(property: 'status', type: 'string', enum: ['pending', 'in_progress', 'completed', 'cancelled', 'archived'], example: 'in_progress'),
                 ]
             )
         ),

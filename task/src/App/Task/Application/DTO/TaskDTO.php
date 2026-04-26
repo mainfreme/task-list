@@ -31,6 +31,7 @@ final class TaskDTO
         public readonly ?Uuid $userId = null,
         public readonly ?DueDate $dueDate = null,
         public readonly ?DeliveryAddress $deliveryAddress = null,
+        public readonly ?\DateTimeImmutable $createdAt = null,
     ) {
     }
 
@@ -49,6 +50,7 @@ final class TaskDTO
             'user_id' => $this->userId?->getValue(),
             'due_date' => $this->dueDate?->format('Y-m-d H:i:s'),
             'delivery_address' => $this->deliveryAddress?->getValue(),
+            'created_at' => $this->createdAt?->format(\DateTimeInterface::ATOM),
         ];
     }
 }

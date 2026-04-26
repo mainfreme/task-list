@@ -83,6 +83,10 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
         $query = TaskModel::query()
             ->when($status !== null, fn ($q) => $q->where('status', $status->value))
             ->when(
+                $status === null,
+                fn ($q) => $q->where('status', '!=', TaskStatus::ARCHIVED->value),
+            )
+            ->when(
                 $appIds !== [],
                 fn ($q) => $q->whereIn('application_manager_id', $appIds),
             )
@@ -106,6 +110,10 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
 
         return TaskModel::query()
             ->when($status !== null, fn ($q) => $q->where('status', $status->value))
+            ->when(
+                $status === null,
+                fn ($q) => $q->where('status', '!=', TaskStatus::ARCHIVED->value),
+            )
             ->when(
                 $appIds !== [],
                 fn ($q) => $q->whereIn('application_manager_id', $appIds),

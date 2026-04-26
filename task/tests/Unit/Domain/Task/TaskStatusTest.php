@@ -23,6 +23,7 @@ final class TaskStatusTest extends TestCase
         $this->assertSame(TaskStatus::IN_PROGRESS, TaskStatus::fromString('in_progress'));
         $this->assertSame(TaskStatus::COMPLETED, TaskStatus::fromString('completed'));
         $this->assertSame(TaskStatus::CANCELLED, TaskStatus::fromString('cancelled'));
+        $this->assertSame(TaskStatus::ARCHIVED, TaskStatus::fromString('archived'));
     }
 
     /** Wszystkie statusy mają zdefiniowane etykiety po polsku – zmiana w enumie nie umknie */
@@ -32,5 +33,6 @@ final class TaskStatusTest extends TestCase
         $this->assertSame('W trakcie realizacji', TaskStatus::IN_PROGRESS->label());
         $this->assertSame('Zakończono', TaskStatus::COMPLETED->label());
         $this->assertSame('Anulowano', TaskStatus::CANCELLED->label());
+        $this->assertSame('Zarchiwizowano', TaskStatus::ARCHIVED->label());
     }
 }

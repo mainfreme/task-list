@@ -64,7 +64,8 @@ final class UpdateTaskHandler
             applicationManagerId: $task->getApplicationManagerId(),
             userId: $task->getUserId(),
             dueDate: $task->getDueDate(),
-            deliveryAddress: $task->getDeliveryAddress()
+            deliveryAddress: $task->getDeliveryAddress(),
+            createdAt: $task->getCreatedAt()
         );
     }
 }

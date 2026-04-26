@@ -11,7 +11,7 @@ final class UpdateTaskStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|string|in:pending,in_progress,completed,cancelled',
+            'status' => 'required|string|in:pending,in_progress,completed,cancelled,archived',
         ];
     }
 }
